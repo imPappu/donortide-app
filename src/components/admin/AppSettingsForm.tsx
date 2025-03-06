@@ -16,6 +16,27 @@ const AppSettingsForm = () => {
       try {
         const data = await getAppSettings();
         setSettings(data);
+        
+        // Ensure required settings exist
+        const requiredSettings = [
+          {
+            settingKey: 'admin_url_path',
+            settingValue: 'admin',
+            description: 'Custom URL path for admin panel (e.g., "admin", "dashboard", "control-panel")'
+          }
+        ];
+        
+        // Check if each required setting exists, if not add it to the settings
+        for (const required of requiredSettings) {
+          if (!data.some(s => s.settingKey === required.settingKey)) {
+            try {
+              await updateAppSetting(required.settingKey, required.settingValue, required.description);
+              setSettings(prev => [...prev, required]);
+            } catch (error) {
+              console.error(`Error adding required setting ${required.settingKey}:`, error);
+            }
+          }
+        }
       } catch (error) {
         console.error('Error fetching settings:', error);
         toast({
@@ -44,6 +65,15 @@ const AppSettingsForm = () => {
         title: "Success",
         description: "Setting updated successfully",
       });
+      
+      // If admin URL path was updated, prompt for page reload
+      if (key === 'admin_url_path') {
+        toast({
+          title: "Admin URL Changed",
+          description: "Please refresh the page for the new admin URL to take effect.",
+          duration: 5000,
+        });
+      }
     } catch (error) {
       console.error('Error updating setting:', error);
       toast({

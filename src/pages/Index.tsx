@@ -10,9 +10,12 @@ import {
   PlusCircle, 
   MapPin,
   Heart,
-  ArrowRight
+  ArrowRight,
+  ExternalLink
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import HomeBanner from "@/components/HomeBanner";
+import TopDonors from "@/components/TopDonors";
 
 const Index = () => {
   const urgentRequests = [
@@ -34,6 +37,24 @@ const Index = () => {
     }
   ];
 
+  const bannerImages = [
+    {
+      src: "https://placehold.co/1200x400/red/white?text=Donate+Blood+Save+Lives",
+      alt: "Donate Blood Save Lives",
+      url: "/create"
+    },
+    {
+      src: "https://placehold.co/1200x400/blue/white?text=World+Blood+Donor+Day",
+      alt: "World Blood Donor Day",
+      url: "/blog"
+    },
+    {
+      src: "https://placehold.co/1200x400/green/white?text=Find+Donors+Near+You",
+      alt: "Find Donors Near You",
+      url: "/donors"
+    }
+  ];
+
   return (
     <div className="container max-w-md mx-auto px-4 py-6 pb-20">
       <div className="flex items-center justify-between mb-6">
@@ -46,6 +67,11 @@ const Index = () => {
             <Bell className="h-5 w-5" />
           </Button>
         </div>
+      </div>
+
+      {/* Banner Slider */}
+      <div className="mb-6">
+        <HomeBanner images={bannerImages} />
       </div>
 
       <Alert className="mb-6 border-red-200 bg-red-50 text-red-800">
@@ -124,6 +150,29 @@ const Index = () => {
         ))}
       </div>
 
+      {/* Ad Banner */}
+      <div className="mb-6">
+        <div className="relative overflow-hidden rounded-lg bg-slate-50 p-2 border border-slate-200">
+          <div className="flex items-center">
+            <div className="text-xs absolute top-1 right-1 text-muted-foreground">Ad</div>
+            <div className="flex-1 p-2">
+              <h3 className="text-sm font-medium">Donate Blood Today</h3>
+              <p className="text-xs text-muted-foreground">Find your nearest donation center</p>
+            </div>
+            <Button size="sm" className="shrink-0" asChild>
+              <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+                Learn More
+              </a>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Top/Recent Donors Section */}
+      <div className="mb-6">
+        <TopDonors />
+      </div>
+
       <Card className="mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Blood Donation Facts</CardTitle>
@@ -145,7 +194,9 @@ const Index = () => {
           </ul>
         </CardContent>
         <CardFooter className="pt-0">
-          <Button variant="outline" size="sm" className="w-full">Learn More</Button>
+          <Button variant="outline" size="sm" className="w-full" asChild>
+            <Link to="/blog">Learn More</Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>

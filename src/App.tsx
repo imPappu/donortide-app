@@ -10,6 +10,8 @@ import Requests from "./pages/Requests";
 import CreateRequest from "./pages/CreateRequest";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
+import AdminDashboard from "./pages/Admin";
 import Navigation from "./components/Navigation";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
               <Route path="/requests" element={<Requests />} />
               <Route path="/create" element={<CreateRequest />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

@@ -12,7 +12,7 @@ import {
   DropletIcon, 
   Award, 
   Clock, 
-  Settings, 
+  Settings as SettingsIcon, 
   LogOut,
   Bell
 } from "lucide-react";
@@ -78,7 +78,7 @@ const Achievements = () => {
   );
 };
 
-const Settings = () => {
+const SettingsTab = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -109,7 +109,7 @@ const Settings = () => {
       <div className="space-y-4">
         <h3 className="font-medium">Account</h3>
         <Button variant="outline" className="w-full justify-start">
-          <Settings className="mr-2 h-4 w-4" /> Account Settings
+          <SettingsIcon className="mr-2 h-4 w-4" /> Account Settings
         </Button>
         <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-50">
           <LogOut className="mr-2 h-4 w-4" /> Logout
@@ -160,7 +160,7 @@ const Profile = () => {
                 <Achievements />
               </TabsContent>
               <TabsContent value="settings">
-                <Settings />
+                <SettingsTab />
               </TabsContent>
             </div>
           </Tabs>

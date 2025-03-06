@@ -1,0 +1,105 @@
+
+<?php
+// This is an example backend file for your cPanel hosting
+// You would need to save this as api.php on your server
+
+// Set headers for CORS and JSON content type
+header("Access-Control-Allow-Origin: *"); // In production, replace * with your domain
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
+// Database connection details - update with your cPanel PostgreSQL credentials
+$host = "localhost";
+$dbname = "your_database_name";
+$user = "your_username";
+$password = "your_password";
+
+// Create connection string for PostgreSQL
+$dsn = "pgsql:host=$host;dbname=$dbname;";
+
+try {
+    // Create a PDO instance
+    $pdo = new PDO($dsn, $user, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Get the request method and path
+    $method = $_SERVER['REQUEST_METHOD'];
+    $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+    $path_parts = explode('/', $path);
+    $endpoint = end($path_parts);
+    
+    // Handle different API endpoints
+    if ($endpoint === 'requests') {
+        if ($method === 'GET') {
+            // Get all blood requests
+            $stmt = $pdo->prepare("SELECT * FROM blood_requests ORDER BY created_at DESC");
+            $stmt->execute();
+            $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($requests);
+        } 
+        else if ($method === 'POST') {
+            // Create a new blood request
+            $data = json_decode(file_get_contents('php://input'), true);
+            
+            $stmt = $pdo->prepare("INSERT INTO blood_requests (patient_name, blood_type, hospital, location, contact_number, urgency, notes, created_at) 
+                                   VALUES (:patient_name, :blood_type, :hospital, :location, :contact_number, :urgency, :notes, NOW())
+                                   RETURNING id, patient_name, blood_type, hospital, location, contact_number, urgency, notes, created_at");
+            
+            $stmt->bindParam(':patient_name', $data['patientName']);
+            $stmt->bindParam(':blood_type', $data['bloodType']);
+            $stmt->bindParam(':hospital', $data['hospital']);
+            $stmt->bindParam(':location', $data['location']);
+            $stmt->bindParam(':contact_number', $data['contactNumber']);
+            $stmt->bindParam(':urgency', $data['urgency']);
+            $stmt->bindParam(':notes', $data['notes']);
+            
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode($result);
+        }
+    } 
+    else if ($endpoint === 'donors') {
+        if ($method === 'GET') {
+            // Get all donors
+            $stmt = $pdo->prepare("SELECT * FROM donors ORDER BY name");
+            $stmt->execute();
+            $donors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($donors);
+        } 
+        else if ($method === 'POST') {
+            // Register a new donor
+            $data = json_decode(file_get_contents('php://input'), true);
+            
+            $stmt = $pdo->prepare("INSERT INTO donors (name, blood_type, location, contact_number, created_at) 
+                                   VALUES (:name, :blood_type, :location, :contact_number, NOW())
+                                   RETURNING id, name, blood_type, location, contact_number, created_at");
+            
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':blood_type', $data['bloodType']);
+            $stmt->bindParam(':location', $data['location']);
+            $stmt->bindParam(':contact_number', $data['contactNumber']);
+            
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode($result);
+        }
+    } 
+    else {
+        // Return 404 for unknown endpoints
+        http_response_code(404);
+        echo json_encode(["error" => "Endpoint not found"]);
+    }
+    
+} catch (PDOException $e) {
+    // Handle database errors
+    http_response_code(500);
+    echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+} catch (Exception $e) {
+    // Handle other errors
+    http_response_code(500);
+    echo json_encode(["error" => "Server error: " . $e->getMessage()]);
+}
+?>

@@ -32,6 +32,7 @@ const App = () => {
         }
       } catch (error) {
         console.error("Error fetching admin path:", error);
+        // Continue with default "admin" path if API fails
       } finally {
         setLoading(false);
       }
@@ -59,6 +60,7 @@ const App = () => {
                 <Route path="/create" element={<CreateRequest />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/blog" element={<Blog />} />
+                {/* Use the exact value of adminPath, not a parameter notation */}
                 <Route path={`/${adminPath}`} element={<AdminDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -9,47 +9,42 @@ import { getDonors, Donor } from "@/services/dbService";
 import { toast } from "@/hooks/use-toast";
 
 const DonorCard = ({ name, bloodType, location, lastDonation, contactNumber }: Donor & { lastDonation?: string }) => {
-  const [showContact, setShowContact] = useState(false);
-  
-  const handleContactClick = () => {
-    setShowContact(!showContact);
+  const handleCallClick = () => {
+    // Launch phone dialer with the contact number
+    window.location.href = `tel:${contactNumber}`;
+    
+    // Show toast notification
+    toast({
+      title: "Calling donor",
+      description: `Dialing ${name} at ${contactNumber}`,
+    });
   };
   
   return (
-    <Card className="mb-4">
-      <CardContent className="pt-6">
+    <Card className="mb-3">
+      <CardContent className="pt-4 pb-3 px-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
               <span className="text-red-600 font-bold">{bloodType}</span>
             </div>
             <div>
-              <h3 className="font-medium">{name}</h3>
-              <p className="text-sm text-muted-foreground">{location}</p>
+              <h3 className="font-medium text-sm">{name}</h3>
+              <p className="text-xs text-muted-foreground">{location}</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" onClick={handleContactClick}>
-            {showContact ? "Hide Contact" : "Contact"}
+          <Button size="sm" variant="outline" onClick={handleCallClick} className="h-8 px-3">
+            <Phone className="h-3.5 w-3.5 mr-1" />
+            Call
           </Button>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
           {lastDonation && (
             <div>
               <span className="text-muted-foreground">Last Donation:</span>
               <p>{lastDonation}</p>
             </div>
           )}
-          <div>
-            <span className="text-muted-foreground">Contact:</span>
-            {showContact ? (
-              <div className="flex items-center">
-                <Phone className="h-3 w-3 mr-1" />
-                <p>{contactNumber}</p>
-              </div>
-            ) : (
-              <p>**********</p>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>

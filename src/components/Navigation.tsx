@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, PlusCircle, User, Newspaper } from "lucide-react";
+import { Home, Search, PlusCircle, User, Newspaper, Building } from "lucide-react";
 
 const Navigation = () => {
   const location = useLocation();
@@ -59,6 +58,26 @@ const Navigation = () => {
           >
             <User className="h-6 w-6" />
             <span className="text-xs mt-1">Profile</span>
+          </Link>
+          
+          <Link
+            to="/volunteers"
+            className={`flex flex-1 flex-col items-center justify-center py-2 ${
+              path === "/volunteers" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <User className="w-5 h-5" />
+            <span className="text-xs mt-1">Volunteers</span>
+          </Link>
+          
+          <Link
+            to="/charities"
+            className={`flex flex-1 flex-col items-center justify-center py-2 ${
+              path === "/charities" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Building className="w-5 h-5" />
+            <span className="text-xs mt-1">Organizations</span>
           </Link>
         </div>
       </div>

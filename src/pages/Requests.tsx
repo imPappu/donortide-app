@@ -4,39 +4,64 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, MapPin, Clock, Calendar, DropletIcon } from "lucide-react";
+import { Search, MapPin, Clock, Calendar, DropletIcon, Phone } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
+import { sendNotification } from "@/services/dbService";
 
-const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, distance, hospital, notes }) => {
+const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, distance, hospital, notes, contactNumber }) => {
   const [responded, setResponded] = useState(false);
 
-  const handleRespond = () => {
+  const handleRespond = async () => {
     setResponded(true);
+    
+    // Show toast notification
     toast({
       title: "Response sent",
       description: `You have responded to ${name}'s blood request.`,
     });
+    
+    // Send push notification to the requester
+    try {
+      await sendNotification({
+        title: `Response to your ${bloodType} blood request`,
+        message: `A donor has responded to your blood request at ${hospital}. They will contact you soon.`,
+        targetType: 'specific_users',
+        targetData: { requesterId: name.replace(/\s+/g, '-').toLowerCase() }
+      });
+    } catch (error) {
+      console.error("Failed to send push notification:", error);
+    }
+  };
+  
+  const handleCall = () => {
+    // Launch phone dialer with the contact number
+    window.location.href = `tel:${contactNumber || "1234567890"}`;
+    
+    toast({
+      title: "Calling requester",
+      description: `Dialing ${name}`,
+    });
   };
 
   return (
-    <Card className="mb-4">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-3">
+    <Card className="mb-3">
+      <CardContent className="pt-4 pb-3 px-4">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
-              <DropletIcon className="h-5 w-5 text-red-600" />
+            <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mr-2">
+              <DropletIcon className="h-4 w-4 text-red-600" />
             </div>
             <div>
-              <h3 className="font-medium">{name}</h3>
-              <p className="text-sm text-muted-foreground flex items-center">
+              <h3 className="font-medium text-sm">{name}</h3>
+              <p className="text-xs text-muted-foreground flex items-center">
                 <MapPin className="h-3 w-3 mr-1" />
                 {location} • {distance}
               </p>
             </div>
           </div>
           <div className="text-right">
-            <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-600">
+            <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-600">
               {bloodType}
             </span>
             <p className="text-xs text-muted-foreground mt-1 flex items-center justify-end">
@@ -46,13 +71,13 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
           </div>
         </div>
 
-        <div className="mb-4">
-          <p className="text-sm"><span className="font-medium">Hospital:</span> {hospital}</p>
-          {notes && <p className="text-sm mt-1">{notes}</p>}
+        <div className="mb-2">
+          <p className="text-xs"><span className="font-medium">Hospital:</span> {hospital}</p>
+          {notes && <p className="text-xs mt-1">{notes}</p>}
         </div>
 
-        <div className="flex items-center gap-2 mb-3">
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+        <div className="flex items-center gap-2 mb-2">
+          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
             urgency === "Urgent" ? "bg-red-100 text-red-600" : 
             urgency === "High" ? "bg-orange-100 text-orange-600" : 
             "bg-yellow-100 text-yellow-600"
@@ -66,22 +91,24 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
         </div>
       </CardContent>
 
-      <CardFooter className="border-t bg-muted/20 px-6 py-3">
+      <CardFooter className="border-t bg-muted/20 px-4 py-2">
         {responded ? (
-          <div className="w-full text-center text-green-600 text-sm font-medium">
+          <div className="w-full text-center text-green-600 text-xs font-medium">
             You've responded to this request
           </div>
         ) : (
           <div className="w-full flex gap-2">
             <Button 
               variant="outline" 
-              className="flex-1" 
+              className="flex-1 py-1 h-8" 
               size="sm"
+              onClick={handleCall}
             >
-              Message
+              <Phone className="h-3.5 w-3.5 mr-1" />
+              Call
             </Button>
             <Button 
-              className="flex-1" 
+              className="flex-1 py-1 h-8" 
               size="sm"
               onClick={handleRespond}
             >

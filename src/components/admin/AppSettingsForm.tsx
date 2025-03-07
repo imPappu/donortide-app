@@ -30,7 +30,8 @@ const AppSettingsForm = () => {
         for (const required of requiredSettings) {
           if (!data.some(s => s.settingKey === required.settingKey)) {
             try {
-              await updateAppSetting(required.settingKey, required.settingValue, required.description);
+              // Use the updateAppSetting with correct number of arguments
+              await updateAppSetting(required.settingKey, required.settingValue);
               setSettings(prev => [...prev, required]);
             } catch (error) {
               console.error(`Error adding required setting ${required.settingKey}:`, error);

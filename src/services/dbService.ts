@@ -358,14 +358,19 @@ export const getAppSettings = async (): Promise<AppSetting[]> => {
   }
 };
 
-export const updateAppSetting = async (key: string, value: string): Promise<AppSetting | null> => {
+export const updateAppSetting = async (key: string, value: string, description?: string): Promise<AppSetting | null> => {
   try {
+    const payload: { settingValue: string; description?: string } = { settingValue: value };
+    if (description) {
+      payload.description = description;
+    }
+    
     const response = await fetch(`${API_BASE_URL}/settings/${key}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ settingValue: value }),
+      body: JSON.stringify(payload),
     });
     
     if (!response.ok) throw new Error('Failed to update app setting');

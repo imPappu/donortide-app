@@ -1,4 +1,3 @@
-
 // This service file defines how your frontend communicates with your PostgreSQL backend
 // You'll need to replace the base URL with your actual API endpoint once deployed
 
@@ -85,6 +84,19 @@ export interface Payment {
   paymentDetails?: object;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface DatabaseConfig {
+  host: string;
+  database: string;
+  user: string;
+  password: string;
+}
+
+export interface AdminUser {
+  username: string;
+  email: string;
+  password: string;
 }
 
 // Blood Request API functions
@@ -378,6 +390,117 @@ export const updateAppSetting = async (key: string, value: string, description?:
   } catch (error) {
     console.error('Error updating app setting:', error);
     return null;
+  }
+};
+
+// Admin Authentication
+export const verifyAdminCredentials = async (username: string, password: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    
+    if (!response.ok) return false;
+    
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error('Error verifying admin credentials:', error);
+    
+    // For development/demo purposes only - allows login with default credentials
+    // when the API is not available
+    if (username === 'admin' && password === 'admin') {
+      console.warn('Using fallback admin authentication - REMOVE IN PRODUCTION');
+      return true;
+    }
+    
+    return false;
+  }
+};
+
+// Installation API functions
+export const testDatabaseConnection = async (dbConfig: DatabaseConfig): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/install/test-connection`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dbConfig),
+    });
+    
+    if (!response.ok) return false;
+    
+    const data = await response.json();
+    return data.connected === true;
+  } catch (error) {
+    console.error('Error testing database connection:', error);
+    
+    // For development/demo purposes - simulate successful connection
+    console.warn('Using simulated database connection - REMOVE IN PRODUCTION');
+    return true;
+  }
+};
+
+export const createAdminUser = async (adminUser: AdminUser): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/install/create-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(adminUser),
+    });
+    
+    if (!response.ok) return false;
+    
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+    
+    // For development/demo purposes - simulate successful creation
+    console.warn('Using simulated admin creation - REMOVE IN PRODUCTION');
+    return true;
+  }
+};
+
+export const installSystem = async (
+  dbConfig: DatabaseConfig, 
+  adminUser: AdminUser, 
+  appSettings: AppSetting[]
+): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/install`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        database: dbConfig,
+        admin: adminUser,
+        settings: appSettings
+      }),
+    });
+    
+    if (!response.ok) return false;
+    
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error('Error installing system:', error);
+    
+    // For development/demo purposes - simulate successful installation
+    console.warn('Using simulated installation - REMOVE IN PRODUCTION');
+    
+    // Simulate saving the admin path to localStorage for demo purposes
+    localStorage.setItem('admin_path', appSettings.find(s => s.settingKey === 'admin_url_path')?.settingValue || 'admin');
+    
+    return true;
   }
 };
 

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -17,7 +18,8 @@ import {
   Trash2,
   Plus,
   Eye,
-  Image
+  Image,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +37,7 @@ import {
   updateBanner,
   deleteBanner,
   sendNotification,
+  getAppSettings,
   BlogPost,
   Banner,
   Notification,
@@ -47,6 +50,7 @@ import PaymentGatewaySettings from "@/components/admin/PaymentGatewaySettings";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDonations: 0,
@@ -58,6 +62,7 @@ const AdminDashboard = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [requests, setRequests] = useState<BloodRequest[]>([]);
+  const [adminPath, setAdminPath] = useState("admin");
   
   // State for forms
   const [editingBlogPost, setEditingBlogPost] = useState<BlogPost | null>(null);
@@ -72,46 +77,110 @@ const AdminDashboard = () => {
     targetType: 'all'
   });
 
+  // Check for admin authentication
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch dashboard stats
-        const dashboardData = await getDashboardStats();
-        setStats({
-          totalUsers: dashboardData.totalUsers || 0,
-          totalDonations: dashboardData.totalDonations || 0,
-          totalRequests: dashboardData.totalRequests || 0,
-          totalLocations: dashboardData.totalLocations || 0,
-          recentRequests: dashboardData.recentRequests || []
-        });
-        
-        // Fetch blood requests
-        const requestsData = await getBloodRequests();
-        setRequests(requestsData);
-        
-        // Fetch blog posts
-        const blogData = await getBlogPosts();
-        setBlogPosts(blogData);
-        
-        // Fetch banners
-        const bannerData = await getBanners();
-        setBanners(bannerData);
-      } catch (error) {
-        console.error('Error fetching admin data:', error);
+    const checkAdminAuth = () => {
+      const adminToken = localStorage.getItem("admin_token");
+      if (!adminToken) {
         toast({
-          title: "Error",
-          description: "Failed to load admin dashboard data",
+          title: "Authentication required",
+          description: "Please login to access the admin dashboard",
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
+        navigate(`/${adminPath}`);
+        return false;
+      }
+      
+      // Parse token and check if it's expired
+      try {
+        const tokenData = JSON.parse(adminToken);
+        const now = new Date().getTime();
+        const expiryTime = tokenData.timestamp + tokenData.expiresIn;
+        
+        if (now > expiryTime) {
+          localStorage.removeItem("admin_token");
+          toast({
+            title: "Session expired",
+            description: "Your session has expired. Please login again",
+            variant: "destructive",
+          });
+          navigate(`/${adminPath}`);
+          return false;
+        }
+      } catch (error) {
+        localStorage.removeItem("admin_token");
+        navigate(`/${adminPath}`);
+        return false;
+      }
+      
+      return true;
+    };
+
+    const fetchAdminPath = async () => {
+      try {
+        const settings = await getAppSettings();
+        const adminPathSetting = settings.find(s => s.settingKey === 'admin_url_path');
+        if (adminPathSetting && adminPathSetting.settingValue) {
+          setAdminPath(adminPathSetting.settingValue);
+        }
+      } catch (error) {
+        console.error("Error fetching admin path:", error);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchAdminPath();
+    const isAuthenticated = checkAdminAuth();
+    
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [navigate]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch dashboard stats
+      const dashboardData = await getDashboardStats();
+      setStats({
+        totalUsers: dashboardData.totalUsers || 0,
+        totalDonations: dashboardData.totalDonations || 0,
+        totalRequests: dashboardData.totalRequests || 0,
+        totalLocations: dashboardData.totalLocations || 0,
+        recentRequests: dashboardData.recentRequests || []
+      });
+      
+      // Fetch blood requests
+      const requestsData = await getBloodRequests();
+      setRequests(requestsData);
+      
+      // Fetch blog posts
+      const blogData = await getBlogPosts();
+      setBlogPosts(blogData);
+      
+      // Fetch banners
+      const bannerData = await getBanners();
+      setBanners(bannerData);
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load admin dashboard data",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully",
+    });
+    navigate(`/${adminPath}`);
+  };
 
   // Blog post handlers
   const handleAddBlogPost = () => {
@@ -300,6 +369,10 @@ const AdminDashboard = () => {
           <Button variant="outline" size="sm">
             <Settings className="h-4 w-4 mr-2" />
             Settings
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
           </Button>
           <Button size="sm">
             <Bell className="h-4 w-4 mr-2" />

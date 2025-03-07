@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Index from "./pages/Index";
 import Donors from "./pages/Donors";
@@ -15,34 +15,62 @@ import Blog from "./pages/Blog";
 import AdminDashboard from "./pages/Admin";
 import Navigation from "./components/Navigation";
 import { getAppSettings } from "@/services/dbService";
+import AdminLogin from "./pages/AdminLogin";
+import Install from "./pages/Install";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [adminPath, setAdminPath] = useState<string>("admin");
   const [loading, setLoading] = useState(true);
+  const [isInstalled, setIsInstalled] = useState(true); // Default to true, will check in useEffect
 
   useEffect(() => {
-    const fetchAdminPath = async () => {
+    const fetchAppSettings = async () => {
       try {
         const settings = await getAppSettings();
+        
+        // Check if the app is installed
+        const installationSetting = settings.find(s => s.settingKey === 'app_installed');
+        if (installationSetting && installationSetting.settingValue === 'false') {
+          setIsInstalled(false);
+        }
+        
+        // Get admin path
         const adminPathSetting = settings.find(s => s.settingKey === 'admin_url_path');
         if (adminPathSetting && adminPathSetting.settingValue) {
           setAdminPath(adminPathSetting.settingValue);
         }
       } catch (error) {
-        console.error("Error fetching admin path:", error);
+        console.error("Error fetching app settings:", error);
         // Continue with default "admin" path if API fails
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAdminPath();
+    fetchAppSettings();
   }, []);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading application...</div>;
+  }
+
+  if (!isInstalled) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Install />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
   }
 
   return (
@@ -60,8 +88,8 @@ const App = () => {
                 <Route path="/create" element={<CreateRequest />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/blog" element={<Blog />} />
-                {/* Use the exact value of adminPath, not a parameter notation */}
-                <Route path={`/${adminPath}`} element={<AdminDashboard />} />
+                <Route path={`/${adminPath}`} element={<AdminLogin />} />
+                <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

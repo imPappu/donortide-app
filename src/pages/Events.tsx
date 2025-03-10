@@ -1,11 +1,13 @@
 
 import React from "react";
 import TopNavbar from "@/components/TopNavbar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, MapPin, User } from "lucide-react";
+import { Calendar } from "lucide-react";
+import PageHeader from "@/components/common/PageHeader";
+import EventGrid from "@/components/events/EventGrid";
+import { EventCardProps } from "@/components/events/EventCard";
 
 const Events = () => {
-  const upcomingEvents = [
+  const upcomingEvents: EventCardProps[] = [
     {
       id: "1",
       title: "Blood Drive at Central Park",
@@ -53,41 +55,12 @@ const Events = () => {
       <TopNavbar />
       
       <div className="container mx-auto px-4 py-6 flex-1 pb-20 max-w-6xl">
-        <h1 className="text-2xl font-bold mb-6">Upcoming Blood Donation Events</h1>
+        <PageHeader 
+          icon={<Calendar className="h-6 w-6 mr-2 text-orange-500" />}
+          title="Upcoming Blood Donation Events"
+        />
         
-        <div className="grid md:grid-cols-2 gap-6">
-          {upcomingEvents.map((event) => (
-            <Card key={event.id} className="overflow-hidden">
-              <div className="aspect-video w-full">
-                <img 
-                  src={event.image} 
-                  alt={event.title} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardHeader className="pb-2">
-                <CardTitle>{event.title}</CardTitle>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {event.date}, {event.time}
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground flex items-center">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {event.location}
-                </div>
-                <div className="text-sm text-muted-foreground flex items-center">
-                  <User className="h-4 w-4 mr-1" />
-                  Organized by: {event.organizer}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{event.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <EventGrid events={upcomingEvents} />
       </div>
     </div>
   );

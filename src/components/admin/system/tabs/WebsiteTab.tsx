@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe } from "lucide-react";
+import { Globe, Layers } from "lucide-react";
 
 const WebsiteTab = () => {
   return (
@@ -50,7 +50,7 @@ const WebsiteTab = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {["Blog", "Testimonials", "Team", "Gallery", "FAQ", "Contact", "Donors", "Events"].map(module => (
                 <div key={module} className="flex items-center gap-2">
-                  <input type="checkbox" id={`module-${module}`} checked={module !== "Team"} />
+                  <input type="checkbox" id={`module-${module}`} defaultChecked={module !== "Team"} />
                   <label htmlFor={`module-${module}`} className="text-sm">{module}</label>
                 </div>
               ))}

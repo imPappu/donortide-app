@@ -1,21 +1,40 @@
 
 import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Box, Cog, Download, Globe, Layers, Smartphone, Upload } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Download, Smartphone, Globe, Cog, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-// Import refactored components
 import CoreSystemTab from "./tabs/CoreSystemTab";
-import AddonsTab from "./tabs/AddonsTab";
 import MobileTab from "./tabs/MobileTab";
 import WebsiteTab from "./tabs/WebsiteTab";
+
+// Define interfaces for our tab components
+interface CoreSystemTabProps {
+  updateAvailable: boolean;
+  updating: boolean;
+  progress: number;
+  handleSystemUpdate: () => Promise<void>;
+}
+
+interface MobileTabProps {
+  mobileUpdating: boolean;
+  handleMobileUpdate: (platform: string) => Promise<void>;
+}
+
+interface WebsiteTabProps {
+  websiteVersion: string;
+  handleWebsiteSettingsSave: () => void;
+}
 
 const SystemUpdatePanel = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("core");
   const [updating, setUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [uploadingAddon, setUploadingAddon] = useState(false);
+  const [mobileUpdating, setMobileUpdating] = useState(false);
   
   const handleSystemUpdate = async () => {
     setUpdating(true);
@@ -34,67 +53,71 @@ const SystemUpdatePanel = () => {
     
     setUpdating(false);
   };
-  
-  const handleUploadAddon = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
+
+  const handleMobileUpdate = async (platform: string) => {
+    setMobileUpdating(true);
     
-    setUploadingAddon(true);
-    const file = e.target.files[0];
-    
-    // Simulate upload and installation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-      title: "Addon Installed",
-      description: `Successfully installed ${file.name}`,
-    });
-    
-    setUploadingAddon(false);
+    try {
+      // Simulate mobile update process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast({
+        title: "Mobile Update Successful",
+        description: `The ${platform} app has been updated to the latest version.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: `Failed to update ${platform} app. Please try again.`,
+        variant: "destructive",
+      });
+    } finally {
+      setMobileUpdating(false);
+    }
   };
-  
-  const installedAddons = [
-    { id: 1, name: "Payment Gateway Plus", version: "1.2.0", status: "Active" },
-    { id: 2, name: "Analytics Dashboard", version: "2.0.1", status: "Active" },
-    { id: 3, name: "Community Manager", version: "1.0.5", status: "Inactive" },
-  ];
+
+  const handleWebsiteSettingsSave = () => {
+    toast({
+      title: "Website Settings Saved",
+      description: "Your website settings have been updated successfully.",
+    });
+  };
   
   return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">System Management</h1>
-        <p className="text-muted-foreground">Manage system updates and addon modules</p>
+        <p className="text-muted-foreground">Manage system updates and settings</p>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid grid-cols-3 lg:w-[450px]">
           <TabsTrigger value="core">Core System</TabsTrigger>
-          <TabsTrigger value="addons">Addon Modules</TabsTrigger>
           <TabsTrigger value="mobile">Mobile Updates</TabsTrigger>
           <TabsTrigger value="website">Website</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="core">
+        <TabsContent value="core" className="space-y-4">
           <CoreSystemTab 
-            updating={updating} 
-            progress={progress} 
-            handleSystemUpdate={handleSystemUpdate} 
+            updateAvailable={true}
+            updating={updating}
+            progress={progress}
+            handleSystemUpdate={handleSystemUpdate}
           />
         </TabsContent>
         
-        <TabsContent value="addons">
-          <AddonsTab 
-            uploadingAddon={uploadingAddon} 
-            handleUploadAddon={handleUploadAddon} 
-            installedAddons={installedAddons} 
+        <TabsContent value="mobile" className="space-y-4">
+          <MobileTab 
+            mobileUpdating={mobileUpdating}
+            handleMobileUpdate={handleMobileUpdate}
           />
         </TabsContent>
         
-        <TabsContent value="mobile">
-          <MobileTab />
-        </TabsContent>
-        
-        <TabsContent value="website">
-          <WebsiteTab />
+        <TabsContent value="website" className="space-y-4">
+          <WebsiteTab 
+            websiteVersion="2.1.0"
+            handleWebsiteSettingsSave={handleWebsiteSettingsSave}
+          />
         </TabsContent>
       </Tabs>
     </div>

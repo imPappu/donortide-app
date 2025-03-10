@@ -2,11 +2,16 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, Layers } from "lucide-react";
+import { Globe } from "lucide-react";
 
-const WebsiteTab = () => {
+interface WebsiteTabProps {
+  websiteVersion: string;
+  handleWebsiteSettingsSave: () => void;
+}
+
+const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabProps) => {
   return (
-    <div className="space-y-4">
+    <>
       <Card>
         <CardHeader>
           <CardTitle>Website Configuration</CardTitle>
@@ -16,7 +21,7 @@ const WebsiteTab = () => {
             <Globe className="h-5 w-5 text-blue-500" />
             <div>
               <p className="font-medium text-blue-800 dark:text-blue-200">
-                Website Version: 2.1.0
+                Website Version: {websiteVersion}
               </p>
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 Your website is currently active and running the latest version.
@@ -58,7 +63,9 @@ const WebsiteTab = () => {
           </div>
           
           <div className="flex justify-end">
-            <Button>Save Website Settings</Button>
+            <Button onClick={handleWebsiteSettingsSave}>
+              Save Website Settings
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -104,7 +111,7 @@ const WebsiteTab = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 };
 

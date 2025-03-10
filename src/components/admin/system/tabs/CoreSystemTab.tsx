@@ -1,46 +1,54 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { AlertCircle, Download } from "lucide-react";
 
 interface CoreSystemTabProps {
+  updateAvailable: boolean;
   updating: boolean;
   progress: number;
   handleSystemUpdate: () => Promise<void>;
 }
 
-const CoreSystemTab = ({ updating, progress, handleSystemUpdate }: CoreSystemTabProps) => {
+const CoreSystemTab = ({ 
+  updateAvailable, 
+  updating, 
+  progress, 
+  handleSystemUpdate 
+}: CoreSystemTabProps) => {
   return (
-    <div className="space-y-4">
+    <>
       <Card>
         <CardHeader>
           <CardTitle>Core System Updates</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5">
-                <AlertCircle className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <h3 className="font-medium text-blue-800 dark:text-blue-200">Update Available</h3>
-                <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                  Version 2.5.0 is available (Current: 2.4.2)
-                </p>
-                <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                  <p className="font-medium">What's new:</p>
-                  <ul className="list-disc list-inside mt-1 space-y-1">
-                    <li>Enhanced security features</li>
-                    <li>Improved performance and stability</li>
-                    <li>New admin dashboard widgets</li>
-                    <li>Bug fixes and minor improvements</li>
-                  </ul>
+          {updateAvailable && (
+            <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  <AlertCircle className="h-5 w-5 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-blue-800 dark:text-blue-200">Update Available</h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    Version 2.5.0 is available (Current: 2.4.2)
+                  </p>
+                  <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                    <p className="font-medium">What's new:</p>
+                    <ul className="list-disc list-inside mt-1 space-y-1">
+                      <li>Enhanced security features</li>
+                      <li>Improved performance and stability</li>
+                      <li>New admin dashboard widgets</li>
+                      <li>Bug fixes and minor improvements</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           
           {updating && (
             <div className="space-y-2">
@@ -90,7 +98,7 @@ const CoreSystemTab = ({ updating, progress, handleSystemUpdate }: CoreSystemTab
           </div>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 };
 

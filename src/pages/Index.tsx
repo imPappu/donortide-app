@@ -1,23 +1,18 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { 
-  Heart, 
-  ArrowRight,
-  MapPin,
-  User,
-  MessageSquare,
-  Award,
-  Calendar,
-  Megaphone
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Heart } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import HomeBanner from "@/components/HomeBanner";
 import TopDonors from "@/components/TopDonors";
 import TopNavbar from "@/components/TopNavbar";
 import UrgentRequestsRow from "@/components/UrgentRequestsRow";
+import QuickActionsGrid from "@/components/home/QuickActionsGrid";
+import EventsCampaignsSection from "@/components/home/EventsCampaignsSection";
+import UserStoriesSection from "@/components/home/UserStoriesSection";
+import CommunityActivitySection from "@/components/home/CommunityActivitySection";
+import BloodDonationFacts from "@/components/home/BloodDonationFacts";
 
 const Index = () => {
   const urgentRequests = [
@@ -158,241 +153,24 @@ const Index = () => {
         <UrgentRequestsRow requests={urgentRequests} />
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <Link to="/requests">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-              <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-                <Heart className="h-8 w-8 text-red-500 mb-2" />
-                <h3 className="font-medium text-center">Blood Requests</h3>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link to="/donors">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-              <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-                <User className="h-8 w-8 text-primary mb-2" />
-                <h3 className="font-medium text-center">Find Donors</h3>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link to="/donate">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-              <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-                <Award className="h-8 w-8 text-amber-500 mb-2" />
-                <h3 className="font-medium text-center">Donate Items</h3>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link to="/community">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-              <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-                <MessageSquare className="h-8 w-8 text-blue-500 mb-2" />
-                <h3 className="font-medium text-center">Community</h3>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
+        <QuickActionsGrid />
         
         {/* Events & Campaigns Section */}
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          {/* Events Section */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <Calendar className="h-5 w-5 mr-2 text-blue-500" />
-                Upcoming Events
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {upcomingEvents.length > 0 ? (
-                <div className="space-y-3">
-                  {upcomingEvents.map(event => (
-                    <div key={event.id} className="border-b pb-3 last:border-0 last:pb-0">
-                      <h3 className="font-medium">{event.title}</h3>
-                      <div className="flex justify-between text-sm text-muted-foreground">
-                        <span className="flex items-center">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          {event.date}
-                        </span>
-                        <span>{event.type}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground flex items-center mt-1">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {event.location}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-sm py-2">No upcoming events</p>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link to="/events">View All Events</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-
-          {/* Campaigns Section */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <Megaphone className="h-5 w-5 mr-2 text-orange-500" />
-                Active Campaigns
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {activeCampaigns.length > 0 ? (
-                <div className="space-y-3">
-                  {activeCampaigns.map(campaign => (
-                    <div key={campaign.id} className="border-b pb-3 last:border-0 last:pb-0">
-                      <h3 className="font-medium">{campaign.title}</h3>
-                      <div className="mt-1 space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span>Goal: {campaign.goal}</span>
-                          <span>Ends: {campaign.endDate}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-orange-500 h-2.5 rounded-full" 
-                            style={{ width: `${campaign.progress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-right text-muted-foreground">{campaign.progress}% Complete</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-sm py-2">No active campaigns</p>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link to="/campaigns">View All Campaigns</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+        <EventsCampaignsSection events={upcomingEvents} campaigns={activeCampaigns} />
         
         {/* User Stories */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Recent Stories</h2>
-            <Link to="/stories" className="text-sm text-primary flex items-center">
-              View all <ArrowRight className="h-3 w-3 ml-1" />
-            </Link>
-          </div>
-          
-          {recentStories.map(story => (
-            <Card key={story.id} className="mb-3">
-              <CardContent className="p-4">
-                <div className="flex items-center mb-2">
-                  <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                    <User className="h-4 w-4 text-gray-600" />
-                  </div>
-                  <div>
-                    <div className="flex items-center">
-                      <h3 className="font-medium text-sm">{story.userName}</h3>
-                      {story.badge && (
-                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                          <Award className="h-3 w-3 mr-1" />
-                          {story.badge}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <h4 className="font-medium mb-1">{story.title}</h4>
-                <p className="text-sm text-muted-foreground mb-2">{story.excerpt}</p>
-                
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <span className="flex items-center mr-3">
-                    <Heart className="h-3 w-3 mr-1" />
-                    {story.likes}
-                  </span>
-                  <span className="flex items-center">
-                    <MessageSquare className="h-3 w-3 mr-1" />
-                    {story.comments}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <UserStoriesSection stories={recentStories} />
         
         {/* Community Posts */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Community Activity</h2>
-            <Link to="/community" className="text-sm text-primary flex items-center">
-              View all <ArrowRight className="h-3 w-3 ml-1" />
-            </Link>
-          </div>
-          
-          {recentCommunityPosts.map(post => (
-            <Card key={post.id} className="mb-3">
-              <CardContent className="p-4">
-                <div className="flex items-center mb-2">
-                  <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                    <User className="h-4 w-4 text-gray-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-sm">{post.userName}</h3>
-                    <p className="text-xs text-muted-foreground">{post.timestamp}</p>
-                  </div>
-                </div>
-                
-                <p className="text-sm mb-2">{post.content}</p>
-                
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <span className="flex items-center mr-3">
-                    <Heart className="h-3 w-3 mr-1" />
-                    {post.likes}
-                  </span>
-                  <span className="flex items-center">
-                    <MessageSquare className="h-3 w-3 mr-1" />
-                    {post.comments}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <CommunityActivitySection posts={recentCommunityPosts} />
 
         {/* Top/Recent Donors Section */}
         <div className="mb-6">
           <TopDonors />
         </div>
 
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Blood Donation Facts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="text-sm space-y-2">
-              <li className="flex items-center">
-                <span className="h-2 w-2 rounded-full bg-primary mr-2"></span>
-                One donation can save up to three lives
-              </li>
-              <li className="flex items-center">
-                <span className="h-2 w-2 rounded-full bg-primary mr-2"></span>
-                Every two seconds someone needs blood
-              </li>
-              <li className="flex items-center">
-                <span className="h-2 w-2 rounded-full bg-primary mr-2"></span>
-                Type O- is a universal donor blood type
-              </li>
-            </ul>
-          </CardContent>
-          <CardFooter className="pt-0">
-            <Button variant="outline" size="sm" className="w-full" asChild>
-              <Link to="/blog">Learn More</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+        {/* Blood Donation Facts */}
+        <BloodDonationFacts />
       </div>
     </div>
   );

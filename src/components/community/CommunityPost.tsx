@@ -8,6 +8,7 @@ import { Post } from "@/types/community";
 import PostHeader from "./post/PostHeader";
 import PostContent from "./post/PostContent";
 import PostFooter from "./post/PostFooter";
+import PostStats from "./post/PostStats";
 import PollItem from "./poll/PollItem";
 
 interface CommunityPostProps {
@@ -75,10 +76,11 @@ const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
           <PollItem poll={poll} onVote={setPoll} />
         )}
         
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{likeCount} likes</span>
-          <span>{post.comments} comments • {post.shares} shares</span>
-        </div>
+        <PostStats 
+          likeCount={likeCount}
+          comments={post.comments}
+          shares={post.shares}
+        />
       </CardContent>
       
       <CardFooter className="px-0 py-0 border-t flex justify-between">

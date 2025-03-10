@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect } from "react";
 import TopNavbar from "@/components/TopNavbar";
-import CommunityPost from "@/components/community/CommunityPost";
 import NewPostForm from "@/components/community/NewPostForm";
 import { MOCK_POSTS, TRENDING_TAGS } from "@/data/mockPosts";
 import Navigation from "@/components/Navigation";
 import TrendingTags from "@/components/community/TrendingTags";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import PostList from "@/components/community/feed/PostList";
+import FilterBar from "@/components/community/feed/FilterBar";
+import FollowedTags from "@/components/community/feed/FollowedTags";
 
 // Add some sample poll data to demonstrate functionality
 const ENHANCED_POSTS = MOCK_POSTS.map((post, index) => {
@@ -110,28 +110,12 @@ const CommunityFeed = () => {
       
       <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
         {/* Active tag filter indicator */}
-        {activeTag && (
-          <div className="flex items-center justify-between bg-muted p-2 rounded-md mb-4">
-            <div className="flex items-center">
-              <span className="text-sm mr-2">Filtered by:</span>
-              <Badge variant="default">{activeTag}</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                className="text-xs text-muted-foreground hover:text-primary"
-                onClick={() => toggleFollowTag(activeTag)}
-              >
-                {followedTags.includes(activeTag) ? 'Unfollow' : 'Follow'}
-              </button>
-              <button
-                className="h-6 w-6 rounded-full bg-muted-foreground/10 flex items-center justify-center"
-                onClick={clearTagFilter}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          </div>
-        )}
+        <FilterBar 
+          activeTag={activeTag} 
+          clearTagFilter={clearTagFilter}
+          followedTags={followedTags}
+          toggleFollowTag={toggleFollowTag}
+        />
         
         <NewPostForm />
         
@@ -141,43 +125,13 @@ const CommunityFeed = () => {
         </div>
         
         {/* Followed tags section */}
-        {followedTags.length > 0 && (
-          <div className="mb-4 bg-muted/30 p-3 rounded-md">
-            <h3 className="text-sm font-medium mb-2">Your followed tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {followedTags.map((tag, index) => (
-                <div key={index} className="relative inline-block">
-                  <Badge 
-                    variant="outline" 
-                    className="cursor-pointer bg-background"
-                    onClick={() => handleTagClick(tag)}
-                  >
-                    {tag}
-                  </Badge>
-                  <button 
-                    className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-white rounded-full flex items-center justify-center text-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFollowTag(tag);
-                    }}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <FollowedTags 
+          followedTags={followedTags}
+          handleTagClick={handleTagClick}
+          toggleFollowTag={toggleFollowTag}
+        />
         
-        {filteredPosts.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No posts found matching your criteria</p>
-          </div>
-        ) : (
-          filteredPosts.map(post => (
-            <CommunityPost key={post.id} post={post} onTagClick={handleTagClick} />
-          ))
-        )}
+        <PostList posts={filteredPosts} onTagClick={handleTagClick} />
       </div>
 
       <Navigation />

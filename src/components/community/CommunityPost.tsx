@@ -1,15 +1,14 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MessageSquare, MoreHorizontal, ThumbsUp, BarChart2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import CommentSection from "@/components/CommentSection";
-import ShareModal from "@/components/ShareModal";
 import { useAuth } from "@/components/auth/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Post, PollOption } from "@/types/community";
-import { Progress } from "@/components/ui/progress";
-import TagBadge from "./TagBadge";
+import { Post } from "@/types/community";
+import PostHeader from "./post/PostHeader";
+import PostContent from "./post/PostContent";
+import PostFooter from "./post/PostFooter";
+import PollItem from "./poll/PollItem";
 
 interface CommunityPostProps {
   post: Post;
@@ -41,34 +40,6 @@ const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
     setShowComments(!showComments);
   };
 
-  const handleVote = (optionId: string) => {
-    if (!poll) return;
-    
-    if (poll.userVoted) {
-      toast({
-        title: "Already voted",
-        description: "You can only vote once per poll",
-      });
-      return;
-    }
-    
-    const updatedPoll = JSON.parse(JSON.stringify(poll));
-    
-    const option = updatedPoll.options.find((opt: PollOption) => opt.id === optionId);
-    if (option) {
-      option.votes++;
-      updatedPoll.totalVotes++;
-      updatedPoll.userVoted = optionId;
-      
-      setPoll(updatedPoll);
-      
-      toast({
-        title: "Vote recorded",
-        description: "Your vote has been counted",
-      });
-    }
-  };
-
   const commentData = post.commentData || [
     {
       id: '1',
@@ -84,97 +55,24 @@ const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
     }
   ];
 
-  const renderPoll = () => {
-    if (!poll) return null;
-    
-    return (
-      <div className="mb-4 bg-muted p-4 rounded-md">
-        <h3 className="font-medium mb-3">{poll.question}</h3>
-        <div className="space-y-3">
-          {poll.options.map((option) => {
-            const percentage = poll.totalVotes > 0 
-              ? Math.round((option.votes / poll.totalVotes) * 100) 
-              : 0;
-              
-            return (
-              <div key={option.id} className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <Button
-                    variant={poll.userVoted === option.id ? "default" : "outline"}
-                    className="w-full justify-start"
-                    disabled={!!poll.userVoted}
-                    onClick={() => handleVote(option.id)}
-                  >
-                    {option.text}
-                  </Button>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Progress value={percentage} className="h-2" />
-                  <span className="text-xs">{percentage}%</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <p className="text-xs text-muted-foreground mt-3">
-          {poll.totalVotes} {poll.totalVotes === 1 ? 'vote' : 'votes'}
-        </p>
-      </div>
-    );
-  };
-
-  const formatContent = (content: string) => {
-    if (!post.tags || post.tags.length === 0) return <p className="text-sm">{content}</p>;
-    
-    return <p className="text-sm mb-2">{content}</p>;
-  };
-
   return (
     <Card className="mb-4">
       <CardContent className="p-4">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center">
-            <Avatar className="h-10 w-10 mr-3">
-              {post.userAvatar ? (
-                <AvatarImage src={post.userAvatar} alt={post.userName} />
-              ) : (
-                <AvatarFallback>
-                  {post.userName.charAt(0)}
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <div>
-              <h3 className="font-medium text-sm">{post.userName}</h3>
-              <p className="text-xs text-muted-foreground">{post.timestamp}</p>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </div>
+        <PostHeader 
+          userName={post.userName}
+          userAvatar={post.userAvatar}
+          timestamp={post.timestamp}
+        />
         
-        <div className="mb-3">
-          {formatContent(post.content)}
-          
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {post.tags.map((tag, index) => (
-                <TagBadge 
-                  key={index} 
-                  tag={tag} 
-                  onClick={() => onTagClick && onTagClick(tag)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <PostContent 
+          content={post.content}
+          tags={post.tags}
+          imageUrl={post.imageUrl}
+          onTagClick={onTagClick}
+        />
         
-        {post.type === 'poll' && renderPoll()}
-        
-        {post.imageUrl && (
-          <div className="mb-3 rounded-md overflow-hidden">
-            <img src={post.imageUrl} alt="Post" className="w-full h-auto" />
-          </div>
+        {post.type === 'poll' && poll && (
+          <PollItem poll={poll} onVote={setPoll} />
         )}
         
         <div className="flex justify-between text-xs text-muted-foreground">
@@ -183,30 +81,17 @@ const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
         </div>
       </CardContent>
       
-      <CardFooter className="px-4 py-2 border-t flex justify-between">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className={`flex-1 ${liked ? 'text-red-500' : ''}`}
-          onClick={handleLike}
-        >
-          <ThumbsUp className="h-4 w-4 mr-2" />
-          Like
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="flex-1"
-          onClick={handleComment}
-        >
-          <MessageSquare className="h-4 w-4 mr-2" />
-          Comment
-        </Button>
-        <ShareModal
-          title={`${post.userName}'s post`}
-          url={`https://donortide.com/post/${post.id}`}
+      <CardFooter className="px-0 py-0 border-t flex justify-between">
+        <PostFooter
+          likes={likeCount}
+          comments={post.comments}
+          shares={post.shares}
+          userName={post.userName}
           content={post.content}
-          type="post"
+          postId={post.id}
+          liked={liked}
+          onLike={handleLike}
+          onComment={handleComment}
         />
       </CardFooter>
       

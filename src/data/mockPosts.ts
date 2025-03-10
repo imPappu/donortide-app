@@ -1,5 +1,4 @@
-
-import { Post } from "@/types/community";
+import { Post, Tag } from "@/types/community";
 
 export const MOCK_POSTS: Post[] = [
   {

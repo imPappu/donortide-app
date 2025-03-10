@@ -2,7 +2,7 @@
 import React from "react";
 import DashboardStats from "../DashboardStats";
 import RecentRequests from "../RecentRequests";
-import { BloodRequest } from "@/services/dbService";
+import { BloodRequest } from "@/types/apiTypes";
 
 interface DashboardContentProps {
   stats: {
@@ -25,7 +25,6 @@ const DashboardContent = ({ stats, loading }: DashboardContentProps) => {
       location: "Downtown",
       urgency: "Urgent" as any, // Type cast to match the expected enum
       createdAt: new Date().toISOString(),
-      status: "Pending",
       contactNumber: "+1234567890"
     },
     {
@@ -36,7 +35,6 @@ const DashboardContent = ({ stats, loading }: DashboardContentProps) => {
       location: "Westside",
       urgency: "High" as any, // Type cast to match the expected enum
       createdAt: new Date(Date.now() - 86400000).toISOString(),
-      status: "Pending",
       contactNumber: "+1987654321"
     },
     {
@@ -47,7 +45,6 @@ const DashboardContent = ({ stats, loading }: DashboardContentProps) => {
       location: "Eastside",
       urgency: "Normal" as any, // Type cast to match the expected enum
       createdAt: new Date(Date.now() - 172800000).toISOString(),
-      status: "Pending",
       contactNumber: "+1567890123"
     }
   ];

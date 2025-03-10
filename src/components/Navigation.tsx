@@ -1,9 +1,10 @@
 
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, Newspaper, Heart, UsersRound, MessageCircle } from "lucide-react";
+import { Home, User, Newspaper, Heart, UsersRound, MessageCircle, Bell } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthContext";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const Navigation = () => {
   const location = useLocation();
@@ -18,7 +19,13 @@ const Navigation = () => {
     }
   };
 
-  const NavItem = ({ to, icon, label, active }: { to: string; icon: React.ReactNode; label: string; active: boolean }) => (
+  const NavItem = ({ to, icon, label, active, notificationCount = 0 }: { 
+    to: string; 
+    icon: React.ReactNode; 
+    label: string; 
+    active: boolean;
+    notificationCount?: number;
+  }) => (
     <Link
       to={to}
       className={cn(
@@ -28,10 +35,17 @@ const Navigation = () => {
       onClick={to === "/profile" ? handleProfileClick : undefined}
     >
       <div className={cn(
-        "h-6 w-6 transition-transform hover:scale-110",
+        "relative h-6 w-6 transition-transform hover:scale-110",
         active && "text-primary"
       )}>
         {icon}
+        {notificationCount > 0 && (
+          <Badge 
+            className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white text-[10px]"
+          >
+            {notificationCount}
+          </Badge>
+        )}
       </div>
       <span className={cn(
         "text-xs mt-1 font-medium transition-colors",
@@ -40,13 +54,13 @@ const Navigation = () => {
         {label}
       </span>
       {active && (
-        <div className="h-1 w-1 bg-primary rounded-full mt-0.5" />
+        <div className="h-1 w-6 bg-primary rounded-full mt-0.5" />
       )}
     </Link>
   );
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white/90 backdrop-blur-sm dark:bg-gray-950/90 dark:border-gray-800 z-50 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
+    <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white/95 backdrop-blur-md dark:bg-gray-950/95 dark:border-gray-800 z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
       <div className="container max-w-md mx-auto px-4">
         <div className="flex items-center justify-between py-2">
           <NavItem
@@ -61,6 +75,7 @@ const Navigation = () => {
             icon={<Heart />}
             label="Requests"
             active={path === "/requests"}
+            notificationCount={3}
           />
           
           <NavItem
@@ -68,6 +83,7 @@ const Navigation = () => {
             icon={<MessageCircle />}
             label="Community"
             active={path === "/community"}
+            notificationCount={5}
           />
           
           <NavItem
@@ -75,6 +91,14 @@ const Navigation = () => {
             icon={<Newspaper />}
             label="Blog"
             active={path === "/blog"}
+          />
+          
+          <NavItem
+            to="/notifications"
+            icon={<Bell />}
+            label="Alerts"
+            active={path === "/notifications"}
+            notificationCount={2}
           />
           
           <NavItem

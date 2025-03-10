@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ChevronRight, ChevronDown } from "lucide-react";
 
 interface NavItemProps {
   id: string;
@@ -9,9 +10,10 @@ interface NavItemProps {
   icon: React.ReactNode;
   activeTab: string;
   onClick: (id: string) => void;
+  badge?: number | string;
 }
 
-export const NavItem = ({ id, label, icon, activeTab, onClick }: NavItemProps) => {
+export const NavItem = ({ id, label, icon, activeTab, onClick, badge }: NavItemProps) => {
   const isActive = activeTab === id;
   
   return (
@@ -19,7 +21,9 @@ export const NavItem = ({ id, label, icon, activeTab, onClick }: NavItemProps) =
       variant={isActive ? "secondary" : "ghost"}
       className={cn(
         "w-full justify-start font-medium transition-all",
-        isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground"
+        isActive 
+          ? "bg-sidebar-primary text-sidebar-primary-foreground dark:bg-blue-600/90 dark:text-white" 
+          : "hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground"
       )}
       onClick={() => onClick(id)}
     >
@@ -30,11 +34,22 @@ export const NavItem = ({ id, label, icon, activeTab, onClick }: NavItemProps) =
         {icon}
       </div>
       <span className={cn(
-        "transition-colors",
+        "transition-colors flex-1 text-left",
         isActive ? "text-sidebar-primary-foreground" : ""
       )}>
         {label}
       </span>
+      
+      {badge && (
+        <div className={cn(
+          "rounded-full px-1.5 py-0.5 text-xs font-semibold",
+          isActive
+            ? "bg-white/20 text-white"
+            : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+        )}>
+          {badge}
+        </div>
+      )}
     </Button>
   );
 };
@@ -58,7 +73,7 @@ export const NavSection = ({ title, children, collapsible = false }: NavSectionP
     <div className="px-3 py-2">
       <h2 
         className={cn(
-          "mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70",
+          "mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70",
           collapsible && "cursor-pointer hover:text-sidebar-foreground transition-colors flex items-center justify-between"
         )}
         onClick={toggleCollapse}
@@ -66,13 +81,13 @@ export const NavSection = ({ title, children, collapsible = false }: NavSectionP
         {title}
         {collapsible && (
           <span className="text-xs">
-            {isCollapsed ? "+" : "-"}
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </span>
         )}
       </h2>
       <div className={cn(
-        "space-y-1 transition-all",
-        isCollapsed ? "h-0 overflow-hidden opacity-0" : "opacity-100"
+        "space-y-1 transition-all overflow-hidden",
+        isCollapsed ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100"
       )}>
         {children}
       </div>

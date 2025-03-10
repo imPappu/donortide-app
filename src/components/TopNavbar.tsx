@@ -1,7 +1,7 @@
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Search, PlusCircle, Bell, Home, MessageCircle, User, Menu, Heart } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, PlusCircle, Bell, Home, MessageCircle, User, ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,14 +12,19 @@ interface TopNavbarProps {
   onSearch?: (query: string) => void;
   showSearchBar?: boolean;
   title?: string;
+  showBackButton?: boolean;
+  onBackClick?: () => void;
 }
 
 const TopNavbar: React.FC<TopNavbarProps> = ({ 
   onSearch, 
   showSearchBar = false,
-  title = "DonorTide"
+  title = "DonorTide",
+  showBackButton = false,
+  onBackClick
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchExpanded, setSearchExpanded] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const { user } = useAuth();
@@ -37,6 +42,14 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
     }
   };
 
+  const handleBackClick = () => {
+    if (onBackClick) {
+      onBackClick();
+    } else {
+      navigate(-1);
+    }
+  };
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     if (onSearch) {
@@ -49,12 +62,23 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
   };
 
   return (
-    <div className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-sm dark:bg-gray-950 dark:border-gray-800 backdrop-blur-sm bg-white/90 dark:bg-gray-950/90">
+    <div className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-sm dark:bg-gray-950 dark:border-gray-800 backdrop-blur-sm bg-white/95 dark:bg-gray-950/95">
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           {!searchExpanded ? (
             <>
               <div className="flex items-center gap-3">
+                {showBackButton && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 mr-1"
+                    onClick={handleBackClick}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                    <span className="sr-only">Back</span>
+                  </Button>
+                )}
                 <Link to="/" className="flex items-center group">
                   <h1 className="text-xl font-bold text-primary group-hover:text-primary/90 transition-colors">
                     {title}
@@ -92,6 +116,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                     className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     <Heart className="h-5 w-5" />
+                    <Badge className="absolute top-1 right-1 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white">3</Badge>
                     <span className="sr-only">Requests</span>
                   </Button>
                 </Link>
@@ -102,7 +127,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                     className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     <MessageCircle className="h-5 w-5" />
-                    <Badge className="absolute top-1 right-1 h-4 w-4 p-0 flex items-center justify-center">3</Badge>
+                    <Badge className="absolute top-1 right-1 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white">5</Badge>
                     <span className="sr-only">Community</span>
                   </Button>
                 </Link>
@@ -149,13 +174,13 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                 >
                   <Link to="/notifications">
                     <Bell className="h-5 w-5" />
-                    <Badge className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center">2</Badge>
+                    <Badge className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white">2</Badge>
                     <span className="sr-only">Notifications</span>
                   </Link>
                 </Button>
                 
                 <Link to="/profile" className="hover:opacity-90 transition-opacity">
-                  <Avatar className="h-8 w-8 border border-border shadow-sm">
+                  <Avatar className="h-9 w-9 border border-border shadow-sm">
                     {user?.avatar ? (
                       <AvatarImage src={user.avatar} alt={user.name} />
                     ) : (

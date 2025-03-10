@@ -24,14 +24,14 @@ export function BloodTypeSelector({ selectedType, onSelectType }: BloodTypeSelec
             className={cn(
               "flex items-center justify-center h-12 transition-all",
               isSelected 
-                ? "bg-red-500 hover:bg-red-600 text-white shadow-md scale-105" 
-                : "hover:border-red-300 hover:text-red-600"
+                ? "bg-red-600 hover:bg-red-700 text-white shadow-md scale-105 dark:bg-red-700 dark:hover:bg-red-800 border-0" 
+                : "hover:border-red-400 hover:text-red-600 dark:hover:border-red-500 dark:hover:text-red-400"
             )}
             onClick={() => onSelectType(type)}
           >
             <DropletIcon className={cn(
               "h-4 w-4 mr-1 transition-colors",
-              isSelected ? "text-white" : "text-red-500"
+              isSelected ? "text-white" : "text-red-500 dark:text-red-400"
             )} />
             {type}
           </Button>

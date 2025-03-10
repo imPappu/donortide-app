@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Download, Upload, Box, Smartphone, Globe, Cog, Layers, AlertTriangle } from "lucide-react";
+import { AlertCircle, Download, Smartphone, Globe, Cog, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const SystemUpdatePanel = () => {
@@ -13,7 +13,6 @@ const SystemUpdatePanel = () => {
   const [activeTab, setActiveTab] = useState("core");
   const [updating, setUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [uploadingAddon, setUploadingAddon] = useState(false);
   
   const handleSystemUpdate = async () => {
     setUpdating(true);
@@ -33,40 +32,16 @@ const SystemUpdatePanel = () => {
     setUpdating(false);
   };
   
-  const handleUploadAddon = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    setUploadingAddon(true);
-    const file = e.target.files[0];
-    
-    // Simulate upload and installation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-      title: "Addon Installed",
-      description: `Successfully installed ${file.name}`,
-    });
-    
-    setUploadingAddon(false);
-  };
-  
-  const installedAddons = [
-    { id: 1, name: "Payment Gateway Plus", version: "1.2.0", status: "Active" },
-    { id: 2, name: "Analytics Dashboard", version: "2.0.1", status: "Active" },
-    { id: 3, name: "Community Manager", version: "1.0.5", status: "Inactive" },
-  ];
-  
   return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">System Management</h1>
-        <p className="text-muted-foreground">Manage system updates and addon modules</p>
+        <p className="text-muted-foreground">Manage system updates</p>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid grid-cols-3 lg:w-[600px]">
           <TabsTrigger value="core">Core System</TabsTrigger>
-          <TabsTrigger value="addons">Addon Modules</TabsTrigger>
           <TabsTrigger value="mobile">Mobile Updates</TabsTrigger>
           <TabsTrigger value="website">Website</TabsTrigger>
         </TabsList>
@@ -145,89 +120,6 @@ const SystemUpdatePanel = () => {
                   <p className="text-sm font-medium">Server Environment</p>
                   <p className="text-lg">Production</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="addons" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Install New Addon</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Upload addon modules to extend system functionality.
-                  Addons should be in the .zip format.
-                </p>
-                
-                <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
-                  <Upload className="h-8 w-8 mx-auto text-gray-400" />
-                  <p className="mt-2 text-sm font-medium">Drag and drop addon file here, or click to browse</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Supports .zip addon packages</p>
-                  
-                  <div className="mt-4">
-                    <label className="relative">
-                      <input
-                        type="file"
-                        accept=".zip"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        onChange={handleUploadAddon}
-                        disabled={uploadingAddon}
-                      />
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        disabled={uploadingAddon}
-                      >
-                        {uploadingAddon ? "Installing..." : "Browse Files"}
-                      </Button>
-                    </label>
-                  </div>
-                </div>
-                
-                <Alert className="bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800">
-                  <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                  <AlertDescription>
-                    Only install addons from trusted sources. Malicious addons can compromise your system security.
-                  </AlertDescription>
-                </Alert>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Installed Addons</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {installedAddons.map(addon => (
-                  <div key={addon.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-primary/10 p-2 rounded-md">
-                        <Box className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{addon.name}</p>
-                        <p className="text-xs text-muted-foreground">Version {addon.version}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        addon.status === "Active" 
-                          ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" 
-                          : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                      }`}>
-                        {addon.status}
-                      </span>
-                      <Button variant="ghost" size="sm">
-                        <Cog className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
               </div>
             </CardContent>
           </Card>

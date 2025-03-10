@@ -5,8 +5,7 @@ import {
   LayoutDashboard, 
   Building, 
   MessageSquare,
-  Brain,
-  Ambulance
+  Brain
 } from "lucide-react";
 import MobileNavItem from "./MobileNavItem";
 import MobileThemeToggle from "./MobileThemeToggle";
@@ -25,7 +24,7 @@ const MobileSidebar = ({ activeTab, setActiveTab, handleLogout }: MobileSidebarP
     { id: "algorithm", label: "Algorithm", icon: <Brain className="h-5 w-5" /> },
     { id: "donors", label: "Donors", icon: <Users className="h-5 w-5" /> },
     { id: "organizations", label: "Organizations", icon: <Building className="h-5 w-5" /> },
-    { id: "services", label: "Services", icon: <Ambulance className="h-5 w-5" /> },
+    { id: "services", label: "Services", icon: <UserPlus className="h-5 w-5" /> },
     { id: "community", label: "Community", icon: <MessageSquare className="h-5 w-5" /> }
   ];
 

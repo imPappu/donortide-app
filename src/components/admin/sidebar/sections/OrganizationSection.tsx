@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Building, Ambulance, UserPlus } from "lucide-react";
+import { Building, UserPlus } from "lucide-react";
 import { NavSection, NavItem } from "../NavSection";
 
 interface SectionProps {
@@ -15,13 +15,6 @@ const OrganizationSection = ({ activeTab, setActiveTab }: SectionProps) => {
         id="organizations"
         label="Organizations"
         icon={<Building className="mr-2 h-4 w-4" />}
-        activeTab={activeTab}
-        onClick={setActiveTab}
-      />
-      <NavItem
-        id="ambulances"
-        label="Ambulances"
-        icon={<Ambulance className="mr-2 h-4 w-4" />}
         activeTab={activeTab}
         onClick={setActiveTab}
       />

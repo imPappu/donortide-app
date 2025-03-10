@@ -32,18 +32,54 @@ export const getPayments = async (): Promise<Payment[]> => {
   }
 };
 
-export const getEnabledPaymentGateways = async (): Promise<string[]> => {
+interface PaymentGateway {
+  id: string;
+  name: string;
+  isEnabled: boolean;
+}
+
+export const getEnabledPaymentGateways = async (): Promise<PaymentGateway[]> => {
   try {
     // In a real app, this would fetch from the server
     // For now, return dummy data from localStorage if available
     const savedSettings = localStorage.getItem('paymentGatewaySettings');
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings);
-      return Object.keys(parsedSettings).filter(key => parsedSettings[key].isEnabled);
+      return Object.keys(parsedSettings)
+        .filter(key => parsedSettings[key].isEnabled)
+        .map(key => ({
+          id: key,
+          name: getReadableGatewayName(key),
+          isEnabled: true
+        }));
     }
-    return ['card', 'bank', 'paypal']; // Default enabled gateways
+    
+    // Default enabled gateways
+    return [
+      { id: 'card', name: 'Card', isEnabled: true },
+      { id: 'bank', name: 'Bank Transfer', isEnabled: true },
+      { id: 'paypal', name: 'PayPal', isEnabled: true }
+    ];
   } catch (error) {
     console.error('Error fetching enabled payment gateways:', error);
-    return ['card', 'bank']; // Fallback to basic payment methods
+    return [
+      { id: 'card', name: 'Card', isEnabled: true },
+      { id: 'bank', name: 'Bank Transfer', isEnabled: true }
+    ];
   }
 };
+
+// Helper function to get readable gateway names
+function getReadableGatewayName(gatewayId: string): string {
+  const nameMap: Record<string, string> = {
+    card: 'Card',
+    bank: 'Bank Transfer',
+    paypal: 'PayPal',
+    stripe: 'Stripe',
+    esewa: 'eSewa',
+    imepay: 'IME Pay',
+    upi: 'UPI'
+  };
+  
+  return nameMap[gatewayId] || gatewayId;
+}

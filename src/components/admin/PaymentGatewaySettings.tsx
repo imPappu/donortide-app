@@ -1,14 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
-import PaymentGatewayToggle from './PaymentGatewayToggle';
-import PaymentGatewayForm from './PaymentGatewayForm';
 import { gatewayConfigs } from './GatewayFormConfigs';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import PaymentSettingsAlert from './payment/PaymentSettingsAlert';
+import PaymentGatewayTabList from './payment/PaymentGatewayTabList';
+import PaymentGatewayTabContent from './payment/PaymentGatewayTabContent';
+import PaymentSettingsSaveSection from './payment/PaymentSettingsSaveSection';
 
 // Define a type for the payment gateway settings
 interface PaymentGatewaySettings {
@@ -34,8 +33,8 @@ const PaymentGatewaySettings = () => {
     esewa: { isEnabled: false, fields: {} },
     imepay: { isEnabled: false, fields: {} },
     upi: { isEnabled: false, fields: {} },
-    card: { isEnabled: true, fields: {} }, // Add card as a payment method
-    bank: { isEnabled: true, fields: {} } // Add bank as a payment method
+    card: { isEnabled: true, fields: {} },
+    bank: { isEnabled: true, fields: {} }
   });
 
   const [currentGateway, setCurrentGateway] = useState("paypal");
@@ -156,58 +155,29 @@ const PaymentGatewaySettings = () => {
         <CardTitle>Payment Gateway Configuration</CardTitle>
       </CardHeader>
       <CardContent>
-        <Alert className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Payment gateways configured here will be available in the donation forms throughout the app.
-          </AlertDescription>
-        </Alert>
+        <PaymentSettingsAlert />
         
         <Tabs defaultValue="paypal" onValueChange={handleTabChange}>
-          <TabsList className="mb-4">
-            {Object.keys(gatewayConfigs).map((key) => (
-              <TabsTrigger key={key} value={key}>
-                {gatewayConfigs[key].name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <PaymentGatewayTabList gatewayConfigs={gatewayConfigs} />
           
           {Object.entries(gatewayConfigs).map(([key, config]) => (
-            <TabsContent key={key} value={key} className="space-y-4">
-              <PaymentGatewayToggle
-                name={config.name}
-                description={config.description}
-                isEnabled={activeGateways[key as keyof typeof activeGateways] || false}
-                onToggle={() => handleToggleGateway(key)}
-              />
-              
-              {activeGateways[key as keyof typeof activeGateways] && (
-                <PaymentGatewayForm
-                  gateway={key}
-                  fields={config.fields}
-                  fieldValues={gatewaySettings[key]?.fields || {}}
-                  onFieldChange={(fieldId, value) => handleFieldChange(key, fieldId, value)}
-                />
-              )}
-            </TabsContent>
+            <PaymentGatewayTabContent
+              key={key}
+              gatewayKey={key}
+              config={config}
+              isEnabled={activeGateways[key as keyof typeof activeGateways] || false}
+              fieldValues={gatewaySettings[key]?.fields || {}}
+              onToggle={() => handleToggleGateway(key)}
+              onFieldChange={(fieldId, value) => handleFieldChange(key, fieldId, value)}
+            />
           ))}
         </Tabs>
         
-        <div className="mt-6 flex items-center justify-between">
-          <div>
-            {hasChanges && (
-              <span className="text-sm text-amber-600">
-                You have unsaved changes
-              </span>
-            )}
-          </div>
-          <Button 
-            onClick={handleSaveSettings} 
-            disabled={isSaving || !hasChanges}
-          >
-            {isSaving ? "Saving..." : "Save Payment Settings"}
-          </Button>
-        </div>
+        <PaymentSettingsSaveSection
+          hasChanges={hasChanges}
+          isSaving={isSaving}
+          onSave={handleSaveSettings}
+        />
       </CardContent>
     </Card>
   );

@@ -2,12 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Ambulance, UserPlus, MessageCircle, CalendarClock } from "lucide-react";
+import { Ambulance, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import AppointmentScheduler from "@/components/services/AppointmentScheduler";
 import ConsultantsList from "@/components/services/ConsultantsList";
 import AmbulanceList from "@/components/services/AmbulanceList";
-import CommunicationForm from "@/components/services/CommunicationForm";
 import { getConsultants, getAmbulances, Consultant, Ambulance as AmbulanceType } from "@/services/servicesService";
 
 const Services = () => {
@@ -77,7 +75,7 @@ const Services = () => {
       <h1 className="text-2xl font-bold mb-6">Services</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="consultant" className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
             <span>Consultant</span>
@@ -85,14 +83,6 @@ const Services = () => {
           <TabsTrigger value="ambulance" className="flex items-center gap-2">
             <Ambulance className="h-4 w-4" />
             <span>Ambulance</span>
-          </TabsTrigger>
-          <TabsTrigger value="communication" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            <span>Communication</span>
-          </TabsTrigger>
-          <TabsTrigger value="appointment" className="flex items-center gap-2">
-            <CalendarClock className="h-4 w-4" />
-            <span>Appointment</span>
           </TabsTrigger>
         </TabsList>
         
@@ -126,34 +116,6 @@ const Services = () => {
                 ambulances={ambulances} 
                 isLoading={isLoadingAmbulances} 
               />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="communication">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Healthcare Professionals</CardTitle>
-              <CardDescription>
-                Get in touch with our team for personalized assistance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CommunicationForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="appointment">
-          <Card>
-            <CardHeader>
-              <CardTitle>Schedule an Appointment</CardTitle>
-              <CardDescription>
-                Book an appointment with our blood donation center
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AppointmentScheduler />
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,76 +1,183 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, CalendarClock } from "lucide-react";
+import { UserPlus, Ambulance } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import ConsultantTabContent from "./services/ConsultantTabContent";
-import AppointmentTabContent from "./services/AppointmentTabContent";
-import AppointmentDialog from "./services/AppointmentDialog";
+import { 
+  getConsultants, 
+  getAmbulances, 
+  Consultant, 
+  Ambulance as AmbulanceType,
+  addConsultant,
+  updateConsultant,
+  deleteConsultant,
+  addAmbulance,
+  updateAmbulance,
+  deleteAmbulance
+} from "@/services/servicesService";
+import ConsultantManagement from "./services/ConsultantManagement";
+import AmbulanceManagement from "./services/AmbulanceManagement";
 
 const ServicesManagement = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("consultants");
-  const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Sample data for consultants
-  const [consultants, setConsultants] = useState([
-    { id: 1, name: "Dr. Sarah Johnson", specialty: "Hematology", status: "Available", phone: "+1 (555) 123-4567" },
-    { id: 2, name: "Dr. Michael Brown", specialty: "Internal Medicine", status: "Available", phone: "+1 (555) 987-6543" },
-    { id: 3, name: "Dr. Emily Davis", specialty: "Transfusion Medicine", status: "Busy", phone: "+1 (555) 456-7890" }
-  ]);
+  // State for consultants
+  const [consultants, setConsultants] = useState<Consultant[]>([]);
   
-  // Sample data for appointments
-  const [appointments, setAppointments] = useState([
-    { id: 1, patientName: "John Doe", date: "2023-08-15", time: "10:00 AM", type: "Blood Donation", status: "Confirmed" },
-    { id: 2, patientName: "Jane Smith", date: "2023-08-16", time: "11:30 AM", type: "Donor Checkup", status: "Pending" },
-    { id: 3, patientName: "Robert Brown", date: "2023-08-17", time: "02:00 PM", type: "Medical Consultation", status: "Confirmed" }
-  ]);
+  // State for ambulances
+  const [ambulances, setAmbulances] = useState<AmbulanceType[]>([]);
   
-  const handleAddAppointment = () => {
-    setIsAppointmentDialogOpen(true);
+  // Fetch consultants and ambulances when the component mounts
+  useEffect(() => {
+    fetchConsultants();
+    fetchAmbulances();
+  }, []);
+
+  const fetchConsultants = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getConsultants();
+      setConsultants(data);
+    } catch (error) {
+      console.error("Error fetching consultants:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load consultants. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-  
-  const handleSaveAppointment = () => {
-    setIsAppointmentDialogOpen(false);
-    toast({
-      title: "Appointment Added",
-      description: "The appointment has been successfully added to the schedule.",
-    });
+
+  const fetchAmbulances = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getAmbulances();
+      setAmbulances(data);
+    } catch (error) {
+      console.error("Error fetching ambulances:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load ambulances. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-  
-  const toggleConsultantStatus = (id: number) => {
-    setConsultants(prevConsultants => 
-      prevConsultants.map(consultant => {
-        if (consultant.id === id) {
-          const newStatus = consultant.status === "Available" ? "Busy" : "Available";
-          return { ...consultant, status: newStatus };
-        }
-        return consultant;
-      })
-    );
-    
-    toast({
-      title: "Status Updated",
-      description: "Consultant status has been updated successfully.",
-    });
+
+  // Consultant CRUD operations
+  const handleAddConsultant = async (consultant: Omit<Consultant, 'id'>) => {
+    try {
+      await addConsultant(consultant);
+      fetchConsultants();
+      toast({
+        title: "Success",
+        description: "Consultant added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding consultant:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add consultant",
+        variant: "destructive",
+      });
+    }
   };
-  
-  const toggleAppointmentStatus = (id: number) => {
-    setAppointments(prevAppointments => 
-      prevAppointments.map(appointment => {
-        if (appointment.id === id) {
-          const newStatus = appointment.status === "Confirmed" ? "Pending" : "Confirmed";
-          return { ...appointment, status: newStatus };
-        }
-        return appointment;
-      })
-    );
-    
-    toast({
-      title: "Status Updated",
-      description: "Appointment status has been updated successfully.",
-    });
+
+  const handleUpdateConsultant = async (consultant: Consultant) => {
+    try {
+      await updateConsultant(consultant);
+      fetchConsultants();
+      toast({
+        title: "Success",
+        description: "Consultant updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating consultant:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update consultant",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteConsultant = async (id: number) => {
+    try {
+      await deleteConsultant(id);
+      fetchConsultants();
+      toast({
+        title: "Success",
+        description: "Consultant deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting consultant:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete consultant",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Ambulance CRUD operations
+  const handleAddAmbulance = async (ambulance: Omit<AmbulanceType, 'id'>) => {
+    try {
+      await addAmbulance(ambulance);
+      fetchAmbulances();
+      toast({
+        title: "Success",
+        description: "Ambulance added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding ambulance:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add ambulance",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateAmbulance = async (ambulance: AmbulanceType) => {
+    try {
+      await updateAmbulance(ambulance);
+      fetchAmbulances();
+      toast({
+        title: "Success",
+        description: "Ambulance updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating ambulance:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update ambulance",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteAmbulance = async (id: number) => {
+    try {
+      await deleteAmbulance(id);
+      fetchAmbulances();
+      toast({
+        title: "Success",
+        description: "Ambulance deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting ambulance:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete ambulance",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -85,35 +192,33 @@ const ServicesManagement = () => {
               <UserPlus className="h-4 w-4" />
               <span>Consultants</span>
             </TabsTrigger>
-            <TabsTrigger value="appointments" className="flex items-center gap-2">
-              <CalendarClock className="h-4 w-4" />
-              <span>Appointments</span>
+            <TabsTrigger value="ambulances" className="flex items-center gap-2">
+              <Ambulance className="h-4 w-4" />
+              <span>Ambulances</span>
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="consultants">
-            <ConsultantTabContent 
+            <ConsultantManagement 
               consultants={consultants} 
-              toggleConsultantStatus={toggleConsultantStatus} 
+              isLoading={isLoading}
+              onAdd={handleAddConsultant}
+              onUpdate={handleUpdateConsultant}
+              onDelete={handleDeleteConsultant}
             />
           </TabsContent>
           
-          <TabsContent value="appointments">
-            <AppointmentTabContent 
-              appointments={appointments} 
-              toggleAppointmentStatus={toggleAppointmentStatus}
-              handleAddAppointment={handleAddAppointment}
+          <TabsContent value="ambulances">
+            <AmbulanceManagement 
+              ambulances={ambulances} 
+              isLoading={isLoading}
+              onAdd={handleAddAmbulance}
+              onUpdate={handleUpdateAmbulance}
+              onDelete={handleDeleteAmbulance}
             />
           </TabsContent>
         </Tabs>
       </CardContent>
-      
-      {/* Add Appointment Dialog */}
-      <AppointmentDialog 
-        isOpen={isAppointmentDialogOpen}
-        onOpenChange={setIsAppointmentDialogOpen}
-        onSave={handleSaveAppointment}
-      />
     </Card>
   );
 };

@@ -1,100 +1,64 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, Download } from "lucide-react";
+import { Shield, Download } from "lucide-react";
 
-interface CoreSystemTabProps {
+export interface CoreSystemTabProps {
   updating: boolean;
   progress: number;
   handleSystemUpdate: () => Promise<void>;
 }
 
-const CoreSystemTab = ({ 
-  updating, 
-  progress, 
-  handleSystemUpdate 
-}: CoreSystemTabProps) => {
+const CoreSystemTab = ({ updating, progress, handleSystemUpdate }: CoreSystemTabProps) => {
+  const updateAvailable = true; // This should be determined by your API
+  
   return (
-    <>
+    <div className="space-y-4">
       <Card>
-        <CardHeader>
-          <CardTitle>Core System Updates</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5">
-                <AlertCircle className="h-5 w-5 text-blue-500" />
-              </div>
+        <CardContent className="pt-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold flex items-center">
+              <Shield className="mr-2 h-5 w-5 text-primary" />
+              Core System
+            </h2>
+            <p className="text-muted-foreground">Manage your core system updates</p>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium text-blue-800 dark:text-blue-200">Update Available</h3>
-                <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                  Version 2.5.0 is available (Current: 2.4.2)
-                </p>
-                <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                  <p className="font-medium">What's new:</p>
-                  <ul className="list-disc list-inside mt-1 space-y-1">
-                    <li>Enhanced security features</li>
-                    <li>Improved performance and stability</li>
-                    <li>New admin dashboard widgets</li>
-                    <li>Bug fixes and minor improvements</li>
-                  </ul>
+                <h3 className="text-lg font-medium">Current Version</h3>
+                <p className="text-sm text-muted-foreground">v3.2.1</p>
+              </div>
+              {updateAvailable && (
+                <div className="text-right">
+                  <h3 className="text-lg font-medium">New Version Available</h3>
+                  <p className="text-sm text-green-600">v3.3.0</p>
                 </div>
-              </div>
+              )}
             </div>
-          </div>
-          
-          {updating && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Updating system...</span>
-                <span>{progress}%</span>
+            
+            {updating ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Updating system... {progress}%</p>
+                <Progress value={progress} className="h-2" />
               </div>
-              <Progress value={progress} />
-            </div>
-          )}
-          
-          <div className="flex justify-end">
-            <Button 
-              onClick={handleSystemUpdate} 
-              disabled={updating}
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              {updating ? "Updating..." : "Update Now"}
-            </Button>
+            ) : (
+              <Button 
+                className="w-full" 
+                onClick={handleSystemUpdate}
+                disabled={!updateAvailable}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {updateAvailable ? "Update Now" : "No Updates Available"}
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>System Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium">Current Version</p>
-              <p className="text-lg">2.4.2</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Last Updated</p>
-              <p className="text-lg">2023-10-15</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Database Version</p>
-              <p className="text-lg">1.8.3</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Server Environment</p>
-              <p className="text-lg">Production</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </>
+    </div>
   );
 };
 

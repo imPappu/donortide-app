@@ -1,0 +1,4 @@
+
+// This is a placeholder. You'll need to add an actual logo file in the public directory.
+// Since we can't directly upload binary files through this interface, I'm adding a note here.
+// The app will fallback to /placeholder.svg if this file is not found.

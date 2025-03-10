@@ -23,15 +23,33 @@ import Notifications from "./pages/Notifications";
 import CommunityFeed from "./pages/CommunityFeed";
 import UserStories from "./pages/UserStories";
 import DonationCategories from "./pages/DonationCategories";
-import { AuthProvider } from "@/components/auth/AuthContext";
+import { AuthProvider, useAuth } from "@/components/auth/AuthContext";
 import AdminLink from "@/components/AdminLink";
+import SplashScreen from "@/components/SplashScreen";
+import LoginSignup from "./pages/LoginSignup";
+import { AnimatePresence } from "framer-motion";
+
+// Add framer-motion dependency
+<lov-add-dependency>framer-motion@latest</lov-add-dependency>
 
 const queryClient = new QueryClient();
+
+// Component to handle protected routes and redirect if not authenticated
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
 
 const App = () => {
   const [adminPath, setAdminPath] = useState<string>("admin");
   const [loading, setLoading] = useState(true);
   const [isInstalled, setIsInstalled] = useState(true); // Default to true, will check in useEffect
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     const fetchAppSettings = async () => {
@@ -89,13 +107,24 @@ const App = () => {
         <AuthProvider>
           <BrowserRouter>
             <div className="flex flex-col min-h-screen">
+              <AnimatePresence>
+                {showSplash && (
+                  <SplashScreen onFinish={() => setShowSplash(false)} />
+                )}
+              </AnimatePresence>
+              
               <div className="flex-1">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/donors" element={<Donors />} />
                   <Route path="/requests" element={<Requests />} />
                   <Route path="/create" element={<CreateRequest />} />
-                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/login" element={<LoginSignup />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/volunteers" element={<Volunteers />} />
                   <Route path="/charities" element={<Charities />} />

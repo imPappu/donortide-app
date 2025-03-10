@@ -17,7 +17,13 @@ import {
   Building, 
   MessageSquare,
   Brain,
-  Activity
+  Activity,
+  Briefcase,
+  UserCheck,
+  Ambulance,
+  Flame,
+  BadgeDollarSign,
+  Palette
 } from "lucide-react";
 
 interface AdminSidebarProps {

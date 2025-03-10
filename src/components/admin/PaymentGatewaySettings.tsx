@@ -33,7 +33,9 @@ const PaymentGatewaySettings = () => {
     stripe: { isEnabled: true, fields: {} },
     esewa: { isEnabled: false, fields: {} },
     imepay: { isEnabled: false, fields: {} },
-    upi: { isEnabled: false, fields: {} }
+    upi: { isEnabled: false, fields: {} },
+    card: { isEnabled: true, fields: {} }, // Add card as a payment method
+    bank: { isEnabled: true, fields: {} } // Add bank as a payment method
   });
 
   const [currentGateway, setCurrentGateway] = useState("paypal");
@@ -43,6 +45,27 @@ const PaymentGatewaySettings = () => {
   useEffect(() => {
     // In a real app, you would fetch the saved settings from an API
     console.log("Fetching payment gateway settings...");
+    
+    // Try to get saved settings from localStorage
+    const savedSettings = localStorage.getItem('paymentGatewaySettings');
+    if (savedSettings) {
+      try {
+        const parsedSettings = JSON.parse(savedSettings);
+        setGatewaySettings(parsedSettings);
+        
+        // Update activeGateways state based on saved settings
+        const newActiveGateways = { ...activeGateways };
+        Object.keys(parsedSettings).forEach(key => {
+          if (key in newActiveGateways) {
+            newActiveGateways[key as keyof typeof newActiveGateways] = parsedSettings[key].isEnabled;
+          }
+        });
+        setActiveGateways(newActiveGateways);
+      } catch (error) {
+        console.error("Error loading saved settings:", error);
+      }
+    }
+    
     // Simulating loading saved settings
     setTimeout(() => {
       console.log("Payment gateway settings loaded");
@@ -101,6 +124,9 @@ const PaymentGatewaySettings = () => {
       }, {} as PaymentGatewaySettings);
       
       console.log("Saving gateway settings:", settingsToSave);
+      
+      // Save to localStorage for demo purposes
+      localStorage.setItem('paymentGatewaySettings', JSON.stringify(settingsToSave));
       
       toast({
         title: "Settings Saved",

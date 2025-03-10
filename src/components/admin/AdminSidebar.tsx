@@ -14,7 +14,11 @@ import {
   Users,
   UserCheck,
   Ambulance,
-  Briefcase
+  Briefcase,
+  Building,
+  MessageSquare,
+  Flame,
+  BadgeDollarSign
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -77,6 +81,14 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   Staff
                 </Button>
                 <Button
+                  variant={activeTab === "donors" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("donors")}
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Donors
+                </Button>
+                <Button
                   variant={activeTab === "volunteers" ? "secondary" : "ghost"}
                   className="w-full justify-start"
                   onClick={() => setActiveTab("volunteers")}
@@ -85,12 +97,50 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   Volunteers
                 </Button>
                 <Button
+                  variant={activeTab === "organizations" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("organizations")}
+                >
+                  <Building className="mr-2 h-4 w-4" />
+                  Organizations
+                </Button>
+                <Button
                   variant={activeTab === "ambulances" ? "secondary" : "ghost"}
                   className="w-full justify-start"
                   onClick={() => setActiveTab("ambulances")}
                 >
                   <Ambulance className="mr-2 h-4 w-4" />
                   Ambulances
+                </Button>
+                <Button
+                  variant={activeTab === "community" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("community")}
+                >
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Community Posts
+                </Button>
+              </div>
+            </div>
+            
+            <div className="px-3 py-2">
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Notifications & Ads</h2>
+              <div className="space-y-1">
+                <Button
+                  variant={activeTab === "push-notifications" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("push-notifications")}
+                >
+                  <Flame className="mr-2 h-4 w-4" />
+                  Firebase Push
+                </Button>
+                <Button
+                  variant={activeTab === "ads" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("ads")}
+                >
+                  <BadgeDollarSign className="mr-2 h-4 w-4" />
+                  Ads Management
                 </Button>
               </div>
             </div>
@@ -172,8 +222,8 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
           <Button variant="ghost" size="sm" onClick={() => setActiveTab("banners")}>
             <Image className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => setActiveTab("blog")}>
-            <FileText className="h-5 w-5" />
+          <Button variant="ghost" size="sm" onClick={() => setActiveTab("donors")}>
+            <Users className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setActiveTab("app-settings")}>
             <Settings className="h-5 w-5" />

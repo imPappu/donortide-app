@@ -13,6 +13,11 @@ import DatabaseSettings from "@/components/admin/DatabaseSettings";
 import StaffManagement from "@/components/admin/StaffManagement";
 import VolunteerManagement from "@/components/admin/VolunteerManagement";
 import AmbulanceManagement from "@/components/admin/AmbulanceManagement";
+import DonorManagement from "@/components/admin/DonorManagement";
+import OrganizationManagement from "@/components/admin/OrganizationManagement";
+import CommunityPostManagement from "@/components/admin/CommunityPostManagement";
+import FirebasePushComponent from "@/components/admin/FirebasePushComponent";
+import AdsManagement from "@/components/admin/AdsManagement";
 import { Banner, BlogPost, Notification } from "@/types/apiTypes";
 
 interface AdminContentProps {
@@ -51,9 +56,19 @@ const AdminContent = ({
       
       {activeTab === "staff" && <StaffManagement />}
       
+      {activeTab === "donors" && <DonorManagement />}
+      
       {activeTab === "volunteers" && <VolunteerManagement />}
       
+      {activeTab === "organizations" && <OrganizationManagement />}
+      
+      {activeTab === "community" && <CommunityPostManagement />}
+      
       {activeTab === "ambulances" && <AmbulanceManagement />}
+      
+      {activeTab === "push-notifications" && <FirebasePushComponent />}
+      
+      {activeTab === "ads" && <AdsManagement />}
       
       {activeTab === "app-branding" && <AppBrandingForm />}
       

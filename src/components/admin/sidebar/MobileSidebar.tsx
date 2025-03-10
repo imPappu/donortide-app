@@ -5,7 +5,8 @@ import {
   LayoutDashboard, 
   Building, 
   MessageSquare,
-  Brain
+  Brain,
+  UserPlus
 } from "lucide-react";
 import MobileNavItem from "./MobileNavItem";
 import MobileThemeToggle from "./MobileThemeToggle";

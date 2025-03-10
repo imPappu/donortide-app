@@ -1,7 +1,5 @@
 
 import React from "react";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { MonitoringSettings } from "../types";
 import MonitoringItem from "./MonitoringItem";
 

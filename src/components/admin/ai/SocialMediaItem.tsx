@@ -5,36 +5,36 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { LucideIcon } from "lucide-react";
 import { SocialMediaConfig } from "../types";
 
 interface SocialMediaItemProps {
   platform: string;
-  icon: LucideIcon;
-  iconColor: string;
-  title: string;
+  label: string;
+  icon: React.ReactNode;
   config: SocialMediaConfig;
   onChange: (platform: string, field: string, value: any) => void;
+  disabled: boolean;
 }
 
 const SocialMediaItem: React.FC<SocialMediaItemProps> = ({
   platform,
-  icon: Icon,
-  iconColor,
-  title,
+  label,
+  icon,
   config,
-  onChange
+  onChange,
+  disabled
 }) => {
   return (
     <div className="border rounded-lg p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Icon className={`h-5 w-5 ${iconColor}`} />
-          <h3 className="font-medium">{title}</h3>
+          {icon}
+          <h3 className="font-medium">{label}</h3>
         </div>
         <Switch 
           checked={config.enabled} 
           onCheckedChange={(checked) => onChange(platform, 'enabled', checked)}
+          disabled={disabled}
         />
       </div>
       
@@ -45,6 +45,7 @@ const SocialMediaItem: React.FC<SocialMediaItemProps> = ({
               id={`${platform}-auto`}
               checked={config.autoPost} 
               onCheckedChange={(checked) => onChange(platform, 'autoPost', checked)}
+              disabled={disabled}
             />
             <Label htmlFor={`${platform}-auto`}>Auto-post updates</Label>
           </div>
@@ -54,6 +55,7 @@ const SocialMediaItem: React.FC<SocialMediaItemProps> = ({
             <Select 
               value={config.schedule}
               onValueChange={(value) => onChange(platform, 'schedule', value)}
+              disabled={disabled}
             >
               <SelectTrigger id={`${platform}-schedule`}>
                 <SelectValue placeholder="Select schedule" />
@@ -70,11 +72,11 @@ const SocialMediaItem: React.FC<SocialMediaItemProps> = ({
           {platform === 'twitter' && (
             <div className="space-y-2">
               <Label htmlFor="twitter-api">API Key</Label>
-              <Input id="twitter-api" type="password" placeholder="Enter Twitter API key" />
+              <Input id="twitter-api" type="password" placeholder="Enter Twitter API key" disabled={disabled} />
             </div>
           )}
           
-          <Button variant="outline" size="sm">Connect Account</Button>
+          <Button variant="outline" size="sm" disabled={disabled}>Connect Account</Button>
         </div>
       )}
     </div>

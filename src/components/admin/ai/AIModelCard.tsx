@@ -1,118 +1,128 @@
 
 import React from "react";
-import { Bot, CheckCircle, AlertTriangle, EyeIcon, EyeOffIcon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { AIModelConfig } from "../types";
+import { CheckCircle, AlertTriangle } from "lucide-react";
 
 interface AIModelCardProps {
-  modelKey: string;
-  modelName: string;
-  iconColor: string;
-  modelConfig: AIModelConfig;
-  modelOptions: { value: string; label: string }[];
-  showApiKey: boolean;
-  onToggleShowApiKey: (model: string) => void;
-  onModelChange: (model: string, field: string, value: any) => void;
-  onTestConnection: (model: string) => void;
+  id: string;
+  name: string;
+  description: string;
+  model: AIModelConfig;
+  onChange: (field: string, value: any) => void;
+  testConnection: () => Promise<void>;
+  disabled: boolean;
 }
 
 const AIModelCard: React.FC<AIModelCardProps> = ({
-  modelKey,
-  modelName,
-  iconColor,
-  modelConfig,
-  modelOptions,
-  showApiKey,
-  onToggleShowApiKey,
-  onModelChange,
-  onTestConnection,
+  id,
+  name,
+  description,
+  model,
+  onChange,
+  testConnection,
+  disabled
 }) => {
+  const getModelOptions = () => {
+    switch (id) {
+      case 'chatgpt':
+        return [
+          { value: 'gpt-4o', label: 'GPT-4o' },
+          { value: 'gpt-4', label: 'GPT-4' },
+          { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
+        ];
+      case 'deepseek':
+        return [
+          { value: 'deepseek-v2', label: 'DeepSeek v2' },
+          { value: 'deepseek-coder', label: 'DeepSeek Coder' }
+        ];
+      case 'grok':
+        return [
+          { value: 'grok-1.5', label: 'Grok 1.5' },
+          { value: 'grok-1', label: 'Grok 1' }
+        ];
+      case 'qwen':
+        return [
+          { value: 'qwen-72b', label: 'Qwen 72B' },
+          { value: 'qwen-14b', label: 'Qwen 14B' }
+        ];
+      default:
+        return [];
+    }
+  };
+
   return (
     <div className="border rounded-lg p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Bot className={`h-5 w-5 ${iconColor}`} />
-          <h3 className="text-lg font-medium">{modelName}</h3>
+        <div>
+          <h3 className="text-lg font-medium">{name}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
         <Switch 
-          checked={modelConfig.enabled} 
-          onCheckedChange={(checked) => onModelChange(modelKey, 'enabled', checked)}
+          checked={model.enabled} 
+          onCheckedChange={(checked) => onChange('enabled', checked)}
+          disabled={disabled}
         />
       </div>
       
-      {modelConfig.enabled && (
+      {model.enabled && (
         <div className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor={`${modelKey}-key`}>API Key</Label>
-              <div className="relative">
-                <Input 
-                  id={`${modelKey}-key`} 
-                  type={showApiKey ? "text" : "password"} 
-                  value={modelConfig.apiKey} 
-                  onChange={(e) => onModelChange(modelKey, 'apiKey', e.target.value)}
-                  placeholder={`Enter ${modelKey} API Key`}
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => onToggleShowApiKey(modelKey)}
-                >
-                  {showApiKey ? (
-                    <EyeOffIcon className="h-4 w-4 text-gray-500" />
-                  ) : (
-                    <EyeIcon className="h-4 w-4 text-gray-500" />
-                  )}
-                </Button>
-              </div>
-              
-              {modelConfig.connectionTested && (
-                <div className={`mt-1 flex items-center text-xs ${modelConfig.connectionSuccess ? 'text-green-600' : 'text-red-600'}`}>
-                  {modelConfig.connectionSuccess ? (
-                    <>
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Connection verified
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="h-3 w-3 mr-1" />
-                      Connection failed
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${id}-key`}>API Key</Label>
+            <Input 
+              id={`${id}-key`} 
+              type="password" 
+              value={model.apiKey} 
+              onChange={(e) => onChange('apiKey', e.target.value)}
+              placeholder={`Enter ${name} API Key`}
+              disabled={disabled}
+            />
             
-            <div className="space-y-2">
-              <Label htmlFor={`${modelKey}-model`}>Model</Label>
-              <Select 
-                value={modelConfig.model}
-                onValueChange={(value) => onModelChange(modelKey, 'model', value)}
-              >
-                <SelectTrigger id={`${modelKey}-model`}>
-                  <SelectValue placeholder="Select model" />
-                </SelectTrigger>
-                <SelectContent>
-                  {modelOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {model.connectionTested && (
+              <div className={`mt-1 flex items-center text-xs ${model.connectionSuccess ? 'text-green-600' : 'text-red-600'}`}>
+                {model.connectionSuccess ? (
+                  <>
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Connection verified
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle className="h-3 w-3 mr-1" />
+                    Connection failed
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor={`${id}-model`}>Model</Label>
+            <Select 
+              value={model.model}
+              onValueChange={(value) => onChange('model', value)}
+              disabled={disabled}
+            >
+              <SelectTrigger id={`${id}-model`}>
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent>
+                {getModelOptions().map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <Button 
             variant="outline" 
-            onClick={() => onTestConnection(modelKey)}
+            onClick={testConnection}
+            disabled={disabled}
           >
             Test Connection
           </Button>

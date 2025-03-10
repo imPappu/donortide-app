@@ -16,7 +16,8 @@ interface SocialMediaTabProps {
 const SocialMediaTab: React.FC<SocialMediaTabProps> = ({
   socialMediaState,
   handleChange,
-  saving
+  saving,
+  saveSettings
 }) => {
   return (
     <div className="space-y-6">

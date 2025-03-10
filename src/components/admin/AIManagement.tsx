@@ -59,11 +59,11 @@ const AIManagement = () => {
     }));
   };
   
-  const handleAIModelChange = (model: string, field: string, value: any) => {
+  const handleAIModelChange = (model: keyof AIModelsState, field: string, value: any) => {
     setAiModels(prev => ({
       ...prev,
       [model]: {
-        ...prev[model as keyof AIModelsState],
+        ...prev[model],
         [field]: value,
         // Reset connection status when changing API key or model
         ...(field === 'apiKey' || field === 'model' ? { connectionTested: false, connectionSuccess: undefined } : {})
@@ -71,18 +71,18 @@ const AIManagement = () => {
     }));
   };
   
-  const handleMonitoringChange = (setting: string, value: boolean) => {
+  const handleMonitoringChange = (setting: keyof MonitoringSettings, value: boolean) => {
     setMonitoringSettings(prev => ({
       ...prev,
       [setting]: value
     }));
   };
   
-  const handleSocialMediaChange = (platform: string, field: string, value: any) => {
+  const handleSocialMediaChange = (platform: keyof SocialMediaState, field: string, value: any) => {
     setSocialMediaSettings(prev => ({
       ...prev,
       [platform]: {
-        ...prev[platform as keyof SocialMediaState],
+        ...prev[platform],
         [field]: value
       }
     }));
@@ -113,9 +113,9 @@ const AIManagement = () => {
     }
   };
   
-  const testAIConnection = async (model: string) => {
+  const testAIConnection = async (model: keyof AIModelsState) => {
     // In a real app, this would test the connection to the AI model
-    const modelConfig = aiModels[model as keyof AIModelsState];
+    const modelConfig = aiModels[model];
     
     if (!modelConfig.apiKey) {
       toast({
@@ -195,27 +195,28 @@ const AIManagement = () => {
           
           <TabsContent value="configuration" className="mt-6 space-y-6">
             <AIModelsTab 
-              aiModels={aiModels}
-              showApiKeys={showApiKeys}
-              toggleShowApiKey={toggleShowApiKey}
-              handleAIModelChange={handleAIModelChange}
-              testAIConnection={testAIConnection}
+              models={aiModels}
+              handleChange={handleAIModelChange}
+              testConnection={testAIConnection}
               saving={saving}
-              saveAIConfiguration={saveAIConfiguration}
             />
           </TabsContent>
           
           <TabsContent value="monitoring" className="mt-6 space-y-6">
             <MonitoringTab 
               monitoringSettings={monitoringSettings}
-              handleMonitoringChange={handleMonitoringChange}
+              handleChange={handleMonitoringChange}
+              saving={saving}
+              saveSettings={saveAIConfiguration}
             />
           </TabsContent>
           
           <TabsContent value="social" className="mt-6 space-y-6">
             <SocialMediaTab 
-              socialMediaSettings={socialMediaSettings}
-              handleSocialMediaChange={handleSocialMediaChange}
+              socialMediaState={socialMediaSettings}
+              handleChange={handleSocialMediaChange}
+              saving={saving}
+              saveSettings={saveAIConfiguration}
             />
           </TabsContent>
         </Tabs>

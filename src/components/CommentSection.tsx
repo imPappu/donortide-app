@@ -17,10 +17,11 @@ interface Comment {
 interface CommentSectionProps {
   comments: Comment[];
   postId: string;
-  postType: 'post' | 'story';
+  postType: 'post' | 'story' | 'news' | 'blog';
+  onCommentAdded?: (comment: Comment) => void;
 }
 
-const CommentSection = ({ comments, postId, postType }: CommentSectionProps) => {
+const CommentSection = ({ comments, postId, postType, onCommentAdded }: CommentSectionProps) => {
   const [newComment, setNewComment] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
   const [displayedComments, setDisplayedComments] = useState<Comment[]>(comments);
@@ -37,6 +38,10 @@ const CommentSection = ({ comments, postId, postType }: CommentSectionProps) => 
     
     setDisplayedComments([comment, ...displayedComments]);
     setNewComment("");
+    
+    if (onCommentAdded) {
+      onCommentAdded(comment);
+    }
     
     toast({
       title: "Comment added",

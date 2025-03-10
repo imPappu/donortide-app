@@ -1,8 +1,9 @@
+
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthContext";
-import { ToastProvider } from "@/hooks/use-toast";
+import { ToastProvider } from "@/hooks/ToastProvider";
 import { useAddonModules } from "@/hooks/useAddonModules";
 import DonationCategories from "@/pages/DonationCategories";
 import Events from "@/pages/Events";

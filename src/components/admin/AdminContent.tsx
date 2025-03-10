@@ -1,19 +1,22 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import DashboardContent from "./DashboardContent";
-import EventsManagement from "./system/addons/event-management/EventsManagement";
+import React from 'react';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import DashboardContent from './DashboardContent';
 
-const AdminContent = ({ activeTab }: AdminContentProps) => {
-  switch (activeTab) {
-    case "dashboard":
-      return <DashboardContent />;
-    
-    case "events":
-      return <EventsManagement />;
-    
-    default:
-      return <DashboardContent />;
-  }
+export interface AdminContentProps {
+  initialTab?: string;
+}
+
+const AdminContent: React.FC<AdminContentProps> = ({ initialTab = 'dashboard' }) => {
+  return (
+    <main className="flex-1 overflow-y-auto">
+      <Tabs defaultValue={initialTab} className="w-full">
+        <TabsContent value="dashboard">
+          <DashboardContent />
+        </TabsContent>
+        {/* Other tab contents */}
+      </Tabs>
+    </main>
+  );
 };
 
 export default AdminContent;

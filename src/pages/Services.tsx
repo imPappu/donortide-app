@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Ambulance, UserPlus, PhoneCall, Calendar } from "lucide-react";
+import { Ambulance, UserPlus, PhoneCall, Calendar, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import AppointmentScheduler from "@/components/services/AppointmentScheduler";
 
 const Services = () => {
   const { toast } = useToast();
@@ -33,7 +34,7 @@ const Services = () => {
       <h1 className="text-2xl font-bold mb-6">Services</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="consultant" className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
             <span>Consultant</span>
@@ -41,6 +42,10 @@ const Services = () => {
           <TabsTrigger value="ambulance" className="flex items-center gap-2">
             <Ambulance className="h-4 w-4" />
             <span>Ambulance</span>
+          </TabsTrigger>
+          <TabsTrigger value="appointment" className="flex items-center gap-2">
+            <CalendarClock className="h-4 w-4" />
+            <span>Appointment</span>
           </TabsTrigger>
         </TabsList>
         
@@ -128,6 +133,20 @@ const Services = () => {
                 
                 <Button type="submit" className="w-full">Book Ambulance Now</Button>
               </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="appointment">
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule an Appointment</CardTitle>
+              <CardDescription>
+                Book an appointment with our blood donation center
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AppointmentScheduler />
             </CardContent>
           </Card>
         </TabsContent>

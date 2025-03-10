@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, MoreHorizontal, ThumbsUp } from "lucide-react";
+import { MessageSquare, MoreHorizontal, ThumbsUp, BarChart2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import CommentSection from "@/components/CommentSection";
 import ShareModal from "@/components/ShareModal";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Post } from "@/types/community";
+import { Post, PollOption } from "@/types/community";
+import { Progress } from "@/components/ui/progress";
 
 interface CommunityPostProps {
   post: Post;
@@ -18,6 +19,7 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
   const [liked, setLiked] = useState(post.liked);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
+  const [poll, setPoll] = useState(post.poll);
   const { user } = useAuth();
 
   const handleLike = () => {
@@ -38,6 +40,37 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
     setShowComments(!showComments);
   };
 
+  const handleVote = (optionId: string) => {
+    if (!poll) return;
+    
+    // If user has already voted
+    if (poll.userVoted) {
+      toast({
+        title: "Already voted",
+        description: "You can only vote once per poll",
+      });
+      return;
+    }
+    
+    // Create a deep copy of the poll
+    const updatedPoll = JSON.parse(JSON.stringify(poll));
+    
+    // Find the option and increment its votes
+    const option = updatedPoll.options.find((opt: PollOption) => opt.id === optionId);
+    if (option) {
+      option.votes++;
+      updatedPoll.totalVotes++;
+      updatedPoll.userVoted = optionId;
+      
+      setPoll(updatedPoll);
+      
+      toast({
+        title: "Vote recorded",
+        description: "Your vote has been counted",
+      });
+    }
+  };
+
   // Default comments if none provided
   const commentData = post.commentData || [
     {
@@ -53,6 +86,46 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
       timestamp: '45 minutes ago'
     }
   ];
+
+  // Render poll if post has one
+  const renderPoll = () => {
+    if (!poll) return null;
+    
+    return (
+      <div className="mb-4 bg-muted p-4 rounded-md">
+        <h3 className="font-medium mb-3">{poll.question}</h3>
+        <div className="space-y-3">
+          {poll.options.map((option) => {
+            const percentage = poll.totalVotes > 0 
+              ? Math.round((option.votes / poll.totalVotes) * 100) 
+              : 0;
+              
+            return (
+              <div key={option.id} className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <Button
+                    variant={poll.userVoted === option.id ? "default" : "outline"}
+                    className="w-full justify-start"
+                    disabled={!!poll.userVoted}
+                    onClick={() => handleVote(option.id)}
+                  >
+                    {option.text}
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Progress value={percentage} className="h-2" />
+                  <span className="text-xs">{percentage}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <p className="text-xs text-muted-foreground mt-3">
+          {poll.totalVotes} {poll.totalVotes === 1 ? 'vote' : 'votes'}
+        </p>
+      </div>
+    );
+  };
 
   return (
     <Card className="mb-4">
@@ -81,6 +154,8 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
         <div className="mb-3">
           <p className="text-sm">{post.content}</p>
         </div>
+        
+        {post.type === 'poll' && renderPoll()}
         
         {post.imageUrl && (
           <div className="mb-3 rounded-md overflow-hidden">

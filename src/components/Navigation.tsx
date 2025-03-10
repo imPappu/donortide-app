@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, Newspaper, Heart, UsersRound, MessageCircle, Bell } from "lucide-react";
+import { Home, User, Heart, MessageCircle } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthContext";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -87,18 +87,10 @@ const Navigation = () => {
           />
           
           <NavItem
-            to="/blog"
-            icon={<Newspaper />}
-            label="Blog"
-            active={path === "/blog"}
-          />
-          
-          <NavItem
-            to="/notifications"
-            icon={<Bell />}
-            label="Alerts"
-            active={path === "/notifications"}
-            notificationCount={2}
+            to="/services"
+            icon={<Heart />}
+            label="Services"
+            active={path.startsWith("/services")}
           />
           
           <NavItem

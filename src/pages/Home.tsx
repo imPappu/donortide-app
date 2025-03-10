@@ -5,8 +5,9 @@ import HomeBanner from "@/components/HomeBanner";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share2, ThumbsUp } from "lucide-react";
+import { Heart, MessageCircle, Share2, ThumbsUp, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Home = () => {
   // Sample banner images
@@ -25,6 +26,45 @@ const Home = () => {
       src: "https://images.unsplash.com/photo-1612367289789-36526896fee7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1950&q=80",
       alt: "Learn about blood compatibility",
       url: "/blog",
+    },
+  ];
+
+  // Top donors
+  const topDonors = [
+    {
+      id: 1,
+      name: "Sarah Johnson",
+      avatar: "https://randomuser.me/api/portraits/women/12.jpg",
+      donations: 24,
+      bloodType: "O-",
+    },
+    {
+      id: 2,
+      name: "Michael Chen",
+      avatar: "https://randomuser.me/api/portraits/men/22.jpg",
+      donations: 18,
+      bloodType: "A+",
+    },
+    {
+      id: 3,
+      name: "Elena Rodriguez",
+      avatar: "https://randomuser.me/api/portraits/women/33.jpg",
+      donations: 15,
+      bloodType: "B+",
+    },
+    {
+      id: 4,
+      name: "David Kim",
+      avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+      donations: 12,
+      bloodType: "AB-",
+    },
+    {
+      id: 5,
+      name: "Olivia Wilson",
+      avatar: "https://randomuser.me/api/portraits/women/67.jpg",
+      donations: 10,
+      bloodType: "O+",
     },
   ];
 
@@ -80,6 +120,48 @@ const Home = () => {
       <TopNavbar showSearchBar={true} />
       
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
+        {/* Top Donors Row */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold flex items-center">
+              <Award className="h-5 w-5 text-yellow-500 mr-2" />
+              Top Donors
+            </h2>
+            <Button variant="link" size="sm" className="text-primary">
+              View All
+            </Button>
+          </div>
+          <div className="flex overflow-x-auto pb-2 space-x-4">
+            <TooltipProvider>
+              {topDonors.map((donor) => (
+                <Tooltip key={donor.id}>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-col items-center min-w-[80px]">
+                      <Avatar className="h-14 w-14 border-2 border-primary mb-2">
+                        <AvatarImage src={donor.avatar} alt={donor.name} />
+                        <AvatarFallback>{donor.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="text-xs font-medium truncate w-full text-center">{donor.name}</div>
+                      <div className="flex items-center mt-1">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                          {donor.bloodType}
+                        </Badge>
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div>
+                      <p className="font-semibold">{donor.name}</p>
+                      <p className="text-xs">{donor.donations} donations</p>
+                      <p className="text-xs">Blood Type: {donor.bloodType}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left sidebar/shortcut column - visible on large screens */}
           <div className="hidden lg:block">

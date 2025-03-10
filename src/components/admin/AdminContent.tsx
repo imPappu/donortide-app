@@ -27,6 +27,7 @@ import TestEnvironment from "./system/TestEnvironment";
 import MaintenanceMode from "./system/MaintenanceMode";
 import AddonModules from "./system/AddonModules";
 import AIConfiguration from "./system/AIConfiguration";
+import ServicesManagement from "./ServicesManagement";
 
 interface AdminContentProps {
   activeTab: string;
@@ -127,6 +128,9 @@ const AdminContent = ({
       {activeTab === "organizations" && getContentWithAnimation(<OrganizationManagement />)}
       
       {activeTab === "ambulances" && getContentWithAnimation(<AmbulanceManagement />)}
+      
+      {/* Services Management */}
+      {activeTab === "services" && getContentWithAnimation(<ServicesManagement />)}
       
       {/* Marketing & Notifications */}
       {activeTab === "push-notifications" && getContentWithAnimation(<FirebasePushComponent />)}

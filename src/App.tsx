@@ -29,6 +29,7 @@ import AdminLink from "@/components/AdminLink";
 import SplashScreen from "@/components/SplashScreen";
 import LoginSignup from "./pages/LoginSignup";
 import Home from "./pages/Home";
+import Services from "./pages/Services";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -144,6 +145,7 @@ const App = () => {
                   <Route path="/community" element={<CommunityFeed />} />
                   <Route path="/stories" element={<UserStories />} />
                   <Route path="/donate" element={<DonationCategories />} />
+                  <Route path="/services" element={<Services />} />
                   <Route path={`/${adminPath}`} element={<AdminLogin />} />
                   <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
                   <Route path="*" element={<NotFound />} />

@@ -31,7 +31,8 @@ import {
   Shield,
   Power,
   Cog,
-  Component
+  Component,
+  UserPlus
 } from "lucide-react";
 import { NavSection, NavItem } from "./NavSection";
 
@@ -119,8 +120,8 @@ const DesktopSidebar = ({ activeTab, setActiveTab, handleLogout }: DesktopSideba
             />
           </NavSection>
           
-          {/* ORGANIZATION MANAGEMENT */}
-          <NavSection title="Organizations">
+          {/* ORGANIZATION & SERVICES MANAGEMENT */}
+          <NavSection title="Organizations & Services">
             <NavItem
               id="organizations"
               label="Organizations"
@@ -132,6 +133,13 @@ const DesktopSidebar = ({ activeTab, setActiveTab, handleLogout }: DesktopSideba
               id="ambulances"
               label="Ambulances"
               icon={<Ambulance className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="services"
+              label="Services"
+              icon={<UserPlus className="mr-2 h-4 w-4" />}
               activeTab={activeTab}
               onClick={setActiveTab}
             />

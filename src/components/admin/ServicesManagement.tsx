@@ -15,7 +15,7 @@ import {
   addAmbulance,
   updateAmbulance,
   deleteAmbulance
-} from "@/services/servicesService";
+} from "@/services";
 import ConsultantManagement from "./services/ConsultantManagement";
 import AmbulanceManagement from "./services/AmbulanceManagement";
 

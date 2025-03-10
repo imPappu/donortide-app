@@ -6,7 +6,7 @@ import { Ambulance, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ConsultantsList from "@/components/services/ConsultantsList";
 import AmbulanceList from "@/components/services/AmbulanceList";
-import { getConsultants, getAmbulances, Consultant, Ambulance as AmbulanceType } from "@/services/servicesService";
+import { getConsultants, getAmbulances, Consultant, Ambulance as AmbulanceType } from "@/services";
 
 const Services = () => {
   const { toast } = useToast();

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2, Plus, Search, UserPlus } from "lucide-react";
-import { Consultant } from "@/services/servicesService";
+import { Consultant } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConsultantManagementProps {

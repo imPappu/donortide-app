@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Phone, User } from "lucide-react";
-import { Consultant } from "@/services/servicesService";
+import { Consultant } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConsultantsListProps {

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2, Plus, Search, Ambulance as AmbulanceIcon } from "lucide-react";
-import { Ambulance } from "@/services/servicesService";
+import { Ambulance } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface AmbulanceManagementProps {

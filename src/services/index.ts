@@ -12,6 +12,12 @@ export * from './notificationService';
 export * from './paymentService';
 export * from './settingService';
 
+// Export our refactored services
+export * from './consultantService';
+export * from './ambulanceService';
+export * from './communicationService';
+export * from './types/serviceTypes';
+
 // Re-export types (for backward compatibility)
 export type { 
   AppSetting,

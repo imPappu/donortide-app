@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Ambulance as AmbulanceIcon, MapPin, Phone, User } from "lucide-react";
-import { Ambulance } from "@/services/servicesService";
+import { Ambulance } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 

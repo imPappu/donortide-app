@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, BookOpen, ArrowRight, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface NewsArticle {
   title: string;
@@ -18,10 +19,23 @@ interface NewsArticle {
   };
 }
 
+interface BlogPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  content?: string; // Adding content property here
+  author: string;
+  date: string;
+  readTime: string;
+  category: string;
+}
+
 const Blog = () => {
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]);
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
+  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,6 +98,7 @@ const Blog = () => {
           id: 1,
           title: "The Importance of Blood Donation",
           excerpt: "Why donating blood regularly can save lives and improve your health.",
+          content: "Blood donation is a critical lifeline for many people facing health issues. When you donate blood, you're giving someone another chance at life. Your donation can help accident victims, surgery patients, and those battling cancer. Regular blood donation not only helps others but may provide health benefits for the donor as well. Studies suggest that regular blood donors have lower risks of certain cardiovascular diseases. The process of giving blood stimulates the production of new blood cells, which can help maintain good health.\n\nDonating blood is quick, easy, and relatively painless. The entire process usually takes less than an hour, with the actual blood draw only taking about 8-10 minutes. Before donating, medical professionals check your temperature, blood pressure, pulse, and hemoglobin levels to ensure you're healthy enough to donate. They also ask about your medical history to ensure the safety of both you and potential recipients.\n\nDespite the critical need for blood, many blood banks face shortages. Only about 3% of eligible people donate blood regularly. If more eligible donors gave blood just once a year, many blood shortages could be prevented. Consider becoming a regular donor and encourage your friends and family to do the same. Together, we can ensure that blood is available whenever and wherever it's needed.",
           author: "Dr. Sarah Johnson",
           date: "2023-05-01T10:00:00Z",
           readTime: "5 min read",
@@ -93,6 +108,7 @@ const Blog = () => {
           id: 2,
           title: "Common Myths About Blood Donation",
           excerpt: "Debunking common misconceptions that prevent people from donating blood.",
+          content: "Many people are hesitant to donate blood due to common misconceptions. Let's debunk some of these myths to encourage more donations.\n\nMyth 1: Donating blood is painful.\nReality: While you might feel a brief pinch when the needle is inserted, most donors report little to no discomfort during donation. The process is designed to be as comfortable as possible.\n\nMyth 2: I don't have enough blood to donate.\nReality: The average adult has about 10 pints of blood, and a standard donation is only about 1 pint. Your body replaces this volume within 24 hours and regenerates red blood cells within a few weeks.\n\nMyth 3: I'll get sick after donating blood.\nReality: Donating blood is safe for healthy individuals. Staff ensure you're well hydrated and provide a snack afterward to help maintain your blood sugar levels.\n\nMyth 4: I can't donate because I'm taking medication.\nReality: Many medications don't disqualify you from donating. Always check with the donation center, as each medication is evaluated individually.\n\nMyth 5: I don't have a common blood type, so my blood isn't needed.\nReality: All blood types are needed! Some rare types are particularly valuable for certain patients.\n\nMyth 6: I can't donate because I have tattoos.\nReality: In most areas, you can donate blood shortly after getting a tattoo if it was done in a regulated facility.\n\nUnderstanding the facts about blood donation can help more people feel comfortable becoming donors, ultimately saving more lives.",
           author: "Michael Chen, RN",
           date: "2023-04-25T14:30:00Z",
           readTime: "8 min read",
@@ -102,6 +118,7 @@ const Blog = () => {
           id: 3,
           title: "How Blood Donations Are Processed",
           excerpt: "What happens to your blood after you donate it? Learn about the journey.",
+          content: "Have you ever wondered what happens to your blood after you donate it? The journey of donated blood is fascinating and involves several crucial steps to ensure safety and maximize its benefits.\n\nStep 1: Collection\nWhen you donate blood, it's collected in sterile bags containing anticoagulants to prevent clotting. Along with the main donation, small samples are collected for testing.\n\nStep 2: Testing\nEach donation undergoes rigorous testing for blood type (A, B, AB, or O, and Rh factor) and screening for infectious diseases including HIV, hepatitis B and C, syphilis, and others depending on regional risks.\n\nStep 3: Processing\nWhole blood is typically separated into components: red blood cells, plasma, and platelets. This allows multiple patients to benefit from a single donation, each receiving exactly what they need.\n\nStep 4: Storage\nEach component requires specific storage conditions:\n- Red blood cells can be stored for up to 42 days at refrigerated temperatures\n- Plasma can be frozen and stored for up to a year\n- Platelets must be stored at room temperature under agitation and can only last about 5 days\n\nStep 5: Distribution\nBlood products are distributed to hospitals as needed, with careful attention to maintaining proper conditions during transport.\n\nStep 6: Transfusion\nFinally, the blood components reach patients in need. Before transfusion, additional compatibility tests ensure the donation is safe for the specific recipient.\n\nThis complex process ensures that your generous donation safely reaches the patients who need it most, potentially saving up to three lives from a single donation.",
           author: "Laura Smith, Lab Technician",
           date: "2023-04-15T09:15:00Z",
           readTime: "6 min read",
@@ -113,11 +130,19 @@ const Blog = () => {
 
     fetchNews();
     fetchBlogPosts();
-  }, []);
+  }, [toast]);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const openArticleDialog = (article: NewsArticle) => {
+    setSelectedArticle(article);
+  };
+
+  const openBlogPostDialog = (post: BlogPost) => {
+    setSelectedBlogPost(post);
   };
 
   return (
@@ -169,10 +194,10 @@ const Blog = () => {
                       <CalendarIcon className="h-3 w-3 mr-1" />
                       {formatDate(article.publishedAt)}
                     </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={article.url} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                        Read <ExternalLink className="ml-1 h-3 w-3" />
-                      </a>
+                    <Button variant="outline" size="sm" onClick={() => openArticleDialog(article)}>
+                      <span className="flex items-center">
+                        Read more <ArrowRight className="ml-1 h-3 w-3" />
+                      </span>
                     </Button>
                   </div>
                 </CardContent>
@@ -196,7 +221,12 @@ const Blog = () => {
                       {formatDate(post.date)} • {post.readTime}
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm" className="flex items-center">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex items-center"
+                    onClick={() => openBlogPostDialog(post)}
+                  >
                     Read more <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
@@ -205,8 +235,85 @@ const Blog = () => {
           ))}
         </TabsContent>
       </Tabs>
+
+      {/* Article Detail Dialog */}
+      <Dialog open={!!selectedArticle} onOpenChange={(open) => !open && setSelectedArticle(null)}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedArticle?.title}</DialogTitle>
+          </DialogHeader>
+          {selectedArticle && (
+            <div className="space-y-4">
+              <div className="text-sm text-muted-foreground flex items-center">
+                <CalendarIcon className="h-3 w-3 mr-1" />
+                {formatDate(selectedArticle.publishedAt)} • {selectedArticle.source.name}
+              </div>
+              
+              {selectedArticle.urlToImage && (
+                <div className="rounded-md overflow-hidden">
+                  <img 
+                    src={selectedArticle.urlToImage} 
+                    alt={selectedArticle.title} 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              )}
+              
+              <p className="text-sm leading-relaxed">{selectedArticle.description}</p>
+              
+              {/* Since we don't have a full content for news articles in our mock data, 
+                  we'll display the description as the main content */}
+              <p className="text-sm leading-relaxed">
+                This is a mock article. In a real application, the full article content would be displayed here.
+                The content would typically include more detailed information about "{selectedArticle.title}".
+              </p>
+              
+              {selectedArticle.url !== "#" && (
+                <div className="pt-4">
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={selectedArticle.url} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                      Read original article <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Blog Post Detail Dialog */}
+      <Dialog open={!!selectedBlogPost} onOpenChange={(open) => !open && setSelectedBlogPost(null)}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedBlogPost?.title}</DialogTitle>
+          </DialogHeader>
+          {selectedBlogPost && (
+            <div className="space-y-4">
+              <div className="text-sm text-muted-foreground flex flex-col">
+                <span>{selectedBlogPost.author}</span>
+                <div className="flex items-center">
+                  <CalendarIcon className="h-3 w-3 mr-1" />
+                  {formatDate(selectedBlogPost.date)} • {selectedBlogPost.readTime}
+                </div>
+              </div>
+              
+              <div className="prose prose-sm">
+                {selectedBlogPost.content ? (
+                  selectedBlogPost.content.split('\n\n').map((paragraph, idx) => (
+                    <p key={idx} className="mb-4 text-sm leading-relaxed">{paragraph}</p>
+                  ))
+                ) : (
+                  <p className="text-sm leading-relaxed">{selectedBlogPost.excerpt}</p>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default Blog;
+

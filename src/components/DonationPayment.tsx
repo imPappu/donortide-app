@@ -9,7 +9,16 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Lock } from "lucide-react";
+import { 
+  DollarSign, 
+  CreditCard, 
+  Landmark, 
+  Smartphone, 
+  Check, 
+  Lock,
+  Wallet,
+  Info
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getEnabledPaymentGateways } from "@/services/paymentService";
 import { getPaymentIcon, getPaymentDescription } from "./donation/PaymentIcons";

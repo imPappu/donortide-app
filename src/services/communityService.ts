@@ -1,6 +1,6 @@
 
 import { API_BASE_URL } from './apiConfig';
-import { Post } from "@/types/community";
+import { Post, Story } from "@/types/community";
 import { MOCK_POSTS } from "@/data/mockPosts";
 
 // Get all community posts
@@ -57,7 +57,7 @@ export const createCommunityPost = async (data: Omit<Post, 'id' | 'timestamp'>):
       id: `new-${Date.now()}`,
       timestamp: new Date().toISOString(),
       comments: 0
-    };
+    } as Post;
   }
 };
 
@@ -120,6 +120,63 @@ export const flagPostForReview = async (id: string, reason: string): Promise<boo
     return true;
   } catch (error) {
     console.error('Error flagging post:', error);
+    // For development, assume success
+    return true;
+  }
+};
+
+// Create a new story
+export const createStory = async (data: Omit<Story, 'id' | 'timestamp'>): Promise<Story> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/community/stories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to create story');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating story:', error);
+    // For development, simulate a successful creation
+    return {
+      ...data,
+      id: `story-${Date.now()}`,
+      timestamp: 'Just now',
+    } as Story;
+  }
+};
+
+// Get all stories
+export const getStories = async (): Promise<Story[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/community/stories`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch stories');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching stories:', error);
+    // For development, return mock stories
+    return [];
+  }
+};
+
+// Delete a story
+export const deleteStory = async (id: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/community/stories/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete story');
+    }
+    return true;
+  } catch (error) {
+    console.error('Error deleting story:', error);
     // For development, assume success
     return true;
   }

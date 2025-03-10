@@ -10,13 +10,18 @@ import PostContent from "./post/PostContent";
 import PostFooter from "./post/PostFooter";
 import PostStats from "./post/PostStats";
 import PollItem from "./poll/PollItem";
+import { Trash, Edit } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface CommunityPostProps {
   post: Post;
   onTagClick?: (tag: string) => void;
+  onDelete?: (postId: string) => void;
+  onEdit?: (post: Post) => void;
 }
 
-const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
+const CommunityPost = ({ post, onTagClick, onDelete, onEdit }: CommunityPostProps) => {
   const [liked, setLiked] = useState(post.liked);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
@@ -41,6 +46,8 @@ const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
     setShowComments(!showComments);
   };
 
+  const isOwnPost = user && user.name === post.userName;
+
   const commentData = post.commentData || [
     {
       id: '1',
@@ -56,19 +63,69 @@ const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
     }
   ];
 
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(post.id);
+      toast({
+        title: "Post deleted",
+        description: "Your post has been deleted",
+      });
+    }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(post);
+    }
+  };
+
   return (
-    <Card className="mb-4">
+    <Card className={`mb-4 ${post.type === 'story' ? 'border-blue-500' : ''}`}>
       <CardContent className="p-4">
-        <PostHeader 
-          userName={post.userName}
-          userAvatar={post.userAvatar}
-          timestamp={post.timestamp}
-        />
+        <div className="flex justify-between items-center">
+          <PostHeader 
+            userName={post.userName}
+            userAvatar={post.userAvatar}
+            timestamp={post.timestamp}
+          />
+          
+          {isOwnPost && (
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" onClick={handleEdit}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Trash className="h-4 w-4 text-red-500" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete post?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your post.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
+        </div>
         
         <PostContent 
           content={post.content}
           tags={post.tags}
           imageUrl={post.imageUrl}
+          videoUrl={post.videoUrl}
+          isStory={post.type === 'story'}
           onTagClick={onTagClick}
         />
         

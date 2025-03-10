@@ -9,6 +9,10 @@ import { toast } from "@/hooks/use-toast";
 import PostList from "@/components/community/feed/PostList";
 import FilterBar from "@/components/community/feed/FilterBar";
 import FollowedTags from "@/components/community/feed/FollowedTags";
+import { Story } from "@/types/community";
+import StoriesSection from "@/components/community/stories/StoriesSection";
+import { v4 as uuidv4 } from "uuid";
+import { communityService } from "@/services";
 
 // Add some sample poll data to demonstrate functionality
 const ENHANCED_POSTS = MOCK_POSTS.map((post, index) => {
@@ -41,13 +45,49 @@ const ENHANCED_POSTS = MOCK_POSTS.map((post, index) => {
   return { ...post, type: 'text' as const };
 });
 
+// Sample stories
+const SAMPLE_STORIES: Story[] = [
+  {
+    id: "story1",
+    userName: "John Doe",
+    userAvatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    content: "My first blood donation experience",
+    videoUrl: "https://player.vimeo.com/progressive_redirect/playback/747200508/rendition/360p/file.mp4?loc=external",
+    likes: 24,
+    comments: 3,
+    shares: 2,
+    timestamp: "2 hours ago",
+    liked: false,
+    type: 'story',
+    duration: 15,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "story2",
+    userName: "Jane Smith",
+    userAvatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    content: "Helping at the blood drive today!",
+    videoUrl: "https://player.vimeo.com/progressive_redirect/playback/733774855/rendition/360p/file.mp4?loc=external",
+    likes: 42,
+    comments: 7,
+    shares: 5,
+    timestamp: "4 hours ago",
+    liked: false,
+    type: 'story',
+    duration: 12,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  }
+];
+
 const CommunityFeed = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [followedTags, setFollowedTags] = useState<string[]>([]);
+  const [posts, setPosts] = useState(ENHANCED_POSTS);
+  const [stories, setStories] = useState<Story[]>(SAMPLE_STORIES);
   
   // Filter posts based on search query and active tag
-  const filteredPosts = ENHANCED_POSTS.filter(post => {
+  const filteredPosts = posts.filter(post => {
     const matchesSearch = 
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.userName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -86,6 +126,27 @@ const CommunityFeed = () => {
       });
     }
   };
+  
+  const handleAddStory = (storyData: Omit<Story, 'id' | 'timestamp'>) => {
+    const newStory: Story = {
+      ...storyData,
+      id: uuidv4(),
+      timestamp: "Just now",
+    };
+    
+    setStories([newStory, ...stories]);
+  };
+  
+  const handleDeletePost = (postId: string) => {
+    setPosts(posts.filter(post => post.id !== postId));
+  };
+  
+  const handleEditPost = (post: any) => {
+    toast({
+      title: "Edit post",
+      description: "Post editing functionality coming soon",
+    });
+  };
 
   // Simulate receiving a tag notification
   useEffect(() => {
@@ -109,6 +170,9 @@ const CommunityFeed = () => {
       <TopNavbar title="Community Feed" showSearchBar={true} onSearch={setSearchQuery} />
       
       <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
+        {/* Stories section */}
+        <StoriesSection stories={stories} onAddStory={handleAddStory} />
+        
         {/* Active tag filter indicator */}
         <FilterBar 
           activeTag={activeTag} 
@@ -131,7 +195,12 @@ const CommunityFeed = () => {
           toggleFollowTag={toggleFollowTag}
         />
         
-        <PostList posts={filteredPosts} onTagClick={handleTagClick} />
+        <PostList 
+          posts={filteredPosts} 
+          onTagClick={handleTagClick} 
+          onDeletePost={handleDeletePost}
+          onEditPost={handleEditPost}
+        />
       </div>
 
       <Navigation />

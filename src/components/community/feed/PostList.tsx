@@ -1,18 +1,23 @@
 
 import React from "react";
-import CommunityPost from "@/components/community/CommunityPost";
 import { Post } from "@/types/community";
+import CommunityPost from "../CommunityPost";
 
 interface PostListProps {
   posts: Post[];
-  onTagClick: (tag: string) => void;
+  onTagClick?: (tag: string) => void;
+  onDeletePost?: (postId: string) => void;
+  onEditPost?: (post: Post) => void;
 }
 
-const PostList = ({ posts, onTagClick }: PostListProps) => {
+const PostList = ({ posts, onTagClick, onDeletePost, onEditPost }: PostListProps) => {
   if (posts.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">No posts found matching your criteria</p>
+      <div className="py-10 text-center">
+        <h3 className="text-lg font-medium mb-2">No posts found</h3>
+        <p className="text-muted-foreground">
+          Try adjusting your search or filter criteria
+        </p>
       </div>
     );
   }
@@ -20,7 +25,13 @@ const PostList = ({ posts, onTagClick }: PostListProps) => {
   return (
     <div className="space-y-4">
       {posts.map(post => (
-        <CommunityPost key={post.id} post={post} onTagClick={onTagClick} />
+        <CommunityPost 
+          key={post.id} 
+          post={post} 
+          onTagClick={onTagClick}
+          onDelete={onDeletePost}
+          onEdit={onEditPost}
+        />
       ))}
     </div>
   );

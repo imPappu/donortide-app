@@ -33,6 +33,7 @@ export interface Post {
   userAvatar?: string;
   content: string;
   imageUrl?: string;
+  videoUrl?: string;
   likes: number;
   comments: number;
   shares: number;
@@ -40,6 +41,15 @@ export interface Post {
   liked: boolean;
   commentData?: Comment[];
   poll?: Poll;
-  type: 'text' | 'image' | 'poll';
+  type: 'text' | 'image' | 'poll' | 'story' | 'video';
   tags?: string[]; // Array of tag names
+  duration?: number; // Duration in seconds for video content
+  expiresAt?: string; // Expiry timestamp for stories
+}
+
+export interface Story extends Post {
+  type: 'story';
+  videoUrl: string;
+  duration: number; // Duration in seconds
+  expiresAt: string; // When the story expires
 }

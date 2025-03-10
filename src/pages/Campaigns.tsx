@@ -1,12 +1,13 @@
 
 import React from "react";
 import TopNavbar from "@/components/TopNavbar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Megaphone, Target, CalendarClock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Megaphone } from "lucide-react";
+import PageHeader from "@/components/common/PageHeader";
+import CampaignGrid from "@/components/campaigns/CampaignGrid";
+import { CampaignCardProps } from "@/components/campaigns/CampaignCard";
 
 const Campaigns = () => {
-  const activeCampaigns = [
+  const activeCampaigns: CampaignCardProps[] = [
     {
       id: "1",
       title: "Summer Blood Drive Campaign",
@@ -50,50 +51,12 @@ const Campaigns = () => {
       <TopNavbar />
       
       <div className="container mx-auto px-4 py-6 flex-1 pb-20 max-w-6xl">
-        <h1 className="text-2xl font-bold mb-6 flex items-center">
-          <Megaphone className="h-6 w-6 mr-2 text-orange-500" />
-          Active Blood Donation Campaigns
-        </h1>
+        <PageHeader 
+          icon={<Megaphone className="h-6 w-6 mr-2 text-orange-500" />}
+          title="Active Blood Donation Campaigns"
+        />
         
-        <div className="grid md:grid-cols-2 gap-6">
-          {activeCampaigns.map((campaign) => (
-            <Card key={campaign.id} className="overflow-hidden">
-              <div className="aspect-video w-full">
-                <img 
-                  src={campaign.image} 
-                  alt={campaign.title} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardHeader className="pb-2">
-                <CardTitle>{campaign.title}</CardTitle>
-                <div className="flex justify-between text-sm">
-                  <span className="flex items-center text-muted-foreground">
-                    <Target className="h-4 w-4 mr-1" />
-                    Goal: {campaign.goal}
-                  </span>
-                  <span className="flex items-center text-muted-foreground">
-                    <CalendarClock className="h-4 w-4 mr-1" />
-                    Ends: {campaign.endDate}
-                  </span>
-                </div>
-                <div className="mt-2 space-y-1">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div 
-                      className="bg-orange-500 h-2.5 rounded-full" 
-                      style={{ width: `${campaign.progress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-right text-muted-foreground">{campaign.progress}% Complete</p>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm">{campaign.description}</p>
-                <Button className="w-full">Support This Campaign</Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <CampaignGrid campaigns={activeCampaigns} />
       </div>
     </div>
   );

@@ -87,5 +87,5 @@ export const initialAddonPermissionGroups: AddonPermissionGroups = {
     { id: 1, name: "View Inventory", key: "admin.inventory.view", enabled: true },
     { id: 2, name: "Manage Inventory", key: "admin.inventory.manage", enabled: true },
     { id: 3, name: "Transfer Inventory", key: "admin.inventory.transfer", enabled: false }
-  }
+  ]
 };

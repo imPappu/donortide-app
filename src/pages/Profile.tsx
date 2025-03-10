@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import ProfilePictureUpload from "@/components/ProfilePictureUpload";
 import { useAuth } from "@/components/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const DonationHistory = () => {
   const donations = [
@@ -88,7 +88,7 @@ const SettingsTab = () => {
   
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
   
   return (
@@ -123,7 +123,11 @@ const SettingsTab = () => {
         <Button variant="outline" className="w-full justify-start">
           <SettingsIcon className="mr-2 h-4 w-4" /> Account Settings
         </Button>
-        <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-50" onClick={handleLogout}>
+        <Button 
+          variant="outline" 
+          className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-50" 
+          onClick={handleLogout}
+        >
           <LogOut className="mr-2 h-4 w-4" /> Logout
         </Button>
       </div>
@@ -209,8 +213,20 @@ const VerificationTab = () => {
 };
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, isAuthenticated, updateProfile } = useAuth();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!isAuthenticated && !user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to view your profile",
+      });
+      navigate("/");
+    }
+  }, [isAuthenticated, user, navigate]);
+  
   const userData = user || {
     name: "John Doe",
     email: "johndoe@example.com",
@@ -223,6 +239,10 @@ const Profile = () => {
       await updateProfile({ avatar: imageUrl });
     }
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="container max-w-md mx-auto px-4 py-6">

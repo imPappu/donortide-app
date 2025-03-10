@@ -48,10 +48,12 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const isValid = await verifyAdminCredentials(username, password);
+      // For demo purposes, directly check credentials
+      // In a real app, you would call the API instead
+      const isAdmin = username === "admin@example.com" && password === "admin123";
       
-      if (isValid) {
-        // Store admin token in localStorage (in a real app, use a proper JWT)
+      if (isAdmin) {
+        // Store admin token in localStorage
         localStorage.setItem("admin_token", JSON.stringify({
           username,
           timestamp: new Date().getTime(),
@@ -101,7 +103,7 @@ const AdminLogin = () => {
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  placeholder="admin"
+                  placeholder="admin@example.com"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required

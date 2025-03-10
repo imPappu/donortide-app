@@ -2,9 +2,19 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, Copy } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 const LoginCredentials = () => {
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied",
+      description: "Text copied to clipboard",
+    });
+  };
+
   return (
     <Card className="mb-6">
       <CardHeader className="pb-3">
@@ -23,6 +33,7 @@ const LoginCredentials = () => {
               <TableHead>Role</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Password</TableHead>
+              <TableHead className="w-16"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -30,11 +41,29 @@ const LoginCredentials = () => {
               <TableCell className="font-medium">Admin</TableCell>
               <TableCell>admin@example.com</TableCell>
               <TableCell>admin123</TableCell>
+              <TableCell>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => copyToClipboard("admin@example.com")}
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">User</TableCell>
               <TableCell>user@example.com</TableCell>
               <TableCell>password</TableCell>
+              <TableCell>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => copyToClipboard("user@example.com")}
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -32,7 +32,11 @@ const ConsultantManagement = ({
     name: "",
     specialty: "",
     status: "Available",
-    phone: ""
+    phone: "",
+    availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    availableTimeStart: "09:00",
+    availableTimeEnd: "17:00",
+    isFreeService: true
   });
 
   // Reset new consultant form
@@ -41,7 +45,11 @@ const ConsultantManagement = ({
       name: "",
       specialty: "",
       status: "Available",
-      phone: ""
+      phone: "",
+      availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      availableTimeStart: "09:00",
+      availableTimeEnd: "17:00",
+      isFreeService: true
     });
   };
 

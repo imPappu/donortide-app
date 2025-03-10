@@ -7,6 +7,11 @@ export interface Consultant {
   status: string;
   phone: string;
   imageUrl?: string;
+  availableDays: string[]; // ["Monday", "Tuesday", etc.]
+  availableTimeStart: string; // "09:00"
+  availableTimeEnd: string; // "17:00"
+  isFreeService: boolean;
+  price?: number;
 }
 
 export interface Ambulance {
@@ -16,6 +21,11 @@ export interface Ambulance {
   status: "Available" | "On Duty";
   driverName: string;
   driverPhone: string;
+  availableDays: string[]; // ["Monday", "Tuesday", etc.]
+  availableTimeStart: string; // "09:00"
+  availableTimeEnd: string; // "17:00"
+  isFreeService: boolean;
+  price?: number;
 }
 
 export interface CommunicationRequest {

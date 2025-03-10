@@ -33,7 +33,11 @@ const AmbulanceManagement = ({
     location: "",
     status: "Available",
     driverName: "",
-    driverPhone: ""
+    driverPhone: "",
+    availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    availableTimeStart: "09:00",
+    availableTimeEnd: "17:00",
+    isFreeService: true
   });
 
   // Reset new ambulance form
@@ -43,7 +47,11 @@ const AmbulanceManagement = ({
       location: "",
       status: "Available",
       driverName: "",
-      driverPhone: ""
+      driverPhone: "",
+      availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      availableTimeStart: "09:00",
+      availableTimeEnd: "17:00",
+      isFreeService: true
     });
   };
 

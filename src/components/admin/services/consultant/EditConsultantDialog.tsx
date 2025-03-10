@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Dialog, 
   DialogContent, 
@@ -22,6 +23,8 @@ interface EditConsultantDialogProps {
   onUpdate: () => Promise<void>;
 }
 
+const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
 const EditConsultantDialog = ({ 
   isOpen, 
   onOpenChange, 
@@ -33,7 +36,7 @@ const EditConsultantDialog = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Consultant</DialogTitle>
           <DialogDescription>
@@ -67,6 +70,91 @@ const EditConsultantDialog = ({
               value={consultant.phone} 
               onChange={(e) => setConsultant({...consultant, phone: e.target.value})}
             />
+          </div>
+          
+          <div>
+            <Label className="block mb-2">Available Days</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {DAYS_OF_WEEK.map((day) => (
+                <div className="flex items-center space-x-2" key={day}>
+                  <Checkbox 
+                    id={`edit-day-${day}`} 
+                    checked={consultant.availableDays?.includes(day)} 
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setConsultant({
+                          ...consultant, 
+                          availableDays: [...(consultant.availableDays || []), day]
+                        });
+                      } else {
+                        setConsultant({
+                          ...consultant, 
+                          availableDays: (consultant.availableDays || []).filter(d => d !== day)
+                        });
+                      }
+                    }}
+                  />
+                  <label htmlFor={`edit-day-${day}`} className="text-sm">{day}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-availableTimeStart">Available From</Label>
+              <Input 
+                id="edit-availableTimeStart" 
+                type="time"
+                value={consultant.availableTimeStart || "09:00"} 
+                onChange={(e) => setConsultant({...consultant, availableTimeStart: e.target.value})}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-availableTimeEnd">Available Until</Label>
+              <Input 
+                id="edit-availableTimeEnd" 
+                type="time"
+                value={consultant.availableTimeEnd || "17:00"} 
+                onChange={(e) => setConsultant({...consultant, availableTimeEnd: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="edit-isFreeService" 
+                checked={consultant.isFreeService} 
+                onCheckedChange={(checked) => {
+                  setConsultant({
+                    ...consultant, 
+                    isFreeService: checked,
+                    price: checked ? undefined : consultant.price
+                  });
+                }}
+              />
+              <Label htmlFor="edit-isFreeService">Free Service</Label>
+            </div>
+            
+            {!consultant.isFreeService && (
+              <div className="space-y-2">
+                <Label htmlFor="edit-price">Consultation Fee ($)</Label>
+                <Input 
+                  id="edit-price" 
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={consultant.price || ""} 
+                  onChange={(e) => setConsultant({
+                    ...consultant, 
+                    price: e.target.value === "" ? undefined : parseFloat(e.target.value)
+                  })}
+                  placeholder="100.00"
+                />
+              </div>
+            )}
           </div>
           
           <div className="flex items-center space-x-2">

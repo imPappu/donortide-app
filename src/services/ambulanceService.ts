@@ -4,9 +4,44 @@ import { Ambulance } from './types/serviceTypes';
 
 // Mock data for ambulances
 let mockAmbulances: Ambulance[] = [
-  { id: 1, vehicleNumber: "AMB-001", location: "Downtown Medical Center", status: "Available", driverName: "John Smith", driverPhone: "+1 (555) 111-2222" },
-  { id: 2, vehicleNumber: "AMB-002", location: "Westside Hospital", status: "On Duty", driverName: "Robert Johnson", driverPhone: "+1 (555) 333-4444" },
-  { id: 3, vehicleNumber: "AMB-003", location: "Northside Medical Center", status: "Available", driverName: "Lisa Adams", driverPhone: "+1 (555) 555-6666" }
+  { 
+    id: 1, 
+    vehicleNumber: "AMB-001", 
+    location: "Downtown Medical Center", 
+    status: "Available", 
+    driverName: "John Smith", 
+    driverPhone: "+1 (555) 111-2222",
+    availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    availableTimeStart: "08:00",
+    availableTimeEnd: "20:00",
+    isFreeService: true
+  },
+  { 
+    id: 2, 
+    vehicleNumber: "AMB-002", 
+    location: "Westside Hospital", 
+    status: "On Duty", 
+    driverName: "Robert Johnson", 
+    driverPhone: "+1 (555) 333-4444",
+    availableDays: ["Monday", "Wednesday", "Friday"],
+    availableTimeStart: "09:00",
+    availableTimeEnd: "17:00",
+    isFreeService: false,
+    price: 50
+  },
+  { 
+    id: 3, 
+    vehicleNumber: "AMB-003", 
+    location: "Northside Medical Center", 
+    status: "Available", 
+    driverName: "Lisa Adams", 
+    driverPhone: "+1 (555) 555-6666",
+    availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    availableTimeStart: "00:00",
+    availableTimeEnd: "23:59",
+    isFreeService: false,
+    price: 75
+  }
 ];
 
 // Function to fetch ambulances

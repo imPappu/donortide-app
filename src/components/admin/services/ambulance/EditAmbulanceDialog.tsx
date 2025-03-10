@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Dialog, 
   DialogContent, 
@@ -22,6 +23,8 @@ interface EditAmbulanceDialogProps {
   onUpdate: () => Promise<void>;
 }
 
+const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
 const EditAmbulanceDialog = ({ 
   isOpen, 
   onOpenChange, 
@@ -33,7 +36,7 @@ const EditAmbulanceDialog = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Ambulance</DialogTitle>
           <DialogDescription>
@@ -76,6 +79,91 @@ const EditAmbulanceDialog = ({
               value={ambulance.driverPhone} 
               onChange={(e) => setAmbulance({...ambulance, driverPhone: e.target.value})}
             />
+          </div>
+          
+          <div>
+            <Label className="block mb-2">Available Days</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {DAYS_OF_WEEK.map((day) => (
+                <div className="flex items-center space-x-2" key={day}>
+                  <Checkbox 
+                    id={`edit-day-${day}`} 
+                    checked={ambulance.availableDays?.includes(day)} 
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setAmbulance({
+                          ...ambulance, 
+                          availableDays: [...(ambulance.availableDays || []), day]
+                        });
+                      } else {
+                        setAmbulance({
+                          ...ambulance, 
+                          availableDays: (ambulance.availableDays || []).filter(d => d !== day)
+                        });
+                      }
+                    }}
+                  />
+                  <label htmlFor={`edit-day-${day}`} className="text-sm">{day}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-availableTimeStart">Available From</Label>
+              <Input 
+                id="edit-availableTimeStart" 
+                type="time"
+                value={ambulance.availableTimeStart || "09:00"} 
+                onChange={(e) => setAmbulance({...ambulance, availableTimeStart: e.target.value})}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-availableTimeEnd">Available Until</Label>
+              <Input 
+                id="edit-availableTimeEnd" 
+                type="time"
+                value={ambulance.availableTimeEnd || "17:00"} 
+                onChange={(e) => setAmbulance({...ambulance, availableTimeEnd: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="edit-isFreeService" 
+                checked={ambulance.isFreeService} 
+                onCheckedChange={(checked) => {
+                  setAmbulance({
+                    ...ambulance, 
+                    isFreeService: checked,
+                    price: checked ? undefined : ambulance.price
+                  });
+                }}
+              />
+              <Label htmlFor="edit-isFreeService">Free Service</Label>
+            </div>
+            
+            {!ambulance.isFreeService && (
+              <div className="space-y-2">
+                <Label htmlFor="edit-price">Price ($)</Label>
+                <Input 
+                  id="edit-price" 
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={ambulance.price || ""} 
+                  onChange={(e) => setAmbulance({
+                    ...ambulance, 
+                    price: e.target.value === "" ? undefined : parseFloat(e.target.value)
+                  })}
+                  placeholder="50.00"
+                />
+              </div>
+            )}
           </div>
           
           <div className="flex items-center space-x-2">

@@ -4,9 +4,41 @@ import { Consultant } from './types/serviceTypes';
 
 // Mock data for consultants
 let mockConsultants: Consultant[] = [
-  { id: 1, name: "Dr. Sarah Johnson", specialty: "Hematology", status: "Available", phone: "+1 (555) 123-4567" },
-  { id: 2, name: "Dr. Michael Brown", specialty: "Internal Medicine", status: "Available", phone: "+1 (555) 987-6543" },
-  { id: 3, name: "Dr. Emily Davis", specialty: "Transfusion Medicine", status: "Busy", phone: "+1 (555) 456-7890" }
+  { 
+    id: 1, 
+    name: "Dr. Sarah Johnson", 
+    specialty: "Hematology", 
+    status: "Available", 
+    phone: "+1 (555) 123-4567",
+    availableDays: ["Monday", "Wednesday", "Friday"],
+    availableTimeStart: "09:00",
+    availableTimeEnd: "17:00",
+    isFreeService: false,
+    price: 100
+  },
+  { 
+    id: 2, 
+    name: "Dr. Michael Brown", 
+    specialty: "Internal Medicine", 
+    status: "Available", 
+    phone: "+1 (555) 987-6543",
+    availableDays: ["Tuesday", "Thursday"],
+    availableTimeStart: "10:00",
+    availableTimeEnd: "18:00",
+    isFreeService: true
+  },
+  { 
+    id: 3, 
+    name: "Dr. Emily Davis", 
+    specialty: "Transfusion Medicine", 
+    status: "Busy", 
+    phone: "+1 (555) 456-7890",
+    availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    availableTimeStart: "08:00",
+    availableTimeEnd: "16:00",
+    isFreeService: false,
+    price: 75
+  }
 ];
 
 // Function to fetch consultants

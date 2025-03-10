@@ -7,7 +7,8 @@ export const DEMO_USERS = [
     password: 'password',
     avatar: '',
     isVerified: true,
-    role: 'user' as const
+    role: 'user' as const,
+    roles: ['user'] as const
   },
   {
     id: '2',
@@ -16,7 +17,8 @@ export const DEMO_USERS = [
     password: 'admin123',
     avatar: '',
     isVerified: true,
-    role: 'admin' as const
+    role: 'admin' as const,
+    roles: ['admin', 'user'] as const
   },
   {
     id: '3',
@@ -25,7 +27,8 @@ export const DEMO_USERS = [
     password: 'password',
     avatar: '',
     isVerified: true,
-    role: 'donor' as const
+    role: 'donor' as const,
+    roles: ['donor', 'user'] as const
   },
   {
     id: '4',
@@ -34,6 +37,7 @@ export const DEMO_USERS = [
     password: 'password',
     avatar: '',
     isVerified: true,
-    role: 'service_provider' as const
+    role: 'service_provider' as const,
+    roles: ['service_provider', 'user'] as const
   }
 ];

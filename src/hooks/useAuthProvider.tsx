@@ -60,7 +60,7 @@ export const useAuthProvider = () => {
     }
   };
 
-  const register = async (name: string, email: string, password: string, role: User['role'] = 'user'): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string, roles: User['roles'] = ['user']): Promise<boolean> => {
     setIsLoading(true);
     try {
       // Simulate API request
@@ -76,6 +76,11 @@ export const useAuthProvider = () => {
         return false;
       }
       
+      // Ensure user role is always included
+      if (!roles.includes('user')) {
+        roles.push('user');
+      }
+      
       // In a real app, we would save to a database here
       const newUser = {
         id: Date.now().toString(),
@@ -83,15 +88,18 @@ export const useAuthProvider = () => {
         email,
         avatar: '',
         isVerified: false,
-        role
+        roles: roles,
+        role: roles[0] // For backward compatibility
       };
       
       setUser(newUser);
       localStorage.setItem('donor_tide_user', JSON.stringify(newUser));
       
+      const roleNames = roles.map(r => r.replace('_', ' ')).join(', ');
+      
       toast({
         title: "Registration successful",
-        description: `Your account has been created as a ${role.replace('_', ' ')}`,
+        description: `Your account has been created with roles: ${roleNames}`,
       });
       return true;
     } catch (error) {

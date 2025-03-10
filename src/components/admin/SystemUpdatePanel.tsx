@@ -9,8 +9,16 @@ import WebsiteTab from "./system/tabs/WebsiteTab";
 const SystemUpdatePanel = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("core");
+  
+  // Core system state
   const [updating, setUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
+  
+  // Mobile state
+  const [mobileUpdating, setMobileUpdating] = useState(false);
+  
+  // Website state
+  const [websiteVersion, setWebsiteVersion] = useState("1.5.2");
   
   const handleSystemUpdate = async () => {
     setUpdating(true);
@@ -28,6 +36,30 @@ const SystemUpdatePanel = () => {
     });
     
     setUpdating(false);
+  };
+  
+  const handleMobileUpdate = async () => {
+    setMobileUpdating(true);
+    
+    // Simulate update process
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    toast({
+      title: "Mobile Updates Synchronized",
+      description: "Mobile applications have been updated successfully.",
+    });
+    
+    setMobileUpdating(false);
+  };
+  
+  const handleWebsiteSettingsSave = async (settings: any) => {
+    // Simulate saving settings
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    toast({
+      title: "Website Settings Saved",
+      description: "Your website configuration has been updated.",
+    });
   };
   
   return (
@@ -53,11 +85,17 @@ const SystemUpdatePanel = () => {
         </TabsContent>
         
         <TabsContent value="mobile" className="space-y-4">
-          <MobileTab />
+          <MobileTab 
+            mobileUpdating={mobileUpdating}
+            handleMobileUpdate={handleMobileUpdate}
+          />
         </TabsContent>
         
         <TabsContent value="website" className="space-y-4">
-          <WebsiteTab />
+          <WebsiteTab 
+            websiteVersion={websiteVersion}
+            handleWebsiteSettingsSave={handleWebsiteSettingsSave}
+          />
         </TabsContent>
       </Tabs>
     </div>

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Ambulance as AmbulanceIcon, MapPin, Phone, User, Calendar, Clock, WhatsApp, DollarSign } from "lucide-react";
+import { Ambulance as AmbulanceIcon, MapPin, Phone, User, Calendar, Clock, MessageSquare, DollarSign } from "lucide-react";
 import { Ambulance } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -116,7 +116,7 @@ const AmbulanceList: React.FC<AmbulanceListProps> = ({ ambulances, isLoading }) 
                     className="text-green-600 hover:text-green-700"
                   >
                     <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
-                      <WhatsApp className="h-4 w-4" />
+                      <MessageSquare className="h-4 w-4" />
                     </Button>
                   </a>
                   

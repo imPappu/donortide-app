@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Phone, User, Calendar, Clock, WhatsApp, DollarSign } from "lucide-react";
+import { Phone, User, Calendar, Clock, MessageSquare, DollarSign } from "lucide-react";
 import { Consultant } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface ConsultantsListProps {
   consultants: Consultant[];
@@ -121,7 +122,7 @@ const ConsultantsList: React.FC<ConsultantsListProps> = ({ consultants, isLoadin
                     className="text-green-600 hover:text-green-700"
                   >
                     <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
-                      <WhatsApp className="h-4 w-4" />
+                      <MessageSquare className="h-4 w-4" />
                     </Button>
                   </a>
                   

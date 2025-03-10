@@ -23,6 +23,7 @@ import Notifications from "./pages/Notifications";
 import CommunityFeed from "./pages/CommunityFeed";
 import UserStories from "./pages/UserStories";
 import DonationCategories from "./pages/DonationCategories";
+import { AuthProvider } from "@/components/auth/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -84,30 +85,32 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <div className="flex flex-col min-h-screen">
-            <div className="flex-1">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/donors" element={<Donors />} />
-                <Route path="/requests" element={<Requests />} />
-                <Route path="/create" element={<CreateRequest />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/volunteers" element={<Volunteers />} />
-                <Route path="/charities" element={<Charities />} />
-                <Route path="/notifications" element={<Notifications />} />
-                <Route path="/community" element={<CommunityFeed />} />
-                <Route path="/stories" element={<UserStories />} />
-                <Route path="/donate" element={<DonationCategories />} />
-                <Route path={`/${adminPath}`} element={<AdminLogin />} />
-                <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+        <AuthProvider>
+          <BrowserRouter>
+            <div className="flex flex-col min-h-screen">
+              <div className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/donors" element={<Donors />} />
+                  <Route path="/requests" element={<Requests />} />
+                  <Route path="/create" element={<CreateRequest />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/volunteers" element={<Volunteers />} />
+                  <Route path="/charities" element={<Charities />} />
+                  <Route path="/notifications" element={<Notifications />} />
+                  <Route path="/community" element={<CommunityFeed />} />
+                  <Route path="/stories" element={<UserStories />} />
+                  <Route path="/donate" element={<DonationCategories />} />
+                  <Route path={`/${adminPath}`} element={<AdminLogin />} />
+                  <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+              <Navigation />
             </div>
-            <Navigation />
-          </div>
-        </BrowserRouter>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

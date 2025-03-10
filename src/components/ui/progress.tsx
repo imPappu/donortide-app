@@ -24,4 +24,5 @@ const ProgressBar = React.forwardRef<
 ));
 ProgressBar.displayName = ProgressPrimitive.Root.displayName;
 
-export { ProgressBar };
+// Export both ProgressBar and an alias called Progress
+export { ProgressBar, ProgressBar as Progress };

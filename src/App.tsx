@@ -1,10 +1,10 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Donors from "./pages/Donors";
 import Requests from "./pages/Requests";
@@ -27,10 +27,6 @@ import { AuthProvider, useAuth } from "@/components/auth/AuthContext";
 import AdminLink from "@/components/AdminLink";
 import SplashScreen from "@/components/SplashScreen";
 import LoginSignup from "./pages/LoginSignup";
-import { AnimatePresence } from "framer-motion";
-
-// Add framer-motion dependency
-<lov-add-dependency>framer-motion@latest</lov-add-dependency>
 
 const queryClient = new QueryClient();
 

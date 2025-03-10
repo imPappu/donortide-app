@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import DashboardStats from "@/components/admin/DashboardStats";
@@ -12,10 +12,32 @@ import SplashScreenSettings from "@/components/admin/SplashScreenSettings";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogOut, Settings, LayoutDashboard, Image, Bell, CreditCard, FileText, Palette } from "lucide-react";
+import { Banner, BlogPost, Notification } from "@/services/dbService";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
+  
+  // Stats for the dashboard
+  const [stats, setStats] = useState({
+    totalUsers: 450,
+    totalDonations: 1256,
+    totalRequests: 876,
+    totalLocations: 24
+  });
+  
+  // Banners state
+  const [banners, setBanners] = useState<Banner[]>([]);
+  
+  // Blog posts state
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  
+  // Notification state
+  const [notification, setNotification] = useState<Partial<Notification>>({
+    title: '',
+    message: '',
+    targetType: 'all'
+  });
   
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
@@ -160,19 +182,19 @@ const AdminDashboard = () => {
         
         <main className="p-4 md:p-6">
           <TabsContent value="dashboard" className={activeTab === "dashboard" ? "block" : "hidden"}>
-            <DashboardStats />
+            <DashboardStats stats={stats} />
           </TabsContent>
           
           <TabsContent value="banners" className={activeTab === "banners" ? "block" : "hidden"}>
-            <BannerManagement />
+            <BannerManagement banners={banners} setBanners={setBanners} />
           </TabsContent>
           
           <TabsContent value="blog" className={activeTab === "blog" ? "block" : "hidden"}>
-            <BlogManagement />
+            <BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />
           </TabsContent>
           
           <TabsContent value="notifications" className={activeTab === "notifications" ? "block" : "hidden"}>
-            <PushNotificationCenter />
+            <PushNotificationCenter notification={notification} setNotification={setNotification} />
           </TabsContent>
           
           <TabsContent value="payment" className={activeTab === "payment" ? "block" : "hidden"}>

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,6 +29,8 @@ import SplashScreen from "@/components/SplashScreen";
 import LoginSignup from "./pages/LoginSignup";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
+import Events from "./pages/Events";
+import Campaigns from "./pages/Campaigns";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,7 +41,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Component to handle protected routes and redirect if not authenticated
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isAuthenticated } = useAuth();
   
@@ -54,7 +54,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const [adminPath, setAdminPath] = useState<string>("admin");
   const [loading, setLoading] = useState(true);
-  const [isInstalled, setIsInstalled] = useState(true); // Default to true, will check in useEffect
+  const [isInstalled, setIsInstalled] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
@@ -62,20 +62,17 @@ const App = () => {
       try {
         const settings = await getAppSettings();
         
-        // Check if the app is installed
         const installationSetting = settings.find(s => s.settingKey === 'app_installed');
         if (installationSetting && installationSetting.settingValue === 'false') {
           setIsInstalled(false);
         }
         
-        // Get admin path
         const adminPathSetting = settings.find(s => s.settingKey === 'admin_url_path');
         if (adminPathSetting && adminPathSetting.settingValue) {
           setAdminPath(adminPathSetting.settingValue);
         }
       } catch (error) {
         console.error("Error fetching app settings:", error);
-        // Continue with default "admin" path if API fails
       } finally {
         setLoading(false);
       }
@@ -129,6 +126,7 @@ const App = () => {
               <div className="flex-1 pb-20">
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/index" element={<Index />} />
                   <Route path="/donors" element={<Donors />} />
                   <Route path="/requests" element={<Requests />} />
                   <Route path="/create" element={<CreateRequest />} />
@@ -146,6 +144,8 @@ const App = () => {
                   <Route path="/stories" element={<UserStories />} />
                   <Route path="/donate" element={<DonationCategories />} />
                   <Route path="/services" element={<Services />} />
+                  <Route path="/events" element={<Events />} />
+                  <Route path="/campaigns" element={<Campaigns />} />
                   <Route path={`/${adminPath}`} element={<AdminLogin />} />
                   <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
                   <Route path="*" element={<NotFound />} />

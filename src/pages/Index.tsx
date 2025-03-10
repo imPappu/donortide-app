@@ -9,16 +9,20 @@ import {
   MapPin,
   User,
   MessageSquare,
-  Award
+  Award,
+  Calendar,
+  Megaphone
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import HomeBanner from "@/components/HomeBanner";
 import TopDonors from "@/components/TopDonors";
 import TopNavbar from "@/components/TopNavbar";
+import UrgentRequestsRow from "@/components/UrgentRequestsRow";
 
 const Index = () => {
   const urgentRequests = [
     {
+      id: "1",
       name: "Emily Johnson",
       bloodType: "O-",
       location: "Memorial Hospital",
@@ -27,12 +31,31 @@ const Index = () => {
       postedTime: "30 min ago"
     },
     {
+      id: "2",
       name: "Michael Chen",
       bloodType: "A+",
       location: "City Medical Center",
       distance: "4.2 miles",
       urgency: "High",
       postedTime: "2 hours ago"
+    },
+    {
+      id: "3",
+      name: "Sarah Williams",
+      bloodType: "B-",
+      location: "County Hospital",
+      distance: "3.7 miles",
+      urgency: "Critical",
+      postedTime: "15 min ago"
+    },
+    {
+      id: "4",
+      name: "David Patel",
+      bloodType: "AB+",
+      location: "University Medical",
+      distance: "5.1 miles",
+      urgency: "Urgent",
+      postedTime: "1 hour ago"
     }
   ];
 
@@ -51,6 +74,40 @@ const Index = () => {
       src: "https://placehold.co/1200x400/green/white?text=Find+Donors+Near+You",
       alt: "Find Donors Near You",
       url: "/donors"
+    }
+  ];
+
+  const upcomingEvents = [
+    {
+      id: "1",
+      title: "Blood Drive at Central Park",
+      date: "May 15, 2023",
+      location: "Central Park, New York",
+      type: "Blood Drive"
+    },
+    {
+      id: "2",
+      title: "Donor Appreciation Day",
+      date: "June 14, 2023",
+      location: "Memorial Hospital",
+      type: "Appreciation"
+    }
+  ];
+
+  const activeCampaigns = [
+    {
+      id: "1",
+      title: "Summer Blood Drive Campaign",
+      goal: "500 donors",
+      progress: 65,
+      endDate: "Aug 31, 2023"
+    },
+    {
+      id: "2",
+      title: "Hospital Emergency Reserves",
+      goal: "1000 units",
+      progress: 42,
+      endDate: "July 15, 2023"
     }
   ];
 
@@ -81,21 +138,27 @@ const Index = () => {
     <div className="flex flex-col min-h-screen">
       <TopNavbar />
       
-      <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
+      <div className="container mx-auto px-4 py-6 flex-1 pb-20 max-w-6xl">
         {/* Banner Slider */}
         <div className="mb-6">
           <HomeBanner images={bannerImages} />
         </div>
 
-        <Alert className="mb-6 border-red-200 bg-red-50 text-red-800">
-          <AlertDescription className="flex items-center">
-            <Heart className="h-4 w-4 mr-2 text-red-600" /> 
-            3 urgent requests in your area
-          </AlertDescription>
-        </Alert>
+        {/* Urgent Requests Alert - Mobile Only */}
+        <div className="md:hidden">
+          <Alert className="mb-6 border-red-200 bg-red-50 text-red-800">
+            <AlertDescription className="flex items-center">
+              <Heart className="h-4 w-4 mr-2 text-red-600" /> 
+              {urgentRequests.length} urgent requests in your area
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        {/* Urgent Requests Row */}
+        <UrgentRequestsRow requests={urgentRequests} />
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <Link to="/requests">
             <Card className="hover:bg-muted/50 transition-colors h-full">
               <CardContent className="p-4 flex flex-col items-center justify-center h-full">
@@ -129,40 +192,88 @@ const Index = () => {
             </Card>
           </Link>
         </div>
-
-        {/* Urgent Requests */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Urgent Requests</h2>
-            <Link to="/requests" className="text-sm text-primary flex items-center">
-              View all <ArrowRight className="h-3 w-3 ml-1" />
-            </Link>
-          </div>
-          {urgentRequests.map((request, index) => (
-            <Card key={index} className="mb-3">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mr-2">
-                        <span className="text-red-600 font-bold text-xs">{request.bloodType}</span>
+        
+        {/* Events & Campaigns Section */}
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          {/* Events Section */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center">
+                <Calendar className="h-5 w-5 mr-2 text-blue-500" />
+                Upcoming Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {upcomingEvents.length > 0 ? (
+                <div className="space-y-3">
+                  {upcomingEvents.map(event => (
+                    <div key={event.id} className="border-b pb-3 last:border-0 last:pb-0">
+                      <h3 className="font-medium">{event.title}</h3>
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                        <span className="flex items-center">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {event.date}
+                        </span>
+                        <span>{event.type}</span>
                       </div>
-                      <div>
-                        <h3 className="font-medium">{request.name}</h3>
-                        <p className="text-xs text-muted-foreground flex items-center">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          {request.location}
-                        </p>
+                      <p className="text-xs text-muted-foreground flex items-center mt-1">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {event.location}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm py-2">No upcoming events</p>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link to="/events">View All Events</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Campaigns Section */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center">
+                <Megaphone className="h-5 w-5 mr-2 text-orange-500" />
+                Active Campaigns
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {activeCampaigns.length > 0 ? (
+                <div className="space-y-3">
+                  {activeCampaigns.map(campaign => (
+                    <div key={campaign.id} className="border-b pb-3 last:border-0 last:pb-0">
+                      <h3 className="font-medium">{campaign.title}</h3>
+                      <div className="mt-1 space-y-1">
+                        <div className="flex justify-between text-xs">
+                          <span>Goal: {campaign.goal}</span>
+                          <span>Ends: {campaign.endDate}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                          <div 
+                            className="bg-orange-500 h-2.5 rounded-full" 
+                            style={{ width: `${campaign.progress}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-right text-muted-foreground">{campaign.progress}% Complete</p>
                       </div>
                     </div>
-                  </div>
-                  <Button size="sm" asChild>
-                    <Link to={`/requests`}>Respond</Link>
-                  </Button>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              ) : (
+                <p className="text-muted-foreground text-sm py-2">No active campaigns</p>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link to="/campaigns">View All Campaigns</Link>
+              </Button>
+            </CardFooter>
+          </Card>
         </div>
         
         {/* User Stories */}

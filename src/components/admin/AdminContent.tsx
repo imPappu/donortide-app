@@ -18,6 +18,7 @@ import OrganizationManagement from "@/components/admin/OrganizationManagement";
 import CommunityPostManagement from "@/components/admin/CommunityPostManagement";
 import FirebasePushComponent from "@/components/admin/FirebasePushComponent";
 import AdsManagement from "@/components/admin/AdsManagement";
+import AIManagement from "@/components/admin/AIManagement";
 import { Banner, BlogPost, Notification } from "@/types/apiTypes";
 
 interface AdminContentProps {
@@ -69,6 +70,8 @@ const AdminContent = ({
       {activeTab === "push-notifications" && <FirebasePushComponent />}
       
       {activeTab === "ads" && <AdsManagement />}
+      
+      {activeTab === "ai" && <AIManagement />}
       
       {activeTab === "app-branding" && <AppBrandingForm />}
       

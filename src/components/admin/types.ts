@@ -36,3 +36,26 @@ export interface MonitoringSettings {
   dataAnalysis: boolean;
   scheduledReports: boolean;
 }
+
+export interface AppSettingsConfig {
+  settingKey: string;
+  settingValue: string;
+  description?: string;
+  category?: string;
+  isSecret?: boolean;
+}
+
+export interface DatabaseConnection {
+  status: 'connected' | 'disconnected' | 'error';
+  lastChecked: string;
+  error?: string;
+}
+
+export interface AdminSection {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  route: string;
+  permissions: string[];
+}

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { AlertCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 
 export type ErrorSeverity = 'error' | 'warning' | 'info';
 
@@ -10,13 +10,15 @@ interface DBErrorAlertProps {
   severity?: ErrorSeverity;
   title?: string;
   onDismiss?: () => void;
+  className?: string;
 }
 
 const DBErrorAlert = ({ 
   error, 
   severity = 'error',
   title,
-  onDismiss 
+  onDismiss,
+  className = ''
 }: DBErrorAlertProps) => {
   if (!error) return null;
   
@@ -27,7 +29,7 @@ const DBErrorAlert = ({
       case 'warning':
         return <AlertTriangle className="h-4 w-4" />;
       case 'info':
-        return <AlertCircle className="h-4 w-4" />;
+        return <Info className="h-4 w-4" />;
       default:
         return <AlertCircle className="h-4 w-4" />;
     }
@@ -38,9 +40,9 @@ const DBErrorAlert = ({
       case 'error':
         return 'destructive';
       case 'warning':
-        return 'default';
+        return 'warning';
       case 'info':
-        return 'default';
+        return 'info';
       default:
         return 'destructive';
     }
@@ -61,25 +63,31 @@ const DBErrorAlert = ({
   
   return (
     <Alert 
-      variant={getVariant()} 
-      className="mb-4 relative"
+      variant={getVariant() as any} 
+      className={`mb-4 relative ${className}`}
     >
-      {getIcon()}
-      {(title || severity !== 'info') && (
-        <AlertTitle className="ml-2">
-          {title || getDefaultTitle()}
-        </AlertTitle>
-      )}
-      <AlertDescription className="ml-2">{error}</AlertDescription>
-      {onDismiss && (
-        <button 
-          onClick={onDismiss}
-          className="absolute top-4 right-4 text-foreground/70 hover:text-foreground"
-          aria-label="Dismiss"
-        >
-          <XCircle className="h-4 w-4" />
-        </button>
-      )}
+      <div className="flex">
+        <div className="flex-shrink-0">
+          {getIcon()}
+        </div>
+        <div className="ml-3 flex-1">
+          {(title || severity !== 'info') && (
+            <AlertTitle className="text-sm font-medium">
+              {title || getDefaultTitle()}
+            </AlertTitle>
+          )}
+          <AlertDescription className="mt-1 text-sm">{error}</AlertDescription>
+        </div>
+        {onDismiss && (
+          <button 
+            onClick={onDismiss}
+            className="absolute top-4 right-4 text-foreground/70 hover:text-foreground"
+            aria-label="Dismiss"
+          >
+            <XCircle className="h-4 w-4" />
+          </button>
+        )}
+      </div>
     </Alert>
   );
 };

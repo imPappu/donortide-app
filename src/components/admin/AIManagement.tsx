@@ -8,7 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import AIModelsTab from "./ai/AIModelsTab";
 import MonitoringTab from "./ai/MonitoringTab";
 import SocialMediaTab from "./ai/SocialMediaTab";
-import { AIModelsState, SocialMediaState } from "./types";
+import { AIModelsState, SocialMediaState, MonitoringSettings } from "./types";
+import DBErrorAlert from "./DBErrorAlert";
 
 const AIManagement = () => {
   const { toast } = useToast();
@@ -20,6 +21,9 @@ const AIManagement = () => {
     qwen: false
   });
   
+  // Error handling state
+  const [error, setError] = useState<string | null>(null);
+  
   // AI Configuration state
   const [aiModels, setAiModels] = useState<AIModelsState>({
     chatgpt: { enabled: true, apiKey: "", model: "gpt-4o", connectionTested: false },
@@ -29,7 +33,7 @@ const AIManagement = () => {
   });
   
   // Monitoring settings
-  const [monitoringSettings, setMonitoringSettings] = useState({
+  const [monitoringSettings, setMonitoringSettings] = useState<MonitoringSettings>({
     bugDetection: true,
     spamDetection: true,
     contentModeration: true,
@@ -86,6 +90,7 @@ const AIManagement = () => {
   
   const saveAIConfiguration = async () => {
     setSaving(true);
+    setError(null);
     
     try {
       // In a real app, this would save to your database
@@ -96,6 +101,8 @@ const AIManagement = () => {
         description: "Your AI settings have been updated successfully.",
       });
     } catch (error) {
+      setError("Failed to save AI configuration. Please try again.");
+      
       toast({
         title: "Error Saving Configuration",
         description: "There was a problem saving your AI settings.",
@@ -160,19 +167,33 @@ const AIManagement = () => {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl">AI Management</CardTitle>
+    <Card className="w-full shadow-md">
+      <CardHeader className="border-b bg-muted/10">
+        <CardTitle className="text-2xl font-semibold text-primary">AI Management</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="configuration">AI Configuration</TabsTrigger>
-            <TabsTrigger value="monitoring">Platform Monitoring</TabsTrigger>
-            <TabsTrigger value="social">Social Media Automation</TabsTrigger>
+      <CardContent className="p-6">
+        {error && (
+          <DBErrorAlert 
+            error={error} 
+            onDismiss={() => setError(null)}
+            className="mb-6"
+          />
+        )}
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid grid-cols-3 w-full mb-2">
+            <TabsTrigger value="configuration" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              AI Configuration
+            </TabsTrigger>
+            <TabsTrigger value="monitoring" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Platform Monitoring
+            </TabsTrigger>
+            <TabsTrigger value="social" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Social Media Automation
+            </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="configuration">
+          <TabsContent value="configuration" className="mt-6 space-y-6">
             <AIModelsTab 
               aiModels={aiModels}
               showApiKeys={showApiKeys}
@@ -184,14 +205,14 @@ const AIManagement = () => {
             />
           </TabsContent>
           
-          <TabsContent value="monitoring">
+          <TabsContent value="monitoring" className="mt-6 space-y-6">
             <MonitoringTab 
               monitoringSettings={monitoringSettings}
               handleMonitoringChange={handleMonitoringChange}
             />
           </TabsContent>
           
-          <TabsContent value="social">
+          <TabsContent value="social" className="mt-6 space-y-6">
             <SocialMediaTab 
               socialMediaSettings={socialMediaSettings}
               handleSocialMediaChange={handleSocialMediaChange}

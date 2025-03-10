@@ -2,43 +2,19 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { StaffMember } from './types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { 
+  fetchStaffMembers, 
+  addStaffMember, 
+  updateStaffMember, 
+  deleteStaffMember 
+} from '@/services/staffService';
 
 export const useStaffManagement = () => {
   const { toast } = useToast();
-  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([
-    { 
-      id: '1', 
-      name: 'Admin User', 
-      email: 'admin@example.com', 
-      role: 'admin', 
-      isActive: true, 
-      lastLogin: '2023-05-15T10:30:00Z' 
-    },
-    { 
-      id: '2', 
-      name: 'John Doe', 
-      email: 'john@example.com', 
-      role: 'manager', 
-      isActive: true, 
-      lastLogin: '2023-05-14T09:15:00Z' 
-    },
-    { 
-      id: '3', 
-      name: 'Jane Smith', 
-      email: 'jane@example.com', 
-      role: 'staff', 
-      isActive: true, 
-      lastLogin: '2023-05-13T14:22:00Z' 
-    },
-    { 
-      id: '4', 
-      name: 'Sarah Johnson', 
-      email: 'sarah@example.com', 
-      role: 'editor', 
-      isActive: true, 
-      lastLogin: '2023-05-12T11:45:00Z' 
-    }
-  ]);
+  const queryClient = useQueryClient();
+  
+  // Local state for UI
   const [searchTerm, setSearchTerm] = useState('');
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
   const [newStaff, setNewStaff] = useState<Partial<StaffMember>>({
@@ -49,62 +25,123 @@ export const useStaffManagement = () => {
   });
   const [dialogType, setDialogType] = useState<'add' | 'edit' | 'delete' | null>(null);
 
+  // Fetch staff members with react-query
+  const { data: staffMembers = [] } = useQuery({
+    queryKey: ['staffMembers'],
+    queryFn: fetchStaffMembers
+  });
+
+  // Filter staff members based on search term
   const filteredStaff = staffMembers.filter(staff =>
     staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     staff.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddStaff = () => {
-    const newId = (staffMembers.length + 1).toString();
-    const newStaffMember: StaffMember = {
-      id: newId,
-      name: newStaff.name || '',
-      email: newStaff.email || '',
-      role: newStaff.role || 'staff',
-      isActive: newStaff.isActive !== undefined ? newStaff.isActive : true,
-      lastLogin: 'Never'
-    };
+  // Add staff mutation
+  const addStaffMutation = useMutation({
+    mutationFn: (staffData: Omit<StaffMember, 'id' | 'lastLogin'>) => 
+      addStaffMember(staffData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staffMembers'] });
+      setNewStaff({
+        name: '',
+        email: '',
+        role: 'staff',
+        isActive: true
+      });
+      setDialogType(null);
+      
+      toast({
+        title: "Staff Added",
+        description: `New staff member has been added successfully`,
+      });
+    },
+    onError: (error) => {
+      console.error('Error adding staff:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add staff member",
+        variant: "destructive",
+      });
+    }
+  });
 
-    setStaffMembers([...staffMembers, newStaffMember]);
-    setNewStaff({
-      name: '',
-      email: '',
-      role: 'staff',
-      isActive: true
-    });
-    setDialogType(null);
+  // Update staff mutation
+  const updateStaffMutation = useMutation({
+    mutationFn: (staffData: StaffMember) => updateStaffMember(staffData),
+    onSuccess: (updatedStaff) => {
+      queryClient.invalidateQueries({ queryKey: ['staffMembers'] });
+      setDialogType(null);
+      
+      toast({
+        title: "Staff Updated",
+        description: `${updatedStaff.name}'s information has been updated`,
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating staff:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update staff member",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete staff mutation
+  const deleteStaffMutation = useMutation({
+    mutationFn: (id: string) => deleteStaffMember(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staffMembers'] });
+      setDialogType(null);
+      
+      if (editingStaff) {
+        toast({
+          title: "Staff Removed",
+          description: `${editingStaff.name} has been removed from staff`,
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('Error deleting staff:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete staff member",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Handler functions
+  const handleAddStaff = () => {
+    if (!newStaff.name || !newStaff.email || !newStaff.role) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    toast({
-      title: "Staff Added",
-      description: `${newStaffMember.name} has been added as ${newStaffMember.role}`,
+    addStaffMutation.mutate({
+      name: newStaff.name,
+      email: newStaff.email,
+      role: newStaff.role as string,
+      isActive: newStaff.isActive !== undefined ? newStaff.isActive : true
     });
   };
 
   const handleEditStaff = () => {
     if (!editingStaff) return;
     
-    setStaffMembers(staffMembers.map(staff => 
-      staff.id === editingStaff.id ? editingStaff : staff
-    ));
-    setDialogType(null);
-    
-    toast({
-      title: "Staff Updated",
-      description: `${editingStaff.name}'s information has been updated`,
-    });
+    updateStaffMutation.mutate(editingStaff);
   };
 
   const handleDeleteStaff = () => {
     if (!editingStaff) return;
     
-    setStaffMembers(staffMembers.filter(staff => staff.id !== editingStaff.id));
-    setDialogType(null);
-    
-    toast({
-      title: "Staff Removed",
-      description: `${editingStaff.name} has been removed from staff`,
-    });
+    deleteStaffMutation.mutate(editingStaff.id);
   };
 
   const openAddDialog = () => {
@@ -141,6 +178,7 @@ export const useStaffManagement = () => {
     openAddDialog,
     openEditDialog,
     openDeleteDialog,
-    closeDialog
+    closeDialog,
+    isLoading: addStaffMutation.isPending || updateStaffMutation.isPending || deleteStaffMutation.isPending
   };
 };

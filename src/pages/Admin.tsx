@@ -133,10 +133,6 @@ const AdminDashboard = () => {
           setNotification={setNotification}
           loading={loading}
         />
-        
-        {activeTab === "system-updates" && (
-          <SystemUpdatePanel />
-        )}
       </div>
     </div>
   );

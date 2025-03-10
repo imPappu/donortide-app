@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -23,7 +24,14 @@ import {
   Ambulance,
   Flame,
   BadgeDollarSign,
-  Palette
+  Palette,
+  Server,
+  Package,
+  TestTube,
+  Shield,
+  Power,
+  Cog,
+  Component
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -33,13 +41,13 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarProps) => {
-  const sidebarItems = [
+  // Mobile navigation items
+  const mobileNavItems = [
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-5 w-5" /> },
-    { id: "algorithm", label: "Matching Algorithm", icon: <Brain className="h-5 w-5" /> },
-    { id: "donors", label: "Donor Management", icon: <Users className="h-5 w-5" /> },
-    { id: "requests", label: "Request Management", icon: <Bell className="h-5 w-5" /> },
+    { id: "algorithm", label: "Algorithm", icon: <Brain className="h-5 w-5" /> },
+    { id: "donors", label: "Donors", icon: <Users className="h-5 w-5" /> },
     { id: "organizations", label: "Organizations", icon: <Building className="h-5 w-5" /> },
-    { id: "community", label: "Community Posts", icon: <MessageSquare className="h-5 w-5" /> }
+    { id: "community", label: "Community", icon: <MessageSquare className="h-5 w-5" /> }
   ];
 
   return (
@@ -51,10 +59,11 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
           <p className="text-sm text-muted-foreground">Manage your application</p>
         </div>
         
-        <div className="flex flex-col flex-1 py-4">
+        <div className="flex flex-col flex-1 py-4 overflow-y-auto">
           <nav className="flex-1">
+            {/* DASHBOARD SECTION */}
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">General</h2>
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dashboard</h2>
               <div className="space-y-1">
                 <Button
                   variant={activeTab === "dashboard" ? "secondary" : "ghost"}
@@ -64,6 +73,21 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </Button>
+                <Button
+                  variant={activeTab === "algorithm" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("algorithm")}
+                >
+                  <Brain className="mr-2 h-4 w-4" />
+                  Matching Algorithm
+                </Button>
+              </div>
+            </div>
+            
+            {/* CONTENT MANAGEMENT */}
+            <div className="px-3 py-2">
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</h2>
+              <div className="space-y-1">
                 <Button
                   variant={activeTab === "banners" ? "secondary" : "ghost"}
                   className="w-full justify-start"
@@ -80,11 +104,20 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   <FileText className="mr-2 h-4 w-4" />
                   Blog Posts
                 </Button>
+                <Button
+                  variant={activeTab === "community" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("community")}
+                >
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Community Posts
+                </Button>
               </div>
             </div>
             
+            {/* USER MANAGEMENT */}
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Management</h2>
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Users</h2>
               <div className="space-y-1">
                 <Button
                   variant={activeTab === "staff" ? "secondary" : "ghost"}
@@ -110,6 +143,13 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   <UserCheck className="mr-2 h-4 w-4" />
                   Volunteers
                 </Button>
+              </div>
+            </div>
+            
+            {/* ORGANIZATION MANAGEMENT */}
+            <div className="px-3 py-2">
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Organizations</h2>
+              <div className="space-y-1">
                 <Button
                   variant={activeTab === "organizations" ? "secondary" : "ghost"}
                   className="w-full justify-start"
@@ -126,19 +166,12 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   <Ambulance className="mr-2 h-4 w-4" />
                   Ambulances
                 </Button>
-                <Button
-                  variant={activeTab === "community" ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("community")}
-                >
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  Community Posts
-                </Button>
               </div>
             </div>
             
+            {/* MARKETING & NOTIFICATIONS */}
             <div className="px-3 py-2">
-              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Notifications & Ads</h2>
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Marketing</h2>
               <div className="space-y-1">
                 <Button
                   variant={activeTab === "push-notifications" ? "secondary" : "ghost"}
@@ -147,6 +180,14 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                 >
                   <Flame className="mr-2 h-4 w-4" />
                   Firebase Push
+                </Button>
+                <Button
+                  variant={activeTab === "notifications" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("notifications")}
+                >
+                  <Bell className="mr-2 h-4 w-4" />
+                  Notifications
                 </Button>
                 <Button
                   variant={activeTab === "ads" ? "secondary" : "ghost"}
@@ -159,6 +200,54 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
               </div>
             </div>
             
+            {/* SYSTEM & AI */}
+            <div className="px-3 py-2">
+              <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">System</h2>
+              <div className="space-y-1">
+                <Button
+                  variant={activeTab === "system-updates" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("system-updates")}
+                >
+                  <Server className="mr-2 h-4 w-4" />
+                  System Updates
+                </Button>
+                <Button
+                  variant={activeTab === "addons" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("addons")}
+                >
+                  <Component className="mr-2 h-4 w-4" />
+                  Addon Modules
+                </Button>
+                <Button
+                  variant={activeTab === "ai-config" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("ai-config")}
+                >
+                  <Brain className="mr-2 h-4 w-4" />
+                  AI Configuration
+                </Button>
+                <Button
+                  variant={activeTab === "test-mode" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("test-mode")}
+                >
+                  <TestTube className="mr-2 h-4 w-4" />
+                  Test Environment
+                </Button>
+                <Button
+                  variant={activeTab === "maintenance" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("maintenance")}
+                >
+                  <Cog className="mr-2 h-4 w-4" />
+                  Maintenance Mode
+                </Button>
+              </div>
+            </div>
+            
+            {/* SETTINGS */}
             <div className="px-3 py-2">
               <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Settings</h2>
               <div className="space-y-1">
@@ -167,7 +256,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                   className="w-full justify-start"
                   onClick={() => setActiveTab("app-branding")}
                 >
-                  <Settings className="mr-2 h-4 w-4" />
+                  <Palette className="mr-2 h-4 w-4" />
                   App Branding
                 </Button>
                 <Button
@@ -177,14 +266,6 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
                 >
                   <Database className="mr-2 h-4 w-4" />
                   Database
-                </Button>
-                <Button
-                  variant={activeTab === "notifications" ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("notifications")}
-                >
-                  <Bell className="mr-2 h-4 w-4" />
-                  Notifications
                 </Button>
                 <Button
                   variant={activeTab === "payment" ? "secondary" : "ghost"}
@@ -230,7 +311,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
       {/* Mobile navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 z-10">
         <div className="flex justify-around p-2">
-          {sidebarItems.map(item => (
+          {mobileNavItems.map(item => (
             <Button variant="ghost" size="sm" onClick={() => setActiveTab(item.id)} key={item.id}>
               {item.icon}
             </Button>

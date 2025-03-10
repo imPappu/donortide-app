@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import DashboardStats from "@/components/admin/DashboardStats";
@@ -21,6 +22,11 @@ import AIManagement from "@/components/admin/AIManagement";
 import { Banner, BlogPost, Notification } from "@/types/apiTypes";
 import { Skeleton } from "@/components/ui/skeleton";
 import AlgorithmDashboard from "./algorithm/AlgorithmDashboard";
+import SystemUpdatePanel from "./SystemUpdatePanel";
+import TestEnvironment from "./system/TestEnvironment";
+import MaintenanceMode from "./system/MaintenanceMode";
+import AddonModules from "./system/AddonModules";
+import AIConfiguration from "./system/AIConfiguration";
 
 interface AdminContentProps {
   activeTab: string;
@@ -92,6 +98,7 @@ const AdminContent = ({
 
   return (
     <div className="p-6">
+      {/* Dashboard and Analytics */}
       {activeTab === "dashboard" && (
         <DashboardStats stats={stats} />
       )}
@@ -100,33 +107,27 @@ const AdminContent = ({
         <AlgorithmDashboard />
       )}
       
-      {activeTab === "donors" && (
-        <DonorManagement />
-      )}
-      
+      {/* Content Management */}
       {activeTab === "banners" && <BannerManagement banners={banners} setBanners={setBanners} />}
       
       {activeTab === "blog" && <BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />}
       
+      {activeTab === "community" && <CommunityPostManagement />}
+      
+      {/* User Management */}
       {activeTab === "staff" && <StaffManagement />}
+      
+      {activeTab === "donors" && <DonorManagement />}
       
       {activeTab === "volunteers" && <VolunteerManagement />}
       
+      {/* Organization Management */}
       {activeTab === "organizations" && <OrganizationManagement />}
-      
-      {activeTab === "community" && <CommunityPostManagement />}
       
       {activeTab === "ambulances" && <AmbulanceManagement />}
       
+      {/* Marketing & Notifications */}
       {activeTab === "push-notifications" && <FirebasePushComponent />}
-      
-      {activeTab === "ads" && <AdsManagement />}
-      
-      {activeTab === "ai" && <AIManagement />}
-      
-      {activeTab === "app-branding" && <AppBrandingForm />}
-      
-      {activeTab === "database" && <DatabaseSettings />}
       
       {activeTab === "notifications" && (
         <PushNotificationCenter 
@@ -134,6 +135,24 @@ const AdminContent = ({
           setNotification={setNotification} 
         />
       )}
+      
+      {activeTab === "ads" && <AdsManagement />}
+      
+      {/* System & AI */}
+      {activeTab === "system-updates" && <SystemUpdatePanel />}
+      
+      {activeTab === "addons" && <AddonModules />}
+      
+      {activeTab === "ai-config" && <AIConfiguration />}
+      
+      {activeTab === "test-mode" && <TestEnvironment />}
+      
+      {activeTab === "maintenance" && <MaintenanceMode />}
+      
+      {/* Settings */}
+      {activeTab === "app-branding" && <AppBrandingForm />}
+      
+      {activeTab === "database" && <DatabaseSettings />}
       
       {activeTab === "payment" && <PaymentGatewaySettings />}
       

@@ -4,12 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Smartphone } from "lucide-react";
 
-interface MobileTabProps {
-  mobileUpdating: boolean;
-  handleMobileUpdate: (platform: string) => Promise<void>;
-}
-
-const MobileTab = ({ mobileUpdating, handleMobileUpdate }: MobileTabProps) => {
+const MobileTab = () => {
   return (
     <Card>
       <CardHeader>
@@ -26,14 +21,7 @@ const MobileTab = ({ mobileUpdating, handleMobileUpdate }: MobileTabProps) => {
                 <h3 className="font-medium">iOS App</h3>
                 <p className="text-sm text-muted-foreground">Current version: 1.2.3</p>
                 <p className="text-sm text-muted-foreground">Latest version: 1.2.5</p>
-                <Button 
-                  size="sm" 
-                  className="mt-2"
-                  onClick={() => handleMobileUpdate("iOS")}
-                  disabled={mobileUpdating}
-                >
-                  {mobileUpdating ? "Updating..." : "Push Update"}
-                </Button>
+                <Button size="sm" className="mt-2">Push Update</Button>
               </div>
             </div>
           </div>
@@ -47,14 +35,7 @@ const MobileTab = ({ mobileUpdating, handleMobileUpdate }: MobileTabProps) => {
                 <h3 className="font-medium">Android App</h3>
                 <p className="text-sm text-muted-foreground">Current version: 1.2.4</p>
                 <p className="text-sm text-muted-foreground">Latest version: 1.2.5</p>
-                <Button 
-                  size="sm" 
-                  className="mt-2"
-                  onClick={() => handleMobileUpdate("Android")}
-                  disabled={mobileUpdating}
-                >
-                  {mobileUpdating ? "Updating..." : "Push Update"}
-                </Button>
+                <Button size="sm" className="mt-2">Push Update</Button>
               </div>
             </div>
           </div>

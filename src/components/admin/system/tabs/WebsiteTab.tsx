@@ -4,12 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 
-interface WebsiteTabProps {
-  websiteVersion: string;
-  handleWebsiteSettingsSave: () => void;
-}
-
-const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabProps) => {
+const WebsiteTab = () => {
   return (
     <>
       <Card>
@@ -21,7 +16,7 @@ const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabPro
             <Globe className="h-5 w-5 text-blue-500" />
             <div>
               <p className="font-medium text-blue-800 dark:text-blue-200">
-                Website Version: {websiteVersion}
+                Website Version: 2.1.0
               </p>
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 Your website is currently active and running the latest version.
@@ -63,9 +58,7 @@ const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabPro
           </div>
           
           <div className="flex justify-end">
-            <Button onClick={handleWebsiteSettingsSave}>
-              Save Website Settings
-            </Button>
+            <Button>Save Website Settings</Button>
           </div>
         </CardContent>
       </Card>

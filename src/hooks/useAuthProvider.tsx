@@ -32,8 +32,20 @@ export const useAuthProvider = () => {
       
       if (foundUser) {
         const { password, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem('donor_tide_user', JSON.stringify(userWithoutPassword));
+        
+        // Create a proper User object that matches the interface
+        const userObject: User = {
+          id: userWithoutPassword.id,
+          email: userWithoutPassword.email,
+          name: userWithoutPassword.name,
+          role: userWithoutPassword.role,
+          isVerified: userWithoutPassword.isVerified || false,
+          createdAt: new Date().toISOString(),
+          profileImage: userWithoutPassword.avatar
+        };
+        
+        setUser(userObject);
+        localStorage.setItem('donor_tide_user', JSON.stringify(userObject));
         toast({
           title: "Login successful",
           description: `Welcome back, ${foundUser.name}!`,
@@ -76,14 +88,15 @@ export const useAuthProvider = () => {
         return false;
       }
       
-      // In a real app, we would save to a database here
-      const newUser = {
+      // Create a user object that conforms to the User interface
+      const newUser: User = {
         id: Date.now().toString(),
         name,
         email,
-        avatar: '',
+        role: 'user',
         isVerified: false,
-        role: 'user' as const
+        createdAt: new Date().toISOString(),
+        profileImage: ''
       };
       
       setUser(newUser);

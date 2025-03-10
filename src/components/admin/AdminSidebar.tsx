@@ -9,13 +9,13 @@ interface AdminSidebarProps {
   handleLogout: () => void;
 }
 
-const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarProps) => {
+const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab, handleLogout }) => {
   return (
     <>
       <DesktopSidebar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        handleLogout={handleLogout} 
+        // We need to pass only props that DesktopSidebar accepts
+        isCollapsed={false}
+        onToggle={() => {}} // Placeholder empty function
       />
       <MobileSidebar 
         activeTab={activeTab} 

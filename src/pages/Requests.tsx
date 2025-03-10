@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
 import { sendNotification } from "@/services/dbService";
 import TopNavbar from "@/components/TopNavbar";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, distance, hospital, notes, contactNumber }) => {
   const [responded, setResponded] = useState(false);
@@ -44,24 +46,48 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
     });
   };
 
+  // Generate initial for avatar
+  const nameInitial = name.charAt(0);
+  
+  // Generate background color based on blood type
+  const getBgColor = () => {
+    switch (bloodType) {
+      case "O-": return "bg-red-600";
+      case "O+": return "bg-red-500";
+      case "A-": return "bg-orange-600";
+      case "A+": return "bg-orange-500";
+      case "B-": return "bg-yellow-600";
+      case "B+": return "bg-yellow-500";
+      case "AB-": return "bg-green-600";
+      case "AB+": return "bg-green-500";
+      default: return "bg-gray-500";
+    }
+  };
+
   return (
-    <Card className="mb-3">
+    <Card className="mb-3 overflow-hidden border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow animate-fade-in">
       <CardContent className="pt-4 pb-3 px-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mr-2">
-              <DropletIcon className="h-4 w-4 text-red-600" />
-            </div>
+            <Avatar className="h-9 w-9 mr-3">
+              <AvatarImage src="" alt={name} />
+              <AvatarFallback className="bg-gray-100 text-primary font-medium">
+                {nameInitial}
+              </AvatarFallback>
+            </Avatar>
             <div>
               <h3 className="font-medium text-sm">{name}</h3>
               <p className="text-xs text-muted-foreground flex items-center">
                 <MapPin className="h-3 w-3 mr-1" />
-                {location} • {distance}
+                {location} • <span className="font-medium text-green-600 ml-1">{distance}</span>
               </p>
             </div>
           </div>
           <div className="text-right">
-            <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-600">
+            <span className={cn(
+              "inline-block px-2 py-0.5 text-xs font-medium rounded-full text-white",
+              getBgColor()
+            )}>
               {bloodType}
             </span>
             <p className="text-xs text-muted-foreground mt-1 flex items-center justify-end">
@@ -71,17 +97,18 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
           </div>
         </div>
 
-        <div className="mb-2">
+        <div className="mb-3 bg-gray-50 dark:bg-gray-900 p-2 rounded-md">
           <p className="text-xs"><span className="font-medium">Hospital:</span> {hospital}</p>
-          {notes && <p className="text-xs mt-1">{notes}</p>}
+          {notes && <p className="text-xs mt-1 text-muted-foreground">{notes}</p>}
         </div>
 
-        <div className="flex items-center gap-2 mb-2">
-          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-            urgency === "Urgent" ? "bg-red-100 text-red-600" : 
-            urgency === "High" ? "bg-orange-100 text-orange-600" : 
-            "bg-yellow-100 text-yellow-600"
-          }`}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className={cn(
+            "px-2 py-0.5 text-xs font-medium rounded-full",
+            urgency === "Urgent" ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : 
+            urgency === "High" ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400" : 
+            "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400"
+          )}>
             {urgency}
           </span>
           <span className="text-xs text-muted-foreground flex items-center">
@@ -91,16 +118,16 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
         </div>
       </CardContent>
 
-      <CardFooter className="border-t bg-muted/20 px-4 py-2">
+      <CardFooter className="border-t bg-gray-50/50 dark:bg-gray-900/20 px-4 py-2">
         {responded ? (
-          <div className="w-full text-center text-green-600 text-xs font-medium">
-            You've responded to this request
+          <div className="w-full text-center text-green-600 dark:text-green-400 text-xs font-medium py-1">
+            You've responded to this request ✓
           </div>
         ) : (
           <div className="w-full flex gap-2">
             <Button 
               variant="outline" 
-              className="flex-1 py-1 h-8" 
+              className="flex-1 py-1 h-8 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800" 
               size="sm"
               onClick={handleCall}
             >
@@ -108,7 +135,7 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
               Call
             </Button>
             <Button 
-              className="flex-1 py-1 h-8" 
+              className="flex-1 py-1 h-8 bg-primary hover:bg-primary/90" 
               size="sm"
               onClick={handleRespond}
             >
@@ -124,6 +151,7 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
 const Requests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRequests, setFilteredRequests] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
   
   const requests = [
     {
@@ -183,9 +211,17 @@ const Requests = () => {
 
   // Determine which requests to display
   const displayRequests = searchQuery.trim() ? filteredRequests : requests;
+  
+  // Filter requests based on active tab
+  const getFilteredRequests = () => {
+    if (activeTab === "all") return displayRequests;
+    if (activeTab === "nearby") return displayRequests.filter(r => parseFloat(r.distance) < 4);
+    if (activeTab === "urgent") return displayRequests.filter(r => r.urgency === "Urgent");
+    return displayRequests;
+  };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
       <TopNavbar 
         title="Blood Requests"
         showSearchBar={true}
@@ -193,60 +229,51 @@ const Requests = () => {
       />
       
       <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
-        <Alert className="mb-4 border-red-200 bg-red-50 text-red-800">
+        <Alert className="mb-4 border-red-200 bg-red-50 text-red-800 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300">
           <AlertDescription className="flex items-center">
             <DropletIcon className="h-4 w-4 mr-2" /> 
             3 urgent requests in your area
           </AlertDescription>
         </Alert>
 
-        <Tabs defaultValue="all" className="mb-6">
-          <TabsList className="w-full">
-            <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
-            <TabsTrigger value="nearby" className="flex-1">Nearby</TabsTrigger>
-            <TabsTrigger value="urgent" className="flex-1">Urgent</TabsTrigger>
+        <Tabs 
+          defaultValue="all" 
+          className="mb-6"
+          value={activeTab}
+          onValueChange={setActiveTab}
+        >
+          <TabsList className="w-full grid grid-cols-3 h-10">
+            <TabsTrigger value="all" className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              All
+            </TabsTrigger>
+            <TabsTrigger value="nearby" className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Nearby
+            </TabsTrigger>
+            <TabsTrigger value="urgent" className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Urgent
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="all">
-            <div className="mt-4">
-              {displayRequests.length > 0 ? (
-                displayRequests.map((request, index) => (
-                  <BloodRequestCard key={index} {...request} />
-                ))
-              ) : (
-                searchQuery.trim() ? (
-                  <p className="text-center py-4 text-muted-foreground">No results matching "{searchQuery}"</p>
+          
+          <div className="mt-4">
+            {getFilteredRequests().length > 0 ? (
+              getFilteredRequests().map((request, index) => (
+                <BloodRequestCard key={index} {...request} />
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <DropletIcon className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+                {searchQuery.trim() ? (
+                  <p className="text-center text-muted-foreground">No results matching "{searchQuery}"</p>
                 ) : (
-                  <p className="text-center py-4 text-muted-foreground">No requests available</p>
-                )
-              )}
-            </div>
-          </TabsContent>
-          <TabsContent value="nearby">
-            <div className="mt-4">
-              {displayRequests.filter(r => parseFloat(r.distance) < 4).length > 0 ? (
-                displayRequests
-                  .filter(r => parseFloat(r.distance) < 4)
-                  .map((request, index) => (
-                    <BloodRequestCard key={index} {...request} />
-                  ))
-              ) : (
-                <p className="text-center py-4 text-muted-foreground">No nearby requests found</p>
-              )}
-            </div>
-          </TabsContent>
-          <TabsContent value="urgent">
-            <div className="mt-4">
-              {displayRequests.filter(r => r.urgency === "Urgent").length > 0 ? (
-                displayRequests
-                  .filter(r => r.urgency === "Urgent")
-                  .map((request, index) => (
-                    <BloodRequestCard key={index} {...request} />
-                  ))
-              ) : (
-                <p className="text-center py-4 text-muted-foreground">No urgent requests found</p>
-              )}
-            </div>
-          </TabsContent>
+                  <p className="text-center text-muted-foreground">
+                    {activeTab === "nearby" ? "No nearby requests found" : 
+                     activeTab === "urgent" ? "No urgent requests found" : 
+                     "No requests available"}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </Tabs>
       </div>
     </div>

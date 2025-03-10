@@ -22,12 +22,12 @@ const CurrencySelector = ({
   return (
     <div className="w-24">
       <Select value={currency} onValueChange={onCurrencyChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Currency" />
+        <SelectTrigger className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-primary/30">
+          <SelectValue placeholder="Currency" className="font-medium" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 shadow-lg">
           {availableCurrencies.map((curr) => (
-            <SelectItem key={curr} value={curr}>
+            <SelectItem key={curr} value={curr} className="hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
               {curr}
             </SelectItem>
           ))}

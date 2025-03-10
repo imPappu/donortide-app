@@ -59,10 +59,10 @@ const AdminContent = ({
   // Loading skeleton for dashboard stats
   if (loading && activeTab === "dashboard") {
     return (
-      <main className="p-4 md:p-6">
+      <main className="p-4 md:p-6 animate-pulse">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[...Array(4)].map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="overflow-hidden">
               <CardContent className="pt-6">
                 <div className="flex justify-between items-center">
                   <Skeleton className="h-5 w-5 rounded-full" />
@@ -78,14 +78,14 @@ const AdminContent = ({
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
+          <Card className="overflow-hidden">
             <CardContent className="pt-6">
               <Skeleton className="h-6 w-40 mb-4" />
               <Skeleton className="h-[320px] w-full rounded-md" />
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="overflow-hidden">
             <CardContent className="pt-6">
               <Skeleton className="h-6 w-40 mb-4" />
               <Skeleton className="h-[320px] w-full rounded-md" />
@@ -96,76 +96,78 @@ const AdminContent = ({
     );
   }
 
+  const getContentWithAnimation = (content: React.ReactNode) => (
+    <div className="p-6 animate-fade-in">
+      {content}
+    </div>
+  );
+
   return (
-    <div className="p-6">
+    <>
       {/* Dashboard and Analytics */}
-      {activeTab === "dashboard" && (
-        <DashboardStats stats={stats} />
-      )}
+      {activeTab === "dashboard" && getContentWithAnimation(<DashboardStats stats={stats} />)}
       
-      {activeTab === "algorithm" && (
-        <AlgorithmDashboard />
-      )}
+      {activeTab === "algorithm" && getContentWithAnimation(<AlgorithmDashboard />)}
       
       {/* Content Management */}
-      {activeTab === "banners" && <BannerManagement banners={banners} setBanners={setBanners} />}
+      {activeTab === "banners" && getContentWithAnimation(<BannerManagement banners={banners} setBanners={setBanners} />)}
       
-      {activeTab === "blog" && <BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />}
+      {activeTab === "blog" && getContentWithAnimation(<BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />)}
       
-      {activeTab === "community" && <CommunityPostManagement />}
+      {activeTab === "community" && getContentWithAnimation(<CommunityPostManagement />)}
       
       {/* User Management */}
-      {activeTab === "staff" && <StaffManagement />}
+      {activeTab === "staff" && getContentWithAnimation(<StaffManagement />)}
       
-      {activeTab === "donors" && <DonorManagement />}
+      {activeTab === "donors" && getContentWithAnimation(<DonorManagement />)}
       
-      {activeTab === "volunteers" && <VolunteerManagement />}
+      {activeTab === "volunteers" && getContentWithAnimation(<VolunteerManagement />)}
       
       {/* Organization Management */}
-      {activeTab === "organizations" && <OrganizationManagement />}
+      {activeTab === "organizations" && getContentWithAnimation(<OrganizationManagement />)}
       
-      {activeTab === "ambulances" && <AmbulanceManagement />}
+      {activeTab === "ambulances" && getContentWithAnimation(<AmbulanceManagement />)}
       
       {/* Marketing & Notifications */}
-      {activeTab === "push-notifications" && <FirebasePushComponent />}
+      {activeTab === "push-notifications" && getContentWithAnimation(<FirebasePushComponent />)}
       
-      {activeTab === "notifications" && (
+      {activeTab === "notifications" && getContentWithAnimation(
         <PushNotificationCenter 
           notification={notification} 
           setNotification={setNotification} 
         />
       )}
       
-      {activeTab === "ads" && <AdsManagement />}
+      {activeTab === "ads" && getContentWithAnimation(<AdsManagement />)}
       
       {/* System & AI */}
-      {activeTab === "system-updates" && <SystemUpdatePanel />}
+      {activeTab === "system-updates" && getContentWithAnimation(<SystemUpdatePanel />)}
       
-      {activeTab === "addons" && <AddonModules />}
+      {activeTab === "addons" && getContentWithAnimation(<AddonModules />)}
       
-      {activeTab === "ai-config" && <AIConfiguration />}
+      {activeTab === "ai-config" && getContentWithAnimation(<AIConfiguration />)}
       
-      {activeTab === "test-mode" && <TestEnvironment />}
+      {activeTab === "test-mode" && getContentWithAnimation(<TestEnvironment />)}
       
-      {activeTab === "maintenance" && <MaintenanceMode />}
+      {activeTab === "maintenance" && getContentWithAnimation(<MaintenanceMode />)}
       
       {/* Settings */}
-      {activeTab === "app-branding" && <AppBrandingForm />}
+      {activeTab === "app-branding" && getContentWithAnimation(<AppBrandingForm />)}
       
-      {activeTab === "database" && <DatabaseSettings />}
+      {activeTab === "database" && getContentWithAnimation(<DatabaseSettings />)}
       
-      {activeTab === "payment" && <PaymentGatewaySettings />}
+      {activeTab === "payment" && getContentWithAnimation(<PaymentGatewaySettings />)}
       
-      {activeTab === "app-settings" && (
-        <Card>
+      {activeTab === "app-settings" && getContentWithAnimation(
+        <Card className="shadow-sm border-gray-200 dark:border-gray-800">
           <CardContent className="pt-6">
             <AppSettingsForm />
           </CardContent>
         </Card>
       )}
       
-      {activeTab === "splash-screen" && <SplashScreenSettings />}
-    </div>
+      {activeTab === "splash-screen" && getContentWithAnimation(<SplashScreenSettings />)}
+    </>
   );
 };
 

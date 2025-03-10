@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,7 +30,14 @@ import SplashScreen from "@/components/SplashScreen";
 import LoginSignup from "./pages/LoginSignup";
 import Home from "./pages/Home";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      retry: 1,
+    },
+  },
+});
 
 // Component to handle protected routes and redirect if not authenticated
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -76,7 +84,14 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading application...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-950">
+        <div className="flex flex-col items-center">
+          <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+          <p className="text-muted-foreground">Loading application...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isInstalled) {
@@ -103,14 +118,14 @@ const App = () => {
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
-            <div className="flex flex-col min-h-screen">
+            <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
               <AnimatePresence>
                 {showSplash && (
                   <SplashScreen onFinish={() => setShowSplash(false)} />
                 )}
               </AnimatePresence>
               
-              <div className="flex-1">
+              <div className="flex-1 pb-20">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/donors" element={<Donors />} />

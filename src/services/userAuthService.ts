@@ -2,9 +2,31 @@
 import { toast } from "@/hooks/use-toast";
 import { User } from '@/types/auth';
 import { DEMO_USERS } from '@/data/mockUsers';
+import { validateLoginCredentials, validateRegistrationData } from '@/utils/authUtils';
+
+// Utility function to handle API errors consistently
+const handleApiError = (error: any, errorMessage: string) => {
+  console.error(errorMessage, error);
+  toast({
+    title: "API Error",
+    description: "Could not connect to the server. Using offline mode.",
+    variant: "destructive",
+  });
+};
 
 // Login user with provided credentials
 export const loginUser = async (email: string, password: string): Promise<User | null> => {
+  // Validate credentials first
+  const validation = validateLoginCredentials(email, password);
+  if (!validation.isValid) {
+    toast({
+      title: "Validation Error",
+      description: validation.error || "Invalid login credentials",
+      variant: "destructive",
+    });
+    return null;
+  }
+
   try {
     // Simulate API request
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -33,12 +55,7 @@ export const loginUser = async (email: string, password: string): Promise<User |
       return null;
     }
   } catch (error) {
-    console.error("Login error:", error);
-    toast({
-      title: "Login error",
-      description: "An error occurred during login",
-      variant: "destructive",
-    });
+    handleApiError(error, "Login error:");
     return null;
   }
 };
@@ -50,6 +67,17 @@ export const registerUser = async (
   password: string, 
   roles: User['roles'] = ['user']
 ): Promise<User | null> => {
+  // Validate registration data first
+  const validation = validateRegistrationData(name, email, password, roles);
+  if (!validation.isValid) {
+    toast({
+      title: "Validation Error",
+      description: validation.error || "Invalid registration data",
+      variant: "destructive",
+    });
+    return null;
+  }
+
   try {
     // Simulate API request
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -88,12 +116,7 @@ export const registerUser = async (
     });
     return newUser;
   } catch (error) {
-    console.error("Registration error:", error);
-    toast({
-      title: "Registration error",
-      description: "An error occurred during registration",
-      variant: "destructive",
-    });
+    handleApiError(error, "Registration error:");
     return null;
   }
 };
@@ -112,12 +135,7 @@ export const updateUserProfile = async (user: User, data: Partial<User>): Promis
     });
     return updatedUser;
   } catch (error) {
-    console.error("Profile update error:", error);
-    toast({
-      title: "Update error",
-      description: "An error occurred while updating your profile",
-      variant: "destructive",
-    });
+    handleApiError(error, "Profile update error:");
     return null;
   }
 };
@@ -146,12 +164,7 @@ export const verifyUserAccount = async (user: User, code: string): Promise<User 
       return null;
     }
   } catch (error) {
-    console.error("Verification error:", error);
-    toast({
-      title: "Verification error",
-      description: "An error occurred during verification",
-      variant: "destructive",
-    });
+    handleApiError(error, "Verification error:");
     return null;
   }
 };

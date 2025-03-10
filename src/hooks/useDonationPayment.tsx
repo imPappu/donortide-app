@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getEnabledPaymentGateways } from "@/services/paymentService";
+import { getEnabledPaymentGateways, getSupportedCurrencies } from "@/services/paymentService";
 import { getPaymentIcon, getPaymentDescription } from "@/components/donation/PaymentIcons";
 
 interface PaymentMethodOption {
@@ -20,6 +20,8 @@ interface UseDonationPaymentReturn {
   amount: number;
   paymentMethod: string;
   processing: boolean;
+  currency: string;
+  availableCurrencies: string[];
   paymentDetails: {
     cardNumber: string;
     expiryDate: string;
@@ -31,6 +33,7 @@ interface UseDonationPaymentReturn {
   handleDialogOpenChange: (open: boolean) => void;
   handleAmountChange: (value: number) => void;
   setPaymentMethod: (method: string) => void;
+  setCurrency: (currency: string) => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDonation: () => Promise<void>;
 }
@@ -43,6 +46,8 @@ export const useDonationPayment = ({
   const [amount, setAmount] = useState<number>(defaultAmount);
   const [paymentMethod, setPaymentMethod] = useState<string>("card");
   const [processing, setProcessing] = useState(false);
+  const [currency, setCurrency] = useState<string>("USD");
+  const [availableCurrencies, setAvailableCurrencies] = useState<string[]>(["USD"]);
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -55,6 +60,7 @@ export const useDonationPayment = ({
   useEffect(() => {
     if (isDialogOpen) {
       fetchPaymentGateways();
+      fetchSupportedCurrencies();
     }
   }, [isDialogOpen]);
   
@@ -69,15 +75,6 @@ export const useDonationPayment = ({
         description: getPaymentDescription(gateway.id)
       }));
       
-      if (!methodOptions.some(option => option.id === 'card')) {
-        methodOptions.unshift({
-          id: 'card',
-          name: 'Card',
-          icon: getPaymentIcon('card'),
-          description: getPaymentDescription('card')
-        });
-      }
-      
       setAvailablePaymentMethods(methodOptions);
       
       if (methodOptions.length > 0 && !methodOptions.some(m => m.id === paymentMethod)) {
@@ -85,20 +82,28 @@ export const useDonationPayment = ({
       }
     } catch (error) {
       console.error("Error fetching payment gateways:", error);
-      setAvailablePaymentMethods([
-        { 
-          id: 'card', 
-          name: 'Card', 
-          icon: getPaymentIcon('card'), 
-          description: getPaymentDescription('card') 
-        },
-        { 
-          id: 'paypal', 
-          name: 'PayPal', 
-          icon: getPaymentIcon('paypal'), 
-          description: getPaymentDescription('paypal') 
-        }
-      ]);
+      setAvailablePaymentMethods([]);
+    }
+  };
+  
+  const fetchSupportedCurrencies = async () => {
+    try {
+      const currencies = await getSupportedCurrencies();
+      setAvailableCurrencies(currencies);
+      
+      // Detect user's locale for currency if available
+      const userLocale = navigator.language || "en-US";
+      const userCurrency = new Intl.NumberFormat(userLocale, { style: 'currency', currency: 'USD' })
+        .resolvedOptions().currency;
+      
+      if (currencies.includes(userCurrency)) {
+        setCurrency(userCurrency);
+      } else if (currencies.length > 0) {
+        setCurrency(currencies[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching supported currencies:", error);
+      setAvailableCurrencies(["USD"]);
     }
   };
   
@@ -135,7 +140,7 @@ export const useDonationPayment = ({
       
       toast({
         title: "Donation successful",
-        description: `Thank you for your ${amount}$ ${purpose}!`,
+        description: `Thank you for your ${amount} ${currency} ${purpose}!`,
       });
       
       setPaymentDetails({
@@ -159,12 +164,15 @@ export const useDonationPayment = ({
     amount,
     paymentMethod,
     processing,
+    currency,
+    availableCurrencies,
     paymentDetails,
     availablePaymentMethods,
     isDialogOpen,
     handleDialogOpenChange,
     handleAmountChange,
     setPaymentMethod,
+    setCurrency,
     handleChange,
     handleDonation
   };

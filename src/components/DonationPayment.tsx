@@ -31,12 +31,15 @@ const DonationPayment = ({
     amount,
     paymentMethod,
     processing,
+    currency,
+    availableCurrencies,
     paymentDetails,
     availablePaymentMethods,
     isDialogOpen,
     handleDialogOpenChange,
     handleAmountChange,
     setPaymentMethod,
+    setCurrency,
     handleChange,
     handleDonation
   } = useDonationPayment({ defaultAmount, purpose });
@@ -59,16 +62,20 @@ const DonationPayment = ({
           fixedAmount={fixedAmount}
           purpose={purpose}
           paymentMethod={paymentMethod}
+          currency={currency}
+          availableCurrencies={availableCurrencies}
           paymentDetails={paymentDetails}
           availablePaymentMethods={availablePaymentMethods}
           handleAmountChange={handleAmountChange}
           handleChange={handleChange}
           setPaymentMethod={setPaymentMethod}
+          setCurrency={setCurrency}
         />
         
         <DonationFooter 
           amount={amount}
           fixedAmount={fixedAmount}
+          currency={currency}
           processing={processing}
           handleDonation={handleDonation}
           availablePaymentMethodsCount={availablePaymentMethods.length}

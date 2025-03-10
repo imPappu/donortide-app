@@ -41,7 +41,7 @@ interface PaymentGateway {
 export const getEnabledPaymentGateways = async (): Promise<PaymentGateway[]> => {
   try {
     // In a real app, this would fetch from the server
-    // For now, return dummy data from localStorage if available
+    // For now, return data from localStorage if available
     const savedSettings = localStorage.getItem('paymentGatewaySettings');
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings);
@@ -64,8 +64,42 @@ export const getEnabledPaymentGateways = async (): Promise<PaymentGateway[]> => 
     console.error('Error fetching enabled payment gateways:', error);
     return [
       { id: 'card', name: 'Card', isEnabled: true },
-      { id: 'bank', name: 'Bank Transfer', isEnabled: true }
     ];
+  }
+};
+
+export const getSupportedCurrencies = async (): Promise<string[]> => {
+  try {
+    // In a real app, this would fetch from the server
+    // For now, return data from localStorage if available
+    const savedSettings = localStorage.getItem('paymentGatewaySettings');
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
+      
+      // Collect all currencies from enabled gateways
+      const allCurrencies = new Set<string>();
+      
+      Object.keys(parsedSettings)
+        .filter(key => parsedSettings[key].isEnabled)
+        .forEach(key => {
+          const currencyField = `${key}_supported_currencies`;
+          const currenciesStr = parsedSettings[key].fields?.[currencyField] || '';
+          if (currenciesStr) {
+            currenciesStr.split(',').forEach((curr: string) => allCurrencies.add(curr.trim()));
+          } else {
+            // Add default USD if no currencies specified
+            allCurrencies.add('USD');
+          }
+        });
+      
+      return Array.from(allCurrencies);
+    }
+    
+    // Default supported currencies
+    return ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR', 'JPY'];
+  } catch (error) {
+    console.error('Error fetching supported currencies:', error);
+    return ['USD'];
   }
 };
 

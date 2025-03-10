@@ -3,12 +3,15 @@ import React from "react";
 import AmountSelector from "./AmountSelector";
 import PaymentMethodList from "./PaymentMethodList";
 import PaymentContent from "./PaymentContent";
+import CurrencySelector from "./CurrencySelector";
 
 interface DonationContentProps {
   amount: number;
   fixedAmount?: number;
   purpose: string;
   paymentMethod: string;
+  currency: string;
+  availableCurrencies: string[];
   paymentDetails: {
     cardNumber: string;
     expiryDate: string;
@@ -24,6 +27,7 @@ interface DonationContentProps {
   handleAmountChange: (value: number) => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setPaymentMethod: (method: string) => void;
+  setCurrency: (currency: string) => void;
 }
 
 const DonationContent = ({
@@ -31,20 +35,34 @@ const DonationContent = ({
   fixedAmount,
   purpose,
   paymentMethod,
+  currency,
+  availableCurrencies,
   paymentDetails,
   availablePaymentMethods,
   handleAmountChange,
   handleChange,
   setPaymentMethod,
+  setCurrency,
 }: DonationContentProps) => {
   return (
     <div className="px-5 py-4">
-      <AmountSelector 
-        amount={amount} 
-        fixedAmount={fixedAmount} 
-        purpose={purpose} 
-        onAmountChange={handleAmountChange} 
-      />
+      <div className="flex items-center gap-2 mb-4">
+        <CurrencySelector 
+          currency={currency} 
+          availableCurrencies={availableCurrencies} 
+          onCurrencyChange={setCurrency} 
+        />
+        
+        <div className="flex-1">
+          <AmountSelector 
+            amount={amount} 
+            fixedAmount={fixedAmount} 
+            purpose={purpose} 
+            onAmountChange={handleAmountChange}
+            currency={currency} 
+          />
+        </div>
+      </div>
       
       <PaymentMethodList 
         availablePaymentMethods={availablePaymentMethods}

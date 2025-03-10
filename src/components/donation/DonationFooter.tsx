@@ -1,46 +1,64 @@
 
 import React from "react";
-import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
+import { Loader2, CreditCard } from "lucide-react";
 
 interface DonationFooterProps {
   amount: number;
   fixedAmount?: number;
+  currency: string;
   processing: boolean;
-  handleDonation: () => void;
+  handleDonation: () => Promise<void>;
   availablePaymentMethodsCount: number;
 }
 
 const DonationFooter = ({
   amount,
   fixedAmount,
+  currency,
   processing,
   handleDonation,
   availablePaymentMethodsCount,
 }: DonationFooterProps) => {
+  const finalAmount = fixedAmount || amount;
+  
+  const getCurrencySymbol = (currency: string): string => {
+    try {
+      return (0).toLocaleString('en-US', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/\d/g, '').trim();
+    } catch (e) {
+      return currency;
+    }
+  };
+
   return (
-    <DialogFooter className="p-5 bg-gray-50 border-t">
-      <div className="w-full">
-        <Button 
-          onClick={handleDonation} 
-          className="w-full bg-blue-600 hover:bg-blue-700"
-          disabled={processing || availablePaymentMethodsCount === 0}
-        >
-          {processing ? (
-            <>Processing...</>
-          ) : (
-            <>
-              <Lock className="h-4 w-4 mr-2" />
-              Complete ${fixedAmount || amount} Donation
-            </>
-          )}
-        </Button>
-        <div className="mt-3 text-center text-xs text-muted-foreground">
-          By donating, you agree to our terms and conditions
-        </div>
+    <div className="p-5 bg-gray-50 border-t flex items-center justify-between">
+      <div>
+        <p className="text-sm text-muted-foreground">Total Amount</p>
+        <p className="text-xl font-bold">
+          {getCurrencySymbol(currency)} {finalAmount}
+        </p>
       </div>
-    </DialogFooter>
+      <Button
+        disabled={
+          processing || 
+          finalAmount <= 0 || 
+          availablePaymentMethodsCount === 0
+        }
+        onClick={handleDonation}
+      >
+        {processing ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <CreditCard className="h-4 w-4 mr-2" />
+            Donate Now
+          </>
+        )}
+      </Button>
+    </div>
   );
 };
 

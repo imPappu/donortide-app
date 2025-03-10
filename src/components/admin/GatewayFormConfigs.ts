@@ -1,4 +1,3 @@
-
 export type PaymentGatewayField = {
   id: string;
   label: string;
@@ -13,6 +12,38 @@ export type GatewayConfig = {
 };
 
 export const gatewayConfigs: Record<string, GatewayConfig> = {
+  card: {
+    name: "Card Processing",
+    description: "Direct card payment processing gateway",
+    fields: [
+      {
+        id: "card_processor",
+        label: "Card Processor",
+        placeholder: "Select processor",
+      },
+      {
+        id: "card_merchant_id",
+        label: "Merchant ID",
+        placeholder: "Your merchant ID",
+      },
+      {
+        id: "card_api_key",
+        label: "API Key",
+        type: "password",
+        placeholder: "Your API key",
+      },
+      {
+        id: "card_mode",
+        label: "Mode",
+        placeholder: "Select mode",
+      },
+      {
+        id: "card_supported_currencies",
+        label: "Supported Currencies",
+        placeholder: "USD,EUR,GBP,INR (comma separated)",
+      },
+    ],
+  },
   paypal: {
     name: "PayPal",
     description: "Accept payments via PayPal",
@@ -32,6 +63,11 @@ export const gatewayConfigs: Record<string, GatewayConfig> = {
         id: "paypal_mode",
         label: "Mode",
         placeholder: "Select mode",
+      },
+      {
+        id: "paypal_supported_currencies",
+        label: "Supported Currencies",
+        placeholder: "USD,EUR,GBP,JPY (comma separated)",
       },
     ],
   },

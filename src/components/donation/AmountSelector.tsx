@@ -1,72 +1,91 @@
 
-import React from "react";
-import { DollarSign } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-type AmountSelectorProps = {
+const predefinedAmounts = [5, 10, 25, 50];
+
+interface AmountSelectorProps {
   amount: number;
   fixedAmount?: number;
-  purpose?: string;
+  purpose: string;
+  currency?: string;
   onAmountChange: (amount: number) => void;
-};
+}
 
 const AmountSelector = ({
   amount,
   fixedAmount,
   purpose,
+  currency = "USD",
   onAmountChange,
 }: AmountSelectorProps) => {
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    onAmountChange(isNaN(value) ? 0 : value);
+  const [customAmount, setCustomAmount] = useState<string>(amount.toString());
+
+  useEffect(() => {
+    setCustomAmount(amount.toString());
+  }, [amount]);
+
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value)) {
+      setCustomAmount(value);
+      if (value) {
+        onAmountChange(parseFloat(value));
+      }
+    }
+  };
+
+  const handleAmountClick = (amount: number) => {
+    onAmountChange(amount);
+  };
+
+  const getCurrencySymbol = (currency: string): string => {
+    try {
+      return (0).toLocaleString('en-US', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/\d/g, '').trim();
+    } catch (e) {
+      // Fallback to currency code if symbol can't be determined
+      return currency;
+    }
   };
 
   if (fixedAmount) {
     return (
-      <div className="space-y-2 mb-4">
-        <Label className="text-sm font-medium">Amount</Label>
-        <div className="flex items-center bg-blue-50 p-3 rounded-lg">
-          <DollarSign className="h-6 w-6 text-blue-600 mr-2" />
-          <div>
-            <span className="text-2xl font-bold text-blue-700">${fixedAmount}</span>
-            <p className="text-sm text-blue-600 mt-1">
-              Fixed amount for {purpose}
-            </p>
-          </div>
+      <div className="mb-4">
+        <div className="bg-primary/10 p-3 rounded-md text-center">
+          <span className="text-lg font-semibold">
+            {getCurrencySymbol(currency)} {fixedAmount}
+          </span>
+          <p className="text-sm text-muted-foreground mt-1">{purpose}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 mb-4">
-      <Label htmlFor="amount" className="text-sm font-medium">
-        Donation Amount ($)
-      </Label>
-      <div className="relative">
-        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <div className="mb-4">
+      <div className="relative mb-2">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <span className="text-gray-500">{getCurrencySymbol(currency)}</span>
+        </div>
         <Input
-          id="amount"
-          type="number"
-          min="1"
-          step="1"
-          value={amount}
-          onChange={handleAmountChange}
-          className="pl-10"
+          type="text"
+          value={customAmount}
+          onChange={handleCustomAmountChange}
+          className="pl-8"
+          placeholder="Enter amount"
         />
       </div>
-      <div className="grid grid-cols-4 gap-2 mt-2">
-        {[5, 10, 25, 50].map((value) => (
+
+      <div className="grid grid-cols-4 gap-2">
+        {predefinedAmounts.map((predefinedAmount) => (
           <Button
-            key={value}
+            key={predefinedAmount}
             type="button"
-            variant={amount === value ? "default" : "outline"}
-            onClick={() => onAmountChange(value)}
-            className={amount === value ? "bg-blue-600 hover:bg-blue-700" : ""}
+            variant={amount === predefinedAmount ? "default" : "outline"}
+            onClick={() => handleAmountClick(predefinedAmount)}
           >
-            ${value}
+            {getCurrencySymbol(currency)}{predefinedAmount}
           </Button>
         ))}
       </div>

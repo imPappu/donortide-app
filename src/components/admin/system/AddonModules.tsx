@@ -20,12 +20,20 @@ const AddonModules = () => {
     moduleSettings,
     uploadingAddon,
     installingFromRepo,
+    activeAddonSettings,
+    activeAddonPermissions,
+    addonSpecificSettings,
+    addonPermissionGroups,
     toggleAddonStatus,
     uninstallAddon,
     updateAddon,
     handleUploadAddon,
     installFromRepository,
-    handleSettingChange
+    handleSettingChange,
+    openAddonSettings,
+    openAddonPermissions,
+    updateAddonSpecificSetting,
+    updateAddonPermission
   } = useAddonModules();
 
   return (
@@ -54,6 +62,14 @@ const AddonModules = () => {
                   toggleAddonStatus={toggleAddonStatus}
                   uninstallAddon={uninstallAddon}
                   updateAddon={updateAddon}
+                  activeAddonSettings={activeAddonSettings}
+                  activeAddonPermissions={activeAddonPermissions}
+                  addonSpecificSettings={addonSpecificSettings}
+                  addonPermissionGroups={addonPermissionGroups}
+                  openAddonSettings={openAddonSettings}
+                  openAddonPermissions={openAddonPermissions}
+                  updateAddonSpecificSetting={updateAddonSpecificSetting}
+                  updateAddonPermission={updateAddonPermission}
                 />
               </TabsContent>
               

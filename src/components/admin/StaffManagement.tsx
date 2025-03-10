@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
@@ -75,6 +74,14 @@ const StaffManagement = () => {
       role: 'staff', 
       isActive: true, 
       lastLogin: '2023-05-13T14:22:00Z' 
+    },
+    { 
+      id: '4', 
+      name: 'Sarah Johnson', 
+      email: 'sarah@example.com', 
+      role: 'editor', 
+      isActive: true, 
+      lastLogin: '2023-05-12T11:45:00Z' 
     }
   ]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -213,6 +220,7 @@ const StaffManagement = () => {
                   <SelectContent>
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="editor">Editor</SelectItem>
                     <SelectItem value="staff">Staff</SelectItem>
                   </SelectContent>
                 </Select>
@@ -344,6 +352,7 @@ const StaffManagement = () => {
                   <SelectContent>
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="editor">Editor</SelectItem>
                     <SelectItem value="staff">Staff</SelectItem>
                   </SelectContent>
                 </Select>

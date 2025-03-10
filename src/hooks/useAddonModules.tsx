@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { AddonModule, RepositoryAddon, ModuleSettings } from "@/components/admin/system/types";
@@ -8,6 +7,8 @@ export function useAddonModules() {
   const [uploadingAddon, setUploadingAddon] = useState(false);
   const [installingFromRepo, setInstallingFromRepo] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [activeAddonSettings, setActiveAddonSettings] = useState<number | null>(null);
+  const [activeAddonPermissions, setActiveAddonPermissions] = useState<number | null>(null);
   
   const [installedAddons, setInstalledAddons] = useState<AddonModule[]>([
     { 
@@ -45,23 +46,52 @@ export function useAddonModules() {
     },
   ]);
   
-  const repositoryAddons: RepositoryAddon[] = [
-    { 
-      id: 103, 
-      name: "Blood Analytics", 
-      version: "1.2.0", 
-      author: "Data Insights",
-      description: "Advanced analytics dashboard for blood donation patterns and trends.",
-      installed: false,
-      category: "Analytics"
-    },
-  ];
+  const repositoryAddons: RepositoryAddon[] = [];
 
   const [moduleSettings, setModuleSettings] = useState<ModuleSettings>({
     autoUpdates: true,
     compatibilityCheck: true,
     developmentMode: false,
     securityScanning: true
+  });
+
+  const [addonSpecificSettings, setAddonSpecificSettings] = useState({
+    1: { // Blood Matching Algorithm
+      enableAdvancedMatching: true,
+      matchThreshold: 85,
+      useHistoricData: true,
+      notifyOnMatch: true
+    },
+    2: { // Donor Eligibility Check
+      strictMode: true,
+      waitPeriodDays: 56,
+      healthChecksEnabled: true,
+      autoDecline: false
+    },
+    3: { // Donation Inventory
+      lowStockThreshold: 10,
+      expiryNotificationDays: 7,
+      trackByBloodType: true,
+      trackByLocation: true
+    }
+  });
+
+  const [addonPermissionGroups, setAddonPermissionGroups] = useState({
+    1: [ // Blood Matching Algorithm
+      { id: 1, name: "View Matches", key: "admin.blood.view", enabled: true },
+      { id: 2, name: "Create Matches", key: "admin.blood.match", enabled: true },
+      { id: 3, name: "Override Matches", key: "admin.blood.override", enabled: false }
+    ],
+    2: [ // Donor Eligibility Check
+      { id: 1, name: "View Eligibility", key: "admin.eligibility.view", enabled: true },
+      { id: 2, name: "Manage Eligibility", key: "admin.eligibility.manage", enabled: true },
+      { id: 3, name: "Override Eligibility", key: "admin.eligibility.override", enabled: false }
+    ],
+    3: [ // Donation Inventory
+      { id: 1, name: "View Inventory", key: "admin.inventory.view", enabled: true },
+      { id: 2, name: "Manage Inventory", key: "admin.inventory.manage", enabled: true },
+      { id: 3, name: "Transfer Inventory", key: "admin.inventory.transfer", enabled: false }
+    ]
   });
 
   useEffect(() => {
@@ -244,6 +274,52 @@ export function useAddonModules() {
     }));
   };
 
+  const openAddonSettings = (id: number) => {
+    setActiveAddonSettings(id);
+  };
+
+  const openAddonPermissions = (id: number) => {
+    setActiveAddonPermissions(id);
+  };
+
+  const updateAddonSpecificSetting = (addonId: number, settingKey: string, value: any) => {
+    setAddonSpecificSettings(prev => ({
+      ...prev,
+      [addonId]: {
+        ...prev[addonId as keyof typeof prev],
+        [settingKey]: value
+      }
+    }));
+
+    const addon = installedAddons.find(a => a.id === addonId);
+    toast({
+      title: "Setting Updated",
+      description: `Updated ${settingKey} for ${addon?.name}.`
+    });
+  };
+
+  const updateAddonPermission = (addonId: number, permissionId: number, enabled: boolean) => {
+    setAddonPermissionGroups(prev => {
+      const addonGroup = [...prev[addonId as keyof typeof prev]];
+      const updatedGroup = addonGroup.map(p => 
+        p.id === permissionId ? { ...p, enabled } : p
+      );
+      
+      return {
+        ...prev,
+        [addonId]: updatedGroup
+      };
+    });
+
+    const addon = installedAddons.find(a => a.id === addonId);
+    const permission = addonPermissionGroups[addonId as keyof typeof addonPermissionGroups]?.find(p => p.id === permissionId);
+    
+    toast({
+      title: `Permission ${enabled ? 'Enabled' : 'Disabled'}`,
+      description: `${permission?.name} for ${addon?.name}.`
+    });
+  };
+
   return {
     isInitialized,
     installedAddons,
@@ -251,11 +327,19 @@ export function useAddonModules() {
     moduleSettings,
     uploadingAddon,
     installingFromRepo,
+    activeAddonSettings,
+    activeAddonPermissions,
+    addonSpecificSettings,
+    addonPermissionGroups,
     toggleAddonStatus,
     uninstallAddon,
     updateAddon,
     handleUploadAddon,
     installFromRepository,
-    handleSettingChange
+    handleSettingChange,
+    openAddonSettings,
+    openAddonPermissions,
+    updateAddonSpecificSetting,
+    updateAddonPermission
   };
 }

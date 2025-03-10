@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Package, RefreshCw, Settings, Shield, Star, Trash } from "lucide-react";
+import { Package, RefreshCw, Settings, Shield, Star } from "lucide-react";
 
 interface AddonModule {
   id: number;
@@ -21,9 +21,18 @@ interface AddonCardProps {
   toggleAddonStatus: (id: number) => void;
   uninstallAddon: (id: number, name: string) => void;
   updateAddon: (id: number, name: string) => Promise<void>;
+  openAddonSettings?: (id: number) => void;
+  openAddonPermissions?: (id: number) => void;
 }
 
-const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: AddonCardProps) => {
+const AddonCard = ({ 
+  addon, 
+  toggleAddonStatus, 
+  uninstallAddon, 
+  updateAddon,
+  openAddonSettings,
+  openAddonPermissions
+}: AddonCardProps) => {
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className={`${addon.isCustom ? 'bg-primary/20' : 'bg-muted/30'} p-4`}>
@@ -80,10 +89,7 @@ const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: Ad
             {addon.isCustom ? (
               <>Core Module</>
             ) : (
-              <>
-                <Trash className="h-4 w-4 mr-1 text-red-500" />
-                Delete
-              </>
+              <>Delete</>
             )}
           </Button>
           <div className="flex gap-2">
@@ -97,14 +103,22 @@ const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: Ad
                 Update
               </Button>
             )}
-            {addon.hasSettings && (
-              <Button variant="outline" size="sm">
+            {addon.hasSettings && openAddonSettings && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => openAddonSettings(addon.id)}
+              >
                 <Settings className="h-4 w-4 mr-1" />
                 Settings
               </Button>
             )}
-            {addon.permissions && addon.permissions.length > 0 && (
-              <Button variant="outline" size="sm">
+            {addon.permissions && addon.permissions.length > 0 && openAddonPermissions && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => openAddonPermissions(addon.id)}
+              >
                 <Shield className="h-4 w-4 mr-1" />
                 Permissions
               </Button>

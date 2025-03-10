@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DatabaseConfig {
   host: string;
@@ -18,9 +20,16 @@ interface DatabaseConfig {
 interface DatabaseConnectionFormProps {
   config: DatabaseConfig;
   handleChange: (key: keyof DatabaseConfig, value: string | boolean) => void;
+  showPassword: boolean;
+  setShowPassword: (show: boolean) => void;
 }
 
-const DatabaseConnectionForm = ({ config, handleChange }: DatabaseConnectionFormProps) => {
+const DatabaseConnectionForm = ({ 
+  config, 
+  handleChange, 
+  showPassword, 
+  setShowPassword 
+}: DatabaseConnectionFormProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-4">
@@ -30,7 +39,7 @@ const DatabaseConnectionForm = ({ config, handleChange }: DatabaseConnectionForm
             value={config.type} 
             onValueChange={(value) => handleChange('type', value)}
           >
-            <SelectTrigger>
+            <SelectTrigger id="db_type">
               <SelectValue placeholder="Select database type" />
             </SelectTrigger>
             <SelectContent>
@@ -86,13 +95,29 @@ const DatabaseConnectionForm = ({ config, handleChange }: DatabaseConnectionForm
         
         <div className="space-y-2">
           <Label htmlFor="db_password">Password</Label>
-          <Input 
-            id="db_password" 
-            type="password"
-            value={config.password} 
-            onChange={(e) => handleChange('password', e.target.value)} 
-            placeholder="Database password"
-          />
+          <div className="relative">
+            <Input 
+              id="db_password" 
+              type={showPassword ? "text" : "password"}
+              value={config.password} 
+              onChange={(e) => handleChange('password', e.target.value)} 
+              placeholder="Database password"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOffIcon className="h-4 w-4 text-gray-500" />
+              ) : (
+                <EyeIcon className="h-4 w-4 text-gray-500" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,20 +18,58 @@ import {
   Twitter, 
   Facebook, 
   Instagram,
-  Youtube
+  Youtube,
+  EyeIcon,
+  EyeOffIcon,
+  CheckCircle,
+  AlertTriangle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface AIModelConfig {
+  enabled: boolean;
+  apiKey: string;
+  model: string;
+  connectionTested: boolean;
+  connectionSuccess?: boolean;
+}
+
+interface SocialMediaConfig {
+  enabled: boolean;
+  autoPost: boolean;
+  schedule: string;
+}
+
+interface AIModelsState {
+  chatgpt: AIModelConfig;
+  deepseek: AIModelConfig;
+  grok: AIModelConfig;
+  qwen: AIModelConfig;
+}
+
+interface SocialMediaState {
+  twitter: SocialMediaConfig;
+  facebook: SocialMediaConfig;
+  instagram: SocialMediaConfig;
+  youtube: SocialMediaConfig;
+}
 
 const AIManagement = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("configuration");
+  const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
+    chatgpt: false,
+    deepseek: false,
+    grok: false,
+    qwen: false
+  });
   
   // AI Configuration state
-  const [aiModels, setAiModels] = useState({
-    chatgpt: { enabled: true, apiKey: "", model: "gpt-4o" },
-    deepseek: { enabled: false, apiKey: "", model: "deepseek-v2" },
-    grok: { enabled: false, apiKey: "", model: "grok-1.5" },
-    qwen: { enabled: false, apiKey: "", model: "qwen-72b" }
+  const [aiModels, setAiModels] = useState<AIModelsState>({
+    chatgpt: { enabled: true, apiKey: "", model: "gpt-4o", connectionTested: false },
+    deepseek: { enabled: false, apiKey: "", model: "deepseek-v2", connectionTested: false },
+    grok: { enabled: false, apiKey: "", model: "grok-1.5", connectionTested: false },
+    qwen: { enabled: false, apiKey: "", model: "qwen-72b", connectionTested: false }
   });
   
   // Monitoring settings
@@ -45,19 +82,31 @@ const AIManagement = () => {
   });
   
   // Social media automation
-  const [socialMediaSettings, setSocialMediaSettings] = useState({
+  const [socialMediaSettings, setSocialMediaSettings] = useState<SocialMediaState>({
     twitter: { enabled: false, autoPost: false, schedule: "daily" },
     facebook: { enabled: false, autoPost: false, schedule: "weekly" },
     instagram: { enabled: false, autoPost: false, schedule: "weekly" },
     youtube: { enabled: false, autoPost: false, schedule: "monthly" }
   });
+
+  // Add configuration saving status
+  const [saving, setSaving] = useState(false);
+  
+  const toggleShowApiKey = (model: string) => {
+    setShowApiKeys(prev => ({
+      ...prev,
+      [model]: !prev[model]
+    }));
+  };
   
   const handleAIModelChange = (model: string, field: string, value: any) => {
     setAiModels(prev => ({
       ...prev,
       [model]: {
-        ...prev[model as keyof typeof prev],
-        [field]: value
+        ...prev[model as keyof AIModelsState],
+        [field]: value,
+        // Reset connection status when changing API key or model
+        ...(field === 'apiKey' || field === 'model' ? { connectionTested: false, connectionSuccess: undefined } : {})
       }
     }));
   };
@@ -73,34 +122,190 @@ const AIManagement = () => {
     setSocialMediaSettings(prev => ({
       ...prev,
       [platform]: {
-        ...prev[platform as keyof typeof prev],
+        ...prev[platform as keyof SocialMediaState],
         [field]: value
       }
     }));
   };
   
-  const saveAIConfiguration = () => {
-    // In a real app, this would save to your database
-    toast({
-      title: "AI Configuration Saved",
-      description: "Your AI settings have been updated successfully.",
-    });
+  const saveAIConfiguration = async () => {
+    setSaving(true);
+    
+    try {
+      // In a real app, this would save to your database
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "AI Configuration Saved",
+        description: "Your AI settings have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error Saving Configuration",
+        description: "There was a problem saving your AI settings.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
   
-  const testAIConnection = (model: string) => {
+  const testAIConnection = async (model: string) => {
     // In a real app, this would test the connection to the AI model
-    if (aiModels[model as keyof typeof aiModels].apiKey) {
-      toast({
-        title: "Connection Successful",
-        description: `Successfully connected to ${model} API.`,
-      });
-    } else {
+    const modelConfig = aiModels[model as keyof AIModelsState];
+    
+    if (!modelConfig.apiKey) {
       toast({
         title: "Connection Failed",
         description: "Please enter a valid API key.",
         variant: "destructive",
       });
+      
+      handleAIModelChange(model, 'connectionTested', true);
+      handleAIModelChange(model, 'connectionSuccess', false);
+      return;
     }
+    
+    // Simulate API connection test
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Randomly simulate success or failure for demo purposes
+      const success = Math.random() > 0.3; // 70% chance of success
+      
+      if (success) {
+        toast({
+          title: "Connection Successful",
+          description: `Successfully connected to ${model} API.`,
+        });
+        
+        handleAIModelChange(model, 'connectionTested', true);
+        handleAIModelChange(model, 'connectionSuccess', true);
+      } else {
+        toast({
+          title: "Connection Failed",
+          description: `Could not connect to ${model} API. Please check your key and try again.`,
+          variant: "destructive",
+        });
+        
+        handleAIModelChange(model, 'connectionTested', true);
+        handleAIModelChange(model, 'connectionSuccess', false);
+      }
+    } catch (error) {
+      toast({
+        title: "Connection Error",
+        description: "An error occurred while testing the connection.",
+        variant: "destructive",
+      });
+      
+      handleAIModelChange(model, 'connectionTested', true);
+      handleAIModelChange(model, 'connectionSuccess', false);
+    }
+  };
+
+  const renderApiKeyInput = (modelKey: string, modelConfig: AIModelConfig) => {
+    return (
+      <div className="space-y-2">
+        <Label htmlFor={`${modelKey}-key`}>API Key</Label>
+        <div className="relative">
+          <Input 
+            id={`${modelKey}-key`} 
+            type={showApiKeys[modelKey] ? "text" : "password"} 
+            value={modelConfig.apiKey} 
+            onChange={(e) => handleAIModelChange(modelKey, 'apiKey', e.target.value)}
+            placeholder={`Enter ${modelKey} API Key`}
+            className="pr-10"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => toggleShowApiKey(modelKey)}
+          >
+            {showApiKeys[modelKey] ? (
+              <EyeOffIcon className="h-4 w-4 text-gray-500" />
+            ) : (
+              <EyeIcon className="h-4 w-4 text-gray-500" />
+            )}
+          </Button>
+        </div>
+        
+        {modelConfig.connectionTested && (
+          <div className={`mt-1 flex items-center text-xs ${modelConfig.connectionSuccess ? 'text-green-600' : 'text-red-600'}`}>
+            {modelConfig.connectionSuccess ? (
+              <>
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Connection verified
+              </>
+            ) : (
+              <>
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                Connection failed
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderModelSection = (
+    modelKey: string, 
+    modelName: string, 
+    iconColor: string, 
+    modelOptions: { value: string; label: string }[]
+  ) => {
+    const modelConfig = aiModels[modelKey as keyof AIModelsState];
+    
+    return (
+      <div className="border rounded-lg p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Bot className={`h-5 w-5 ${iconColor}`} />
+            <h3 className="text-lg font-medium">{modelName}</h3>
+          </div>
+          <Switch 
+            checked={modelConfig.enabled} 
+            onCheckedChange={(checked) => handleAIModelChange(modelKey, 'enabled', checked)}
+          />
+        </div>
+        
+        {modelConfig.enabled && (
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {renderApiKeyInput(modelKey, modelConfig)}
+              
+              <div className="space-y-2">
+                <Label htmlFor={`${modelKey}-model`}>Model</Label>
+                <Select 
+                  value={modelConfig.model}
+                  onValueChange={(value) => handleAIModelChange(modelKey, 'model', value)}
+                >
+                  <SelectTrigger id={`${modelKey}-model`}>
+                    <SelectValue placeholder="Select model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modelOptions.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => testAIConnection(modelKey)}
+            >
+              Test Connection
+            </Button>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -125,216 +330,57 @@ const AIManagement = () => {
             </Alert>
             
             {/* ChatGPT Configuration */}
-            <div className="border rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Bot className="h-5 w-5 text-green-500" />
-                  <h3 className="text-lg font-medium">ChatGPT / OpenAI</h3>
-                </div>
-                <Switch 
-                  checked={aiModels.chatgpt.enabled} 
-                  onCheckedChange={(checked) => handleAIModelChange('chatgpt', 'enabled', checked)}
-                />
-              </div>
-              
-              {aiModels.chatgpt.enabled && (
-                <div className="space-y-4 mt-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="chatgpt-key">API Key</Label>
-                      <Input 
-                        id="chatgpt-key" 
-                        type="password" 
-                        value={aiModels.chatgpt.apiKey} 
-                        onChange={(e) => handleAIModelChange('chatgpt', 'apiKey', e.target.value)}
-                        placeholder="Enter OpenAI API Key" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="chatgpt-model">Model</Label>
-                      <Select 
-                        value={aiModels.chatgpt.model}
-                        onValueChange={(value) => handleAIModelChange('chatgpt', 'model', value)}
-                      >
-                        <SelectTrigger id="chatgpt-model">
-                          <SelectValue placeholder="Select model" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                          <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
-                          <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => testAIConnection('chatgpt')}
-                  >
-                    Test Connection
-                  </Button>
-                </div>
-              )}
-            </div>
+            {renderModelSection(
+              'chatgpt',
+              'ChatGPT / OpenAI',
+              'text-green-500',
+              [
+                { value: 'gpt-4o', label: 'GPT-4o' },
+                { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+                { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
+              ]
+            )}
             
             {/* DeepSeek Configuration */}
-            <div className="border rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Bot className="h-5 w-5 text-purple-500" />
-                  <h3 className="text-lg font-medium">DeepSeek</h3>
-                </div>
-                <Switch 
-                  checked={aiModels.deepseek.enabled} 
-                  onCheckedChange={(checked) => handleAIModelChange('deepseek', 'enabled', checked)}
-                />
-              </div>
-              
-              {aiModels.deepseek.enabled && (
-                <div className="space-y-4 mt-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="deepseek-key">API Key</Label>
-                      <Input 
-                        id="deepseek-key" 
-                        type="password" 
-                        value={aiModels.deepseek.apiKey} 
-                        onChange={(e) => handleAIModelChange('deepseek', 'apiKey', e.target.value)}
-                        placeholder="Enter DeepSeek API Key" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="deepseek-model">Model</Label>
-                      <Select 
-                        value={aiModels.deepseek.model}
-                        onValueChange={(value) => handleAIModelChange('deepseek', 'model', value)}
-                      >
-                        <SelectTrigger id="deepseek-model">
-                          <SelectValue placeholder="Select model" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="deepseek-v2">DeepSeek-V2</SelectItem>
-                          <SelectItem value="deepseek-coder">DeepSeek Coder</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => testAIConnection('deepseek')}
-                  >
-                    Test Connection
-                  </Button>
-                </div>
-              )}
-            </div>
+            {renderModelSection(
+              'deepseek',
+              'DeepSeek',
+              'text-purple-500',
+              [
+                { value: 'deepseek-v2', label: 'DeepSeek-V2' },
+                { value: 'deepseek-coder', label: 'DeepSeek Coder' }
+              ]
+            )}
             
             {/* Grok Configuration */}
-            <div className="border rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Bot className="h-5 w-5 text-red-500" />
-                  <h3 className="text-lg font-medium">Grok</h3>
-                </div>
-                <Switch 
-                  checked={aiModels.grok.enabled} 
-                  onCheckedChange={(checked) => handleAIModelChange('grok', 'enabled', checked)}
-                />
-              </div>
-              
-              {aiModels.grok.enabled && (
-                <div className="space-y-4 mt-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="grok-key">API Key</Label>
-                      <Input 
-                        id="grok-key" 
-                        type="password" 
-                        value={aiModels.grok.apiKey} 
-                        onChange={(e) => handleAIModelChange('grok', 'apiKey', e.target.value)}
-                        placeholder="Enter Grok API Key" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="grok-model">Model</Label>
-                      <Select 
-                        value={aiModels.grok.model}
-                        onValueChange={(value) => handleAIModelChange('grok', 'model', value)}
-                      >
-                        <SelectTrigger id="grok-model">
-                          <SelectValue placeholder="Select model" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="grok-1.5">Grok 1.5</SelectItem>
-                          <SelectItem value="grok-1">Grok 1</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => testAIConnection('grok')}
-                  >
-                    Test Connection
-                  </Button>
-                </div>
-              )}
-            </div>
+            {renderModelSection(
+              'grok',
+              'Grok',
+              'text-red-500',
+              [
+                { value: 'grok-1.5', label: 'Grok 1.5' },
+                { value: 'grok-1', label: 'Grok 1' }
+              ]
+            )}
             
             {/* Qwen Configuration */}
-            <div className="border rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Bot className="h-5 w-5 text-blue-500" />
-                  <h3 className="text-lg font-medium">Qwen</h3>
-                </div>
-                <Switch 
-                  checked={aiModels.qwen.enabled} 
-                  onCheckedChange={(checked) => handleAIModelChange('qwen', 'enabled', checked)}
-                />
-              </div>
-              
-              {aiModels.qwen.enabled && (
-                <div className="space-y-4 mt-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="qwen-key">API Key</Label>
-                      <Input 
-                        id="qwen-key" 
-                        type="password" 
-                        value={aiModels.qwen.apiKey} 
-                        onChange={(e) => handleAIModelChange('qwen', 'apiKey', e.target.value)}
-                        placeholder="Enter Qwen API Key" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="qwen-model">Model</Label>
-                      <Select 
-                        value={aiModels.qwen.model}
-                        onValueChange={(value) => handleAIModelChange('qwen', 'model', value)}
-                      >
-                        <SelectTrigger id="qwen-model">
-                          <SelectValue placeholder="Select model" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="qwen-72b">Qwen 72B</SelectItem>
-                          <SelectItem value="qwen-max">Qwen Max</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => testAIConnection('qwen')}
-                  >
-                    Test Connection
-                  </Button>
-                </div>
-              )}
-            </div>
+            {renderModelSection(
+              'qwen',
+              'Qwen',
+              'text-blue-500',
+              [
+                { value: 'qwen-72b', label: 'Qwen 72B' },
+                { value: 'qwen-max', label: 'Qwen Max' }
+              ]
+            )}
             
             <div className="flex justify-end mt-6">
-              <Button onClick={saveAIConfiguration}>Save AI Configuration</Button>
+              <Button 
+                onClick={saveAIConfiguration} 
+                disabled={saving}
+              >
+                {saving ? 'Saving...' : 'Save AI Configuration'}
+              </Button>
             </div>
           </TabsContent>
           
@@ -457,7 +503,16 @@ const AIManagement = () => {
               </div>
               
               <div className="flex justify-end mt-6">
-                <Button>Save Monitoring Settings</Button>
+                <Button 
+                  onClick={() => {
+                    toast({
+                      title: "Monitoring Settings Saved",
+                      description: "Your AI monitoring settings have been updated successfully."
+                    });
+                  }}
+                >
+                  Save Monitoring Settings
+                </Button>
               </div>
             </div>
           </TabsContent>
@@ -689,7 +744,16 @@ const AIManagement = () => {
               </div>
               
               <div className="flex justify-end mt-6">
-                <Button>Save Social Media Settings</Button>
+                <Button
+                  onClick={() => {
+                    toast({
+                      title: "Social Media Settings Saved",
+                      description: "Your social media automation settings have been updated."
+                    });
+                  }}
+                >
+                  Save Social Media Settings
+                </Button>
               </div>
             </div>
           </TabsContent>

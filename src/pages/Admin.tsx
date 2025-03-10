@@ -7,11 +7,13 @@ import AdminContent from "@/components/admin/AdminContent";
 import SystemUpdatePanel from "@/components/admin/SystemUpdatePanel";
 import { useToast } from "@/hooks/use-toast";
 import { Banner, BlogPost, Notification } from "@/types/apiTypes";
+import { getDashboardStats } from "@/services/dashboardService";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   
   // Stats for the dashboard
   const [stats, setStats] = useState({
@@ -54,6 +56,28 @@ const AdminDashboard = () => {
     };
     
     checkForUpdates();
+    
+    // Fetch dashboard statistics
+    const fetchDashboardStats = async () => {
+      setLoading(true);
+      try {
+        const dashboardStats = await getDashboardStats();
+        if (dashboardStats) {
+          setStats(dashboardStats);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard statistics. Using cached data.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchDashboardStats();
   }, [toast]);
   
   const handleLogout = () => {
@@ -62,7 +86,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <AdminSidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -107,6 +131,7 @@ const AdminDashboard = () => {
           setBlogPosts={setBlogPosts}
           notification={notification}
           setNotification={setNotification}
+          loading={loading}
         />
         
         {activeTab === "system-updates" && (

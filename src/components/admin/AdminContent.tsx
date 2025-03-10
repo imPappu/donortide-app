@@ -20,6 +20,7 @@ import FirebasePushComponent from "@/components/admin/FirebasePushComponent";
 import AdsManagement from "@/components/admin/AdsManagement";
 import AIManagement from "@/components/admin/AIManagement";
 import { Banner, BlogPost, Notification } from "@/types/apiTypes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AdminContentProps {
   activeTab: string;
@@ -35,6 +36,7 @@ interface AdminContentProps {
   setBlogPosts: React.Dispatch<React.SetStateAction<BlogPost[]>>;
   notification: Partial<Notification>;
   setNotification: React.Dispatch<React.SetStateAction<Partial<Notification>>>;
+  loading?: boolean;
 }
 
 const AdminContent = ({ 
@@ -45,8 +47,49 @@ const AdminContent = ({
   blogPosts, 
   setBlogPosts,
   notification,
-  setNotification 
+  setNotification,
+  loading = false
 }: AdminContentProps) => {
+  // Loading skeleton for dashboard stats
+  if (loading && activeTab === "dashboard") {
+    return (
+      <main className="p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-5 w-5 rounded-full" />
+                  <Skeleton className="h-4 w-10" />
+                </div>
+                <div className="mt-3">
+                  <Skeleton className="h-8 w-20 mb-2" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardContent className="pt-6">
+              <Skeleton className="h-6 w-40 mb-4" />
+              <Skeleton className="h-[320px] w-full rounded-md" />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <Skeleton className="h-6 w-40 mb-4" />
+              <Skeleton className="h-[320px] w-full rounded-md" />
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="p-4 md:p-6">
       {activeTab === "dashboard" && <DashboardStats stats={stats} />}

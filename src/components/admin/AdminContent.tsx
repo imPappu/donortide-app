@@ -28,6 +28,12 @@ const AdminContent: React.FC<AdminContentProps> = ({
   initialTab = 'dashboard', 
   activeTab,
   stats,
+  banners,
+  setBanners,
+  blogPosts,
+  setBlogPosts,
+  notification,
+  setNotification,
   loading = false
 }) => {
   // Use activeTab if provided, otherwise fall back to initialTab
@@ -37,7 +43,10 @@ const AdminContent: React.FC<AdminContentProps> = ({
     <main className="flex-1 overflow-y-auto">
       <Tabs defaultValue={currentTab} className="w-full">
         <TabsContent value="dashboard">
-          <DashboardContent />
+          <DashboardContent 
+            stats={stats}
+            loading={loading}
+          />
         </TabsContent>
         {/* Other tab contents */}
       </Tabs>

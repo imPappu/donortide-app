@@ -1,12 +1,22 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardStats from './DashboardStats';
 import RecentRequests from './RecentRequests';
 import { BloodRequest } from '@/services/dbService';
 import { getDashboardStats } from '@/services/dashboardService';
 
-const DashboardContent: React.FC = () => {
-  const [stats, setStats] = useState({
+interface DashboardContentProps {
+  stats?: {
+    totalUsers: number;
+    totalDonations: number;
+    totalRequests: number;
+    totalLocations: number;
+    recentRequests?: BloodRequest[];
+  };
+  loading?: boolean;
+}
+
+const DashboardContent: React.FC<DashboardContentProps> = ({ stats, loading = false }) => {
+  const [localStats, setLocalStats] = useState({
     totalUsers: 450,
     totalDonations: 1256,
     totalRequests: 876,
@@ -44,26 +54,33 @@ const DashboardContent: React.FC = () => {
   ]);
   
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const data = await getDashboardStats();
-        if (data) {
-          setStats(data);
-          if (data.recentRequests) {
-            setRequests(data.recentRequests);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+    if (stats) {
+      setLocalStats(stats);
+      if (stats.recentRequests) {
+        setRequests(stats.recentRequests);
       }
-    };
-    
-    fetchDashboardData();
-  }, []);
+    } else {
+      const fetchDashboardData = async () => {
+        try {
+          const data = await getDashboardStats();
+          if (data) {
+            setLocalStats(data);
+            if (data.recentRequests) {
+              setRequests(data.recentRequests);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching dashboard data:', error);
+        }
+      };
+      
+      fetchDashboardData();
+    }
+  }, [stats]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-      <DashboardStats stats={stats} />
+      <DashboardStats stats={localStats} />
       <RecentRequests requests={requests} />
     </div>
   );

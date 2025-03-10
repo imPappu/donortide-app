@@ -31,3 +31,19 @@ export const getPayments = async (): Promise<Payment[]> => {
     return [];
   }
 };
+
+export const getEnabledPaymentGateways = async (): Promise<string[]> => {
+  try {
+    // In a real app, this would fetch from the server
+    // For now, return dummy data from localStorage if available
+    const savedSettings = localStorage.getItem('paymentGatewaySettings');
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
+      return Object.keys(parsedSettings).filter(key => parsedSettings[key].isEnabled);
+    }
+    return ['card', 'bank', 'paypal']; // Default enabled gateways
+  } catch (error) {
+    console.error('Error fetching enabled payment gateways:', error);
+    return ['card', 'bank']; // Fallback to basic payment methods
+  }
+};

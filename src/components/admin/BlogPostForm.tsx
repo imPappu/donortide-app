@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { BlogPost } from '@/services/dbService';
 import { useToast } from '@/hooks/use-toast';
+import BlogPostBasicFields from './blog/BlogPostBasicFields';
+import BlogPostContentFields from './blog/BlogPostContentFields';
 
 interface BlogPostFormProps {
   initialData?: BlogPost;
@@ -58,91 +58,17 @@ const BlogPostForm = ({ initialData, onSubmit, onCancel }: BlogPostFormProps) =>
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Title *</Label>
-        <Input 
-          id="title" 
-          name="title" 
-          value={formData.title} 
-          onChange={handleChange} 
-          required 
-        />
-      </div>
+      <BlogPostBasicFields 
+        formData={formData} 
+        handleChange={handleChange}
+      />
       
-      <div className="space-y-2">
-        <Label htmlFor="author">Author *</Label>
-        <Input 
-          id="author" 
-          name="author" 
-          value={formData.author} 
-          onChange={handleChange} 
-          required 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
-        <Input 
-          id="category" 
-          name="category" 
-          value={formData.category || ''} 
-          onChange={handleChange} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="excerpt">Excerpt</Label>
-        <Input 
-          id="excerpt" 
-          name="excerpt" 
-          value={formData.excerpt || ''} 
-          onChange={handleChange} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="imageUrl">Image URL</Label>
-        <Input 
-          id="imageUrl" 
-          name="imageUrl" 
-          value={formData.imageUrl || ''} 
-          onChange={handleChange} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="tags">Tags (comma separated)</Label>
-        <Input 
-          id="tags" 
-          name="tags" 
-          value={formData.tags?.join(', ') || ''} 
-          onChange={handleTagsChange} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="content">Content *</Label>
-        <textarea 
-          id="content" 
-          name="content" 
-          value={formData.content} 
-          onChange={handleChange} 
-          className="w-full px-3 py-2 border border-gray-300 rounded-md min-h-[200px]"
-          required 
-        />
-      </div>
-      
-      <div className="flex items-center space-x-2">
-        <input 
-          type="checkbox" 
-          id="published" 
-          name="published" 
-          checked={formData.published} 
-          onChange={handlePublishedChange} 
-          className="w-4 h-4"
-        />
-        <Label htmlFor="published">Published</Label>
-      </div>
+      <BlogPostContentFields 
+        formData={formData}
+        handleChange={handleChange}
+        handleTagsChange={handleTagsChange}
+        handlePublishedChange={handlePublishedChange}
+      />
       
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>

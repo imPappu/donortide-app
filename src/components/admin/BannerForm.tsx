@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Banner } from '@/services/dbService';
 import { useToast } from '@/hooks/use-toast';
+import BannerBasicFields from './banner/BannerBasicFields';
+import BannerImageUpload from './banner/BannerImageUpload';
 
 interface BannerFormProps {
   initialData?: Banner;
@@ -106,72 +107,16 @@ const BannerForm = ({ initialData, onSubmit, onCancel }: BannerFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Title *</Label>
-        <Input 
-          id="title" 
-          name="title" 
-          value={formData.title} 
-          onChange={handleChange} 
-          required 
-        />
-      </div>
+      <BannerBasicFields
+        formData={formData}
+        handleChange={handleChange}
+        handleNumberChange={handleNumberChange}
+      />
       
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <textarea 
-          id="description" 
-          name="description" 
-          value={formData.description || ''} 
-          onChange={handleChange} 
-          className="w-full px-3 py-2 border border-gray-300 rounded-md min-h-[100px]"
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="bannerImage">Banner Image *</Label>
-        <div className="flex flex-col space-y-2">
-          <Input 
-            id="bannerImage" 
-            name="bannerImage" 
-            type="file" 
-            accept="image/*"
-            onChange={handleImageChange}
-            className="cursor-pointer"
-          />
-          {previewUrl && (
-            <div className="mt-2">
-              <p className="text-sm mb-1">Preview:</p>
-              <img 
-                src={previewUrl} 
-                alt="Banner preview" 
-                className="w-full max-h-40 object-cover rounded-md" 
-              />
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="linkUrl">Link URL</Label>
-        <Input 
-          id="linkUrl" 
-          name="linkUrl" 
-          value={formData.linkUrl || ''} 
-          onChange={handleChange} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="displayOrder">Display Order</Label>
-        <Input 
-          id="displayOrder" 
-          name="displayOrder" 
-          type="number" 
-          value={formData.displayOrder?.toString() || '0'} 
-          onChange={handleNumberChange} 
-        />
-      </div>
+      <BannerImageUpload
+        previewUrl={previewUrl}
+        handleImageChange={handleImageChange}
+      />
       
       <div className="flex items-center space-x-2">
         <input 

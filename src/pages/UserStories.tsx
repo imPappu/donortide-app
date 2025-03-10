@@ -2,9 +2,16 @@
 import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Share, Award, User, ThumbsUp } from "lucide-react";
+import { 
+  MessageSquare, Share, Award, User, ThumbsUp, 
+  PenLine, Check, CheckCircle
+} from "lucide-react";
 import TopNavbar from "@/components/TopNavbar";
 import { toast } from "@/hooks/use-toast";
+import CommentSection from "@/components/CommentSection";
+import ShareModal from "@/components/ShareModal";
+import { useAuth } from "@/components/auth/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Story {
   id: string;
@@ -19,11 +26,13 @@ interface Story {
   comments: number;
   shares: number;
   timestamp: string;
+  isVerified?: boolean;
 }
 
 const StoryCard = ({ story }: { story: Story }) => {
   const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(story.likes);
+  const [showComments, setShowComments] = React.useState(false);
 
   const handleLike = () => {
     if (liked) {
@@ -40,34 +49,45 @@ const StoryCard = ({ story }: { story: Story }) => {
   };
 
   const handleComment = () => {
-    toast({
-      title: "Comment",
-      description: "Coming soon: commenting functionality",
-    });
+    setShowComments(!showComments);
   };
 
-  const handleShare = () => {
-    toast({
-      title: "Share",
-      description: "Coming soon: social media sharing",
-    });
-  };
+  // Default comment data
+  const commentData = [
+    {
+      id: '1',
+      userName: 'Robert Lee',
+      content: 'Thanks for sharing your inspirational story!',
+      timestamp: '2 days ago'
+    },
+    {
+      id: '2',
+      userName: 'Lisa Wong',
+      content: 'This is incredible. You\'re making such a difference.',
+      timestamp: '1 day ago'
+    }
+  ];
 
   return (
     <Card className="mb-6">
       <CardContent className="p-4">
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+            <Avatar className="h-10 w-10 mr-3">
               {story.userAvatar ? (
-                <img src={story.userAvatar} alt={story.userName} className="h-10 w-10 rounded-full" />
+                <AvatarImage src={story.userAvatar} alt={story.userName} />
               ) : (
-                <User className="h-6 w-6 text-gray-600" />
+                <AvatarFallback>
+                  {story.userName.charAt(0)}
+                </AvatarFallback>
               )}
-            </div>
+            </Avatar>
             <div>
               <h3 className="font-medium text-sm flex items-center">
                 {story.userName}
+                {story.isVerified && (
+                  <CheckCircle className="h-4 w-4 text-blue-500 ml-1" />
+                )}
                 {story.badges && story.badges.length > 0 && (
                   <div className="ml-2 flex">
                     <Award className="h-4 w-4 text-yellow-500" />
@@ -136,21 +156,26 @@ const StoryCard = ({ story }: { story: Story }) => {
           <MessageSquare className="h-4 w-4 mr-2" />
           Comment
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="flex-1"
-          onClick={handleShare}
-        >
-          <Share className="h-4 w-4 mr-2" />
-          Share
-        </Button>
+        <ShareModal
+          title={story.title}
+          url={`https://donortide.com/stories/${story.id}`}
+          content={story.content}
+          type="story"
+        />
       </CardFooter>
+      
+      {showComments && (
+        <div className="px-4 pb-4">
+          <CommentSection comments={commentData} postId={story.id} postType="story" />
+        </div>
+      )}
     </Card>
   );
 };
 
 const UserStories = () => {
+  const { user } = useAuth();
+  
   const stories: Story[] = [
     {
       id: '1',
@@ -163,7 +188,8 @@ const UserStories = () => {
       likes: 56,
       comments: 12,
       shares: 8,
-      timestamp: '3 days ago'
+      timestamp: '3 days ago',
+      isVerified: true
     },
     {
       id: '2',
@@ -187,9 +213,25 @@ const UserStories = () => {
       likes: 42,
       comments: 9,
       shares: 5,
-      timestamp: '2 weeks ago'
+      timestamp: '2 weeks ago',
+      isVerified: true
     }
   ];
+
+  const handleShareYourStory = () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to share your story",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Share Your Story",
+      description: "Coming soon: Story submission form",
+    });
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -208,7 +250,8 @@ const UserStories = () => {
         ))}
         
         <div className="flex justify-center mt-4 mb-8">
-          <Button>
+          <Button onClick={handleShareYourStory}>
+            <PenLine className="h-4 w-4 mr-2" />
             Share Your Story
           </Button>
         </div>

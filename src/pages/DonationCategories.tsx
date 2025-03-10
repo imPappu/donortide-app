@@ -6,7 +6,10 @@ import {
   DropletIcon, Heart, Shirt, Pizza, Package, BookOpen, Gift, ArrowRight 
 } from "lucide-react";
 import TopNavbar from "@/components/TopNavbar";
+import DonationPayment from "@/components/DonationPayment";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface DonationCategory {
   id: string;
@@ -17,7 +20,19 @@ interface DonationCategory {
 }
 
 const CategoryCard = ({ category }: { category: DonationCategory }) => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const handleClick = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to make a donation",
+      });
+      navigate("/login");
+      return;
+    }
+
     toast({
       title: `${category.name} donation`,
       description: `Coming soon: ${category.name.toLowerCase()} donation process`,
@@ -50,6 +65,20 @@ const CategoryCard = ({ category }: { category: DonationCategory }) => {
 };
 
 const DonationCategories = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleDonateClick = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to make a monetary donation",
+      });
+      navigate("/login");
+      return;
+    }
+  };
+
   const categories: DonationCategory[] = [
     {
       id: '1',
@@ -122,9 +151,18 @@ const DonationCategories = () => {
                 <p className="text-sm text-muted-foreground mt-1">
                   Support our organization with a financial contribution
                 </p>
-                <Button className="mt-3">
-                  Donate Now
-                </Button>
+                {isAuthenticated ? (
+                  <DonationPayment 
+                    trigger={
+                      <Button className="mt-3">Donate Now</Button>
+                    }
+                    purpose="donation to support our cause"
+                  />
+                ) : (
+                  <Button className="mt-3" onClick={handleDonateClick}>
+                    Donate Now
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>

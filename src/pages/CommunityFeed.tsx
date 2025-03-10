@@ -2,10 +2,14 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Share, MoreHorizontal, User, ThumbsUp } from "lucide-react";
+import { MessageSquare, MoreHorizontal, User, ThumbsUp } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import TopNavbar from "@/components/TopNavbar";
 import { toast } from "@/hooks/use-toast";
+import CommentSection from "@/components/CommentSection";
+import ShareModal from "@/components/ShareModal";
+import { useAuth } from "@/components/auth/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Post {
   id: string;
@@ -18,11 +22,20 @@ interface Post {
   shares: number;
   timestamp: string;
   liked: boolean;
+  commentData?: Array<{
+    id: string;
+    userName: string;
+    userAvatar?: string;
+    content: string;
+    timestamp: string;
+  }>;
 }
 
 const CommunityPost = ({ post }: { post: Post }) => {
   const [liked, setLiked] = useState(post.liked);
   const [likeCount, setLikeCount] = useState(post.likes);
+  const [showComments, setShowComments] = useState(false);
+  const { user } = useAuth();
 
   const handleLike = () => {
     if (liked) {
@@ -39,31 +52,39 @@ const CommunityPost = ({ post }: { post: Post }) => {
   };
 
   const handleComment = () => {
-    toast({
-      title: "Comment",
-      description: "Coming soon: commenting functionality",
-    });
+    setShowComments(!showComments);
   };
 
-  const handleShare = () => {
-    toast({
-      title: "Share",
-      description: "Coming soon: social media sharing",
-    });
-  };
+  // Default comments if none provided
+  const commentData = post.commentData || [
+    {
+      id: '1',
+      userName: 'Alex Johnson',
+      content: 'Thank you for donating! Every donation counts.',
+      timestamp: '1 hour ago'
+    },
+    {
+      id: '2',
+      userName: 'Maria Garcia',
+      content: 'You\'re a hero! I\'m planning to donate next week too.',
+      timestamp: '45 minutes ago'
+    }
+  ];
 
   return (
     <Card className="mb-4">
       <CardContent className="p-4">
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+            <Avatar className="h-10 w-10 mr-3">
               {post.userAvatar ? (
-                <img src={post.userAvatar} alt={post.userName} className="h-10 w-10 rounded-full" />
+                <AvatarImage src={post.userAvatar} alt={post.userName} />
               ) : (
-                <User className="h-6 w-6 text-gray-600" />
+                <AvatarFallback>
+                  {post.userName.charAt(0)}
+                </AvatarFallback>
               )}
-            </div>
+            </Avatar>
             <div>
               <h3 className="font-medium text-sm">{post.userName}</h3>
               <p className="text-xs text-muted-foreground">{post.timestamp}</p>
@@ -109,22 +130,26 @@ const CommunityPost = ({ post }: { post: Post }) => {
           <MessageSquare className="h-4 w-4 mr-2" />
           Comment
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="flex-1"
-          onClick={handleShare}
-        >
-          <Share className="h-4 w-4 mr-2" />
-          Share
-        </Button>
+        <ShareModal
+          title={`${post.userName}'s post`}
+          url={`https://donortide.com/post/${post.id}`}
+          content={post.content}
+          type="post"
+        />
       </CardFooter>
+      
+      {showComments && (
+        <div className="px-4 pb-4">
+          <CommentSection comments={commentData} postId={post.id} postType="post" />
+        </div>
+      )}
     </Card>
   );
 };
 
 const CommunityFeed = () => {
   const [newPost, setNewPost] = useState("");
+  const { user } = useAuth();
   
   const posts: Post[] = [
     {
@@ -135,7 +160,21 @@ const CommunityFeed = () => {
       comments: 5,
       shares: 2,
       timestamp: '2 hours ago',
-      liked: false
+      liked: false,
+      commentData: [
+        {
+          id: '1',
+          userName: 'John Smith',
+          content: 'Thank you for your donation! You\'re making a huge difference.',
+          timestamp: '1 hour ago'
+        },
+        {
+          id: '2',
+          userName: 'Emily Davis',
+          content: 'You\'re inspiring me to donate as well!',
+          timestamp: '30 minutes ago'
+        }
+      ]
     },
     {
       id: '2',
@@ -179,9 +218,15 @@ const CommunityFeed = () => {
         <Card className="mb-6">
           <CardContent className="p-4">
             <div className="flex items-start">
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                <User className="h-6 w-6 text-gray-600" />
-              </div>
+              <Avatar className="h-10 w-10 mr-3">
+                {user?.avatar ? (
+                  <AvatarImage src={user.avatar} alt={user.name} />
+                ) : (
+                  <AvatarFallback>
+                    {user ? user.name.charAt(0) : <User className="h-6 w-6 text-gray-600" />}
+                  </AvatarFallback>
+                )}
+              </Avatar>
               <div className="flex-1">
                 <Textarea 
                   placeholder="Share something with the community..."

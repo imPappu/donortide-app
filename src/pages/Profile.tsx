@@ -1,11 +1,10 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  User, 
   MapPin, 
   Phone, 
   Calendar, 
@@ -14,10 +13,15 @@ import {
   Clock, 
   Settings as SettingsIcon, 
   LogOut,
-  Bell
+  Bell,
+  CheckCircle,
+  Shield
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import ProfilePictureUpload from "@/components/ProfilePictureUpload";
+import { useAuth } from "@/components/auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const DonationHistory = () => {
   const donations = [
@@ -79,6 +83,14 @@ const Achievements = () => {
 };
 
 const SettingsTab = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+  
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -111,7 +123,7 @@ const SettingsTab = () => {
         <Button variant="outline" className="w-full justify-start">
           <SettingsIcon className="mr-2 h-4 w-4" /> Account Settings
         </Button>
-        <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-50">
+        <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-50" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" /> Logout
         </Button>
       </div>
@@ -119,15 +131,114 @@ const SettingsTab = () => {
   );
 };
 
+const VerificationTab = () => {
+  const { user, updateProfile, verifyAccount } = useAuth();
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleVerify = async () => {
+    if (!verificationCode.trim()) return;
+    
+    setIsSubmitting(true);
+    await verifyAccount(verificationCode);
+    setIsSubmitting(false);
+    setVerificationCode("");
+  };
+  
+  if (user?.isVerified) {
+    return (
+      <div className="text-center py-6">
+        <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="h-8 w-8 text-green-600" />
+        </div>
+        <h3 className="text-lg font-medium mb-2">Account Verified</h3>
+        <p className="text-muted-foreground">
+          Your account has been verified. You now have full access to all features.
+        </p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Shield className="h-8 w-8 text-blue-600" />
+        </div>
+        <h3 className="text-lg font-medium mb-2">Verify Your Account</h3>
+        <p className="text-muted-foreground mb-4">
+          Verification helps ensure the safety and trust of our community.
+        </p>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="verification-code">Verification Code</Label>
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              id="verification-code"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Enter 6-digit code"
+            />
+            <Button onClick={handleVerify} disabled={isSubmitting || !verificationCode.trim()}>
+              {isSubmitting ? "Verifying..." : "Verify"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            For this demo, use code: 123456
+          </p>
+        </div>
+        
+        <div className="rounded-md bg-muted p-3">
+          <p className="text-sm">
+            Why verify your account?
+          </p>
+          <ul className="list-disc list-inside text-sm mt-2 space-y-1">
+            <li>Confirm you're a real person</li>
+            <li>Access all features of the platform</li>
+            <li>Enhance trust with other users</li>
+            <li>Protect your account from misuse</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Profile = () => {
+  const { user, updateProfile } = useAuth();
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const userData = user || {
+    name: "John Doe",
+    email: "johndoe@example.com",
+    avatar: "",
+    isVerified: false
+  };
+  
+  const handleAvatarChange = async (imageUrl: string) => {
+    if (user) {
+      await updateProfile({ avatar: imageUrl });
+    }
+  };
+
   return (
     <div className="container max-w-md mx-auto px-4 py-6">
       <Card>
         <CardHeader className="text-center border-b pb-6">
-          <div className="mx-auto h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <User className="h-12 w-12 text-primary" />
+          <ProfilePictureUpload 
+            currentAvatar={user?.avatar}
+            username={user?.name || "User"}
+            onAvatarChange={handleAvatarChange}
+          />
+          <div className="mt-4 flex items-center justify-center">
+            <CardTitle>{userData.name}</CardTitle>
+            {userData.isVerified && (
+              <CheckCircle className="h-4 w-4 text-blue-500 ml-1" />
+            )}
           </div>
-          <CardTitle>John Doe</CardTitle>
           <div className="flex items-center justify-center mt-1">
             <DropletIcon className="h-4 w-4 mr-1 text-red-500" />
             <span className="font-medium">O+</span>
@@ -150,6 +261,7 @@ const Profile = () => {
             <TabsList className="w-full">
               <TabsTrigger value="history" className="flex-1">History</TabsTrigger>
               <TabsTrigger value="achievements" className="flex-1">Achievements</TabsTrigger>
+              <TabsTrigger value="verify" className="flex-1">Verify</TabsTrigger>
               <TabsTrigger value="settings" className="flex-1">Settings</TabsTrigger>
             </TabsList>
             <div className="mt-6">
@@ -158,6 +270,9 @@ const Profile = () => {
               </TabsContent>
               <TabsContent value="achievements">
                 <Achievements />
+              </TabsContent>
+              <TabsContent value="verify">
+                <VerificationTab />
               </TabsContent>
               <TabsContent value="settings">
                 <SettingsTab />

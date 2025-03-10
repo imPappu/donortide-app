@@ -1,33 +1,28 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import DashboardStats from "@/components/admin/DashboardStats";
-import BannerManagement from "@/components/admin/BannerManagement";
-import BlogManagement from "@/components/admin/BlogManagement";
-import PushNotificationCenter from "@/components/admin/PushNotificationCenter";
-import PaymentGatewaySettings from "@/components/admin/PaymentGatewaySettings";
-import AppSettingsForm from "@/components/admin/AppSettingsForm";
-import SplashScreenSettings from "@/components/admin/SplashScreenSettings";
-import AppBrandingForm from "@/components/admin/AppBrandingForm";
-import DatabaseSettings from "@/components/admin/DatabaseSettings";
-import StaffManagement from "@/components/admin/StaffManagement";
-import VolunteerManagement from "@/components/admin/VolunteerManagement";
-import AmbulanceManagement from "@/components/admin/AmbulanceManagement";
-import DonorManagement from "@/components/admin/DonorManagement";
-import OrganizationManagement from "@/components/admin/OrganizationManagement";
-import CommunityPostManagement from "@/components/admin/CommunityPostManagement";
-import FirebasePushComponent from "@/components/admin/FirebasePushComponent";
-import AdsManagement from "@/components/admin/AdsManagement";
-import AIManagement from "@/components/admin/AIManagement";
-import { Banner, BlogPost, Notification } from "@/types/apiTypes";
-import { Skeleton } from "@/components/ui/skeleton";
-import AlgorithmDashboard from "./algorithm/AlgorithmDashboard";
+import DashboardStats from "./DashboardStats";
+import RecentRequests from "./RecentRequests";
+import BannerManagement from "./BannerManagement";
+import BlogManagement from "./BlogManagement";
+import NotificationPanel from "./NotificationPanel";
+import DonorManagement from "./DonorManagement";
+import OrganizationManagement from "./OrganizationManagement";
+import StaffManagement from "./StaffManagement";
+import VolunteerManagement from "./VolunteerManagement";
+import CommunityPostManagement from "./CommunityPostManagement";
+import AdsManagement from "./AdsManagement";
+import AIManagement from "./AIManagement";
+import PaymentGatewaySettings from "./PaymentGatewaySettings";
+import DatabaseSettings from "./DatabaseSettings";
 import SystemUpdatePanel from "./SystemUpdatePanel";
-import TestEnvironment from "./system/TestEnvironment";
-import MaintenanceMode from "./system/MaintenanceMode";
-import AddonModules from "./system/AddonModules";
-import AIConfiguration from "./system/AIConfiguration";
 import ServicesManagement from "./ServicesManagement";
+import AlgorithmDashboard from "./algorithm/AlgorithmDashboard";
+import { Banner, BlogPost, Notification } from "@/types/apiTypes";
+import AddonModules from "./system/AddonModules";
+import MaintenanceMode from "./system/MaintenanceMode";
+import TestEnvironment from "./system/TestEnvironment";
+import AIConfiguration from "./system/AIConfiguration";
+import EventsCampaignsAddon from "./system/events-campaigns/EventsCampaignsAddon";
 
 interface AdminContentProps {
   activeTab: string;
@@ -43,135 +38,131 @@ interface AdminContentProps {
   setBlogPosts: React.Dispatch<React.SetStateAction<BlogPost[]>>;
   notification: Partial<Notification>;
   setNotification: React.Dispatch<React.SetStateAction<Partial<Notification>>>;
-  loading?: boolean;
+  loading: boolean;
 }
 
-const AdminContent = ({ 
-  activeTab, 
-  stats, 
-  banners, 
-  setBanners, 
-  blogPosts, 
+const AdminContent = ({
+  activeTab,
+  stats,
+  banners,
+  setBanners,
+  blogPosts,
   setBlogPosts,
   notification,
   setNotification,
-  loading = false
+  loading
 }: AdminContentProps) => {
-  // Loading skeleton for dashboard stats
-  if (loading && activeTab === "dashboard") {
-    return (
-      <main className="p-4 md:p-6 animate-pulse">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-center">
-                  <Skeleton className="h-5 w-5 rounded-full" />
-                  <Skeleton className="h-4 w-10" />
-                </div>
-                <div className="mt-3">
-                  <Skeleton className="h-8 w-20 mb-2" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="overflow-hidden">
-            <CardContent className="pt-6">
-              <Skeleton className="h-6 w-40 mb-4" />
-              <Skeleton className="h-[320px] w-full rounded-md" />
-            </CardContent>
-          </Card>
-          
-          <Card className="overflow-hidden">
-            <CardContent className="pt-6">
-              <Skeleton className="h-6 w-40 mb-4" />
-              <Skeleton className="h-[320px] w-full rounded-md" />
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    );
-  }
-
-  const getContentWithAnimation = (content: React.ReactNode) => (
-    <div className="p-6 animate-fade-in">
-      {content}
-    </div>
-  );
-
+  
   return (
-    <>
-      {/* Dashboard and Analytics */}
-      {activeTab === "dashboard" && getContentWithAnimation(<DashboardStats stats={stats} />)}
-      
-      {activeTab === "algorithm" && getContentWithAnimation(<AlgorithmDashboard />)}
-      
-      {/* Content Management */}
-      {activeTab === "banners" && getContentWithAnimation(<BannerManagement banners={banners} setBanners={setBanners} />)}
-      
-      {activeTab === "blog" && getContentWithAnimation(<BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />)}
-      
-      {activeTab === "community" && getContentWithAnimation(<CommunityPostManagement />)}
-      
-      {/* User Management */}
-      {activeTab === "staff" && getContentWithAnimation(<StaffManagement />)}
-      
-      {activeTab === "donors" && getContentWithAnimation(<DonorManagement />)}
-      
-      {activeTab === "volunteers" && getContentWithAnimation(<VolunteerManagement />)}
-      
-      {/* Organization Management */}
-      {activeTab === "organizations" && getContentWithAnimation(<OrganizationManagement />)}
-      
-      {activeTab === "ambulances" && getContentWithAnimation(<AmbulanceManagement />)}
-      
-      {/* Services Management */}
-      {activeTab === "services" && getContentWithAnimation(<ServicesManagement />)}
-      
-      {/* Marketing & Notifications */}
-      {activeTab === "push-notifications" && getContentWithAnimation(<FirebasePushComponent />)}
-      
-      {activeTab === "notifications" && getContentWithAnimation(
-        <PushNotificationCenter 
-          notification={notification} 
-          setNotification={setNotification} 
-        />
+    <div className="p-4 md:p-6 pb-16">
+      {/* Dashboard */}
+      {activeTab === "dashboard" && (
+        <div className="space-y-6">
+          <DashboardStats stats={stats} loading={loading} />
+          <RecentRequests />
+        </div>
       )}
       
-      {activeTab === "ads" && getContentWithAnimation(<AdsManagement />)}
-      
-      {/* System & AI */}
-      {activeTab === "system-updates" && getContentWithAnimation(<SystemUpdatePanel />)}
-      
-      {activeTab === "addons" && getContentWithAnimation(<AddonModules />)}
-      
-      {activeTab === "ai-config" && getContentWithAnimation(<AIConfiguration />)}
-      
-      {activeTab === "test-mode" && getContentWithAnimation(<TestEnvironment />)}
-      
-      {activeTab === "maintenance" && getContentWithAnimation(<MaintenanceMode />)}
-      
-      {/* Settings */}
-      {activeTab === "app-branding" && getContentWithAnimation(<AppBrandingForm />)}
-      
-      {activeTab === "database" && getContentWithAnimation(<DatabaseSettings />)}
-      
-      {activeTab === "payment" && getContentWithAnimation(<PaymentGatewaySettings />)}
-      
-      {activeTab === "app-settings" && getContentWithAnimation(
-        <Card className="shadow-sm border-gray-200 dark:border-gray-800">
-          <CardContent className="pt-6">
-            <AppSettingsForm />
-          </CardContent>
-        </Card>
+      {/* Banners */}
+      {activeTab === "banners" && (
+        <BannerManagement banners={banners} setBanners={setBanners} />
       )}
       
-      {activeTab === "splash-screen" && getContentWithAnimation(<SplashScreenSettings />)}
-    </>
+      {/* Blog */}
+      {activeTab === "blog" && (
+        <BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />
+      )}
+      
+      {/* Notifications */}
+      {activeTab === "notifications" && (
+        <NotificationPanel notification={notification} setNotification={setNotification} />
+      )}
+      
+      {/* Donors */}
+      {activeTab === "donors" && (
+        <DonorManagement />
+      )}
+      
+      {/* Organizations */}
+      {activeTab === "organizations" && (
+        <OrganizationManagement />
+      )}
+      
+      {/* Staff */}
+      {activeTab === "staff" && (
+        <StaffManagement />
+      )}
+      
+      {/* Volunteers */}
+      {activeTab === "volunteers" && (
+        <VolunteerManagement />
+      )}
+      
+      {/* Community posts */}
+      {activeTab === "community-posts" && (
+        <CommunityPostManagement />
+      )}
+      
+      {/* Advertisements */}
+      {activeTab === "ads" && (
+        <AdsManagement />
+      )}
+      
+      {/* AI */}
+      {activeTab === "ai" && (
+        <AIManagement />
+      )}
+      
+      {/* Payment */}
+      {activeTab === "payment" && (
+        <PaymentGatewaySettings />
+      )}
+      
+      {/* Database */}
+      {activeTab === "database" && (
+        <DatabaseSettings />
+      )}
+      
+      {/* System updates */}
+      {activeTab === "system-updates" && (
+        <SystemUpdatePanel />
+      )}
+      
+      {/* Services */}
+      {activeTab === "services" && (
+        <ServicesManagement />
+      )}
+      
+      {/* Algorithm */}
+      {activeTab === "algorithm" && (
+        <AlgorithmDashboard />
+      )}
+
+      {/* Addon modules */}
+      {activeTab === "addons" && (
+        <AddonModules />
+      )}
+      
+      {/* Maintenance */}
+      {activeTab === "maintenance" && (
+        <MaintenanceMode />
+      )}
+      
+      {/* Test Environment */}
+      {activeTab === "test-environment" && (
+        <TestEnvironment />
+      )}
+      
+      {/* AI Configuration */}
+      {activeTab === "ai-configuration" && (
+        <AIConfiguration />
+      )}
+      
+      {/* Events & Campaigns */}
+      {activeTab === "events-campaigns" && (
+        <EventsCampaignsAddon />
+      )}
+    </div>
   );
 };
 

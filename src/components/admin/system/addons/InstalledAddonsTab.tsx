@@ -2,18 +2,7 @@
 import React from "react";
 import { Package } from "lucide-react";
 import AddonCard from "./AddonCard";
-
-interface AddonModule {
-  id: number;
-  name: string;
-  version: string;
-  status: "Active" | "Inactive" | "Needs Update";
-  author: string;
-  description: string;
-  hasSettings: boolean;
-  permissions?: string[];
-  isCustom?: boolean;
-}
+import { AddonModule } from "../types";
 
 interface InstalledAddonsTabProps {
   installedAddons: AddonModule[];

@@ -149,7 +149,8 @@ const AddonModules = () => {
         status: "Inactive",
         author: "Custom Upload",
         description: "Manually uploaded addon module.",
-        hasSettings: false
+        hasSettings: false,
+        isCustom: false
       };
       
       setInstalledAddons(prev => [...prev, newAddon]);
@@ -289,51 +290,6 @@ const AddonModules = () => {
       ...prev,
       [setting]: value
     }));
-  };
-
-  const handleUploadAddon = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    setUploadingAddon(true);
-    const file = e.target.files[0];
-    
-    try {
-      // Simulate upload and installation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Check if file is valid addon package
-      if (!file.name.endsWith('.zip') && !file.name.endsWith('.addon')) {
-        throw new Error("Invalid addon file format");
-      }
-      
-      const newAddon: AddonModule = {
-        id: Date.now(),
-        name: file.name.replace(/\.(zip|addon)$/, ""),
-        version: "1.0.0",
-        status: "Inactive",
-        author: "Custom Upload",
-        description: "Manually uploaded addon module.",
-        hasSettings: false,
-        isCustom: false
-      };
-      
-      setInstalledAddons(prev => [...prev, newAddon]);
-      
-      toast({
-        title: "Addon Installed",
-        description: `Successfully installed ${file.name}`,
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast({
-        title: "Installation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingAddon(false);
-      setActiveTab("installed");
-    }
   };
 
   return (

@@ -1,45 +1,38 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Box, Cog, AlertTriangle } from "lucide-react";
+import { Box, AlertTriangle, Cog } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import AddonUploader from "../components/AddonUploader";
-import { AddonModule } from "../types";
+
+interface InstalledAddon {
+  id: number;
+  name: string;
+  version: string;
+  status: string;
+}
 
 const AddonsTab = () => {
   const [uploadingAddon, setUploadingAddon] = useState(false);
   
-  // Updated addon types to match our new type definition
-  const installedAddons: AddonModule[] = [
-    { 
-      id: 1, 
-      name: "Blood Matching Algorithm", 
-      version: "1.0.0", 
-      status: "Active",
-      author: "Internal Team",
-      description: "Blood type matching engine",
-      hasSettings: true
-    },
-    { 
-      id: 2, 
-      name: "Donor Eligibility Check", 
-      version: "1.1.0", 
-      status: "Active",
-      author: "Internal Team",
-      description: "Donor eligibility verification",
-      hasSettings: true
-    },
-    { 
-      id: 3, 
-      name: "Donation Inventory", 
-      version: "1.0.2", 
-      status: "Inactive",
-      author: "Internal Team",
-      description: "Inventory tracking system",
-      hasSettings: false
-    },
+  const installedAddons: InstalledAddon[] = [
+    { id: 1, name: "Payment Gateway Plus", version: "1.2.0", status: "Active" },
+    { id: 2, name: "Analytics Dashboard", version: "2.0.1", status: "Active" },
+    { id: 3, name: "Community Manager", version: "1.0.5", status: "Inactive" },
   ];
+  
+  const handleUploadAddon = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    setUploadingAddon(true);
+    
+    // Simulate upload and installation
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Reset uploading state
+    setUploadingAddon(false);
+  };
   
   return (
     <div className="space-y-4">
@@ -48,24 +41,10 @@ const AddonsTab = () => {
           <CardTitle>Install New Addon</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Upload addon modules to extend system functionality.
-              Addons should be in the .zip format.
-            </p>
-            
-            <AddonUploader 
-              uploadingAddon={uploadingAddon}
-              setUploadingAddon={setUploadingAddon}
-            />
-            
-            <Alert className="bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-              <AlertDescription>
-                Only install addons from trusted sources. Malicious addons can compromise your system security.
-              </AlertDescription>
-            </Alert>
-          </div>
+          <AddonUploader 
+            uploadingAddon={uploadingAddon}
+            handleUploadAddon={handleUploadAddon}
+          />
         </CardContent>
       </Card>
       

@@ -24,6 +24,8 @@ const BannerForm = ({ initialData, onSubmit, onCancel }: BannerFormProps) => {
       displayOrder: 0
     }
   );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>(initialData?.imageUrl || '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -40,19 +42,66 @@ const BannerForm = ({ initialData, onSubmit, onCancel }: BannerFormProps) => {
     setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      // Create a preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.imageUrl) {
+    if (!formData.title) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please enter a banner title",
         variant: "destructive",
       });
       return;
     }
     
-    onSubmit(formData);
+    // Handle image upload
+    if (imageFile) {
+      try {
+        // In a real implementation, you would upload the image to your server here
+        // For now, we'll simulate by setting the imageUrl to the file name
+        const fileName = `/lovable-uploads/${Date.now()}-${imageFile.name}`;
+        
+        // Update form data with the new image URL
+        setFormData(prev => ({ ...prev, imageUrl: fileName }));
+        
+        // Submit the form with the updated imageUrl
+        onSubmit({
+          ...formData,
+          imageUrl: fileName
+        });
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        toast({
+          title: "Error",
+          description: "Failed to upload image",
+          variant: "destructive",
+        });
+      }
+    } else if (!previewUrl && !formData.imageUrl) {
+      toast({
+        title: "Error",
+        description: "Please select an image for the banner",
+        variant: "destructive",
+      });
+      return;
+    } else {
+      // No new image, submit with existing data
+      onSubmit(formData);
+    }
   };
 
   return (
@@ -80,14 +129,27 @@ const BannerForm = ({ initialData, onSubmit, onCancel }: BannerFormProps) => {
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="imageUrl">Image URL *</Label>
-        <Input 
-          id="imageUrl" 
-          name="imageUrl" 
-          value={formData.imageUrl} 
-          onChange={handleChange} 
-          required 
-        />
+        <Label htmlFor="bannerImage">Banner Image *</Label>
+        <div className="flex flex-col space-y-2">
+          <Input 
+            id="bannerImage" 
+            name="bannerImage" 
+            type="file" 
+            accept="image/*"
+            onChange={handleImageChange}
+            className="cursor-pointer"
+          />
+          {previewUrl && (
+            <div className="mt-2">
+              <p className="text-sm mb-1">Preview:</p>
+              <img 
+                src={previewUrl} 
+                alt="Banner preview" 
+                className="w-full max-h-40 object-cover rounded-md" 
+              />
+            </div>
+          )}
+        </div>
       </div>
       
       <div className="space-y-2">

@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Donation System - Installation Guide</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #1c64f2;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .step {
+      margin-bottom: 30px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+    }
+    .note {
+      background-color: #fff8e6;
+      border-left: 4px solid #ffc107;
+      padding: 10px 15px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blood Donation System - Installation Guide</h1>
+  
+  <p>This guide will help you install the Blood Donation System on your cPanel hosting.</p>
+  
+  <div class="step">
+    <h2>Step 1: Server Requirements</h2>
+    <p>Before you begin, ensure your server meets the following requirements:</p>
+    <ul>
+      <li>PHP 7.4 or higher</li>
+      <li>PostgreSQL 12 or higher</li>
+      <li>Apache or Nginx web server</li>
+      <li>SSL certificate (recommended for security)</li>
+    </ul>
+  </div>
+  
+  <div class="step">
+    <h2>Step 2: Upload Files</h2>
+    <p>Upload the application files to your cPanel hosting:</p>
+    <ol>
+      <li>Login to your cPanel account</li>
+      <li>Navigate to the File Manager</li>
+      <li>Go to the public_html directory (or subdirectory where you want to install)</li>
+      <li>Upload the zipped application package</li>
+      <li>Extract the files</li>
+    </ol>
+  </div>
+  
+  <div class="step">
+    <h2>Step 3: Create Database</h2>
+    <p>Create a PostgreSQL database for the application:</p>
+    <ol>
+      <li>In cPanel, navigate to "PostgreSQL Databases"</li>
+      <li>Create a new database</li>
+      <li>Create a database user and assign it to the database with all privileges</li>
+      <li>Note down the database name, username, and password</li>
+    </ol>
+  </div>
+  
+  <div class="step">
+    <h2>Step 4: Configure Installation</h2>
+    <p>Navigate to the installation wizard by visiting your domain:</p>
+    <pre><code>https://your-domain.com/install</code></pre>
+    <p>Follow the installation wizard which will guide you through:</p>
+    <ul>
+      <li>Database configuration</li>
+      <li>Admin user creation</li>
+      <li>Initial system settings</li>
+    </ul>
+    
+    <div class="note">
+      <p><strong>Note:</strong> The installation script will create necessary database tables and initial configuration.</p>
+    </div>
+  </div>
+  
+  <div class="step">
+    <h2>Step 5: Finalize Installation</h2>
+    <p>After completing the wizard:</p>
+    <ol>
+      <li>Set proper file permissions (typically 755 for directories and 644 for files)</li>
+      <li>Remove or rename the install directory for security</li>
+      <li>Configure cron jobs if needed (for scheduling tasks)</li>
+    </ol>
+  </div>
+  
+  <div class="step">
+    <h2>Manual Installation (Advanced)</h2>
+    <p>If you prefer a manual installation, follow these steps:</p>
+    <ol>
+      <li>Copy the <code>config.php.example</code> file to <code>config.php</code></li>
+      <li>Edit the configuration file with your database credentials</li>
+      <li>Import the SQL schema from <code>database_setup.sql</code> to your PostgreSQL database</li>
+      <li>Create an admin user directly in the database</li>
+    </ol>
+    <pre><code>-- SQL to create admin user manually
+INSERT INTO users (email, password_hash, name, role)
+VALUES ('admin@example.com', 'YOUR_HASHED_PASSWORD', 'Admin', 'admin');</code></pre>
+  </div>
+  
+  <div class="step">
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li>If you encounter database connection issues, verify your database credentials</li>
+      <li>For permission errors, check file ownership and permissions</li>
+      <li>Check PHP error logs in cPanel for detailed error messages</li>
+      <li>Ensure your server meets all the requirements listed above</li>
+    </ul>
+  </div>
+  
+  <footer>
+    <p>For additional support, please contact our support team or refer to the documentation.</p>
+  </footer>
+</body>
+</html>

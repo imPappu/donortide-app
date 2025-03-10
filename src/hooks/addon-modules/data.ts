@@ -1,3 +1,4 @@
+
 import { AddonModule, RepositoryAddon, ModuleSettings, AddonSpecificSettings, AddonPermissionGroups } from "./types";
 
 // Initial list of installed addons

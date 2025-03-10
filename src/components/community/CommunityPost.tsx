@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,12 +9,14 @@ import { useAuth } from "@/components/auth/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Post, PollOption } from "@/types/community";
 import { Progress } from "@/components/ui/progress";
+import TagBadge from "./TagBadge";
 
 interface CommunityPostProps {
   post: Post;
+  onTagClick?: (tag: string) => void;
 }
 
-const CommunityPost = ({ post }: CommunityPostProps) => {
+const CommunityPost = ({ post, onTagClick }: CommunityPostProps) => {
   const [liked, setLiked] = useState(post.liked);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
@@ -43,7 +44,6 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
   const handleVote = (optionId: string) => {
     if (!poll) return;
     
-    // If user has already voted
     if (poll.userVoted) {
       toast({
         title: "Already voted",
@@ -52,10 +52,8 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
       return;
     }
     
-    // Create a deep copy of the poll
     const updatedPoll = JSON.parse(JSON.stringify(poll));
     
-    // Find the option and increment its votes
     const option = updatedPoll.options.find((opt: PollOption) => opt.id === optionId);
     if (option) {
       option.votes++;
@@ -71,7 +69,6 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
     }
   };
 
-  // Default comments if none provided
   const commentData = post.commentData || [
     {
       id: '1',
@@ -87,7 +84,6 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
     }
   ];
 
-  // Render poll if post has one
   const renderPoll = () => {
     if (!poll) return null;
     
@@ -127,6 +123,12 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
     );
   };
 
+  const formatContent = (content: string) => {
+    if (!post.tags || post.tags.length === 0) return <p className="text-sm">{content}</p>;
+    
+    return <p className="text-sm mb-2">{content}</p>;
+  };
+
   return (
     <Card className="mb-4">
       <CardContent className="p-4">
@@ -152,7 +154,19 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
         </div>
         
         <div className="mb-3">
-          <p className="text-sm">{post.content}</p>
+          {formatContent(post.content)}
+          
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {post.tags.map((tag, index) => (
+                <TagBadge 
+                  key={index} 
+                  tag={tag} 
+                  onClick={() => onTagClick && onTagClick(tag)}
+                />
+              ))}
+            </div>
+          )}
         </div>
         
         {post.type === 'poll' && renderPoll()}

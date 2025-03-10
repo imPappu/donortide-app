@@ -11,6 +11,8 @@ export const MOCK_POSTS: Post[] = [
     shares: 2,
     timestamp: '2 hours ago',
     liked: false,
+    type: 'text',
+    tags: ['BloodDonation', 'DonorHero', 'MemorialHospital'],
     commentData: [
       {
         id: '1',
@@ -35,7 +37,9 @@ export const MOCK_POSTS: Post[] = [
     comments: 8,
     shares: 4,
     timestamp: '5 hours ago',
-    liked: true
+    liked: true,
+    type: 'image',
+    tags: ['FirstTimeDonor', 'PayItForward', 'BloodDonation']
   },
   {
     id: '3',
@@ -45,6 +49,17 @@ export const MOCK_POSTS: Post[] = [
     comments: 12,
     shares: 15,
     timestamp: '1 day ago',
-    liked: false
+    liked: false,
+    type: 'text',
+    tags: ['BloodUrgent', 'ONegative', 'CityMedical']
   }
+];
+
+// Mock trending tags data
+export const TRENDING_TAGS: Tag[] = [
+  { id: '1', name: 'BloodUrgent', count: 58, trending: true },
+  { id: '2', name: 'ONegative', count: 42, trending: true },
+  { id: '3', name: 'BloodDonation', count: 127, trending: true },
+  { id: '4', name: 'DonorHero', count: 89, trending: true },
+  { id: '5', name: 'FirstTimeDonor', count: 63, trending: true },
 ];

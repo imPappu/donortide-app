@@ -1,8 +1,7 @@
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Image, BarChart2, X, Plus } from "lucide-react";
+import { User, Image, BarChart2, X, Plus, Hash, Tag } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -11,6 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { v4 as uuidv4 } from "uuid";
+import { TRENDING_TAGS } from "@/data/mockPosts";
+import TagBadge from "./TagBadge";
+import TagSuggestions from "./TagSuggestions";
 
 const NewPostForm = () => {
   const [newPost, setNewPost] = useState("");
@@ -19,8 +21,27 @@ const NewPostForm = () => {
   const [isPollDialogOpen, setIsPollDialogOpen] = useState(false);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
+  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+  const [tagInput, setTagInput] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagSuggestionQuery, setTagSuggestionQuery] = useState("");
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const tagInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
+  
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (tagInputRef.current && !tagInputRef.current.contains(e.target as Node)) {
+        setShowTagSuggestions(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
   
   const handlePostSubmit = () => {
     if (postType === 'text' && !newPost.trim()) return;
@@ -35,12 +56,20 @@ const NewPostForm = () => {
       description: `Your ${postType} post has been shared with the community`,
     });
     
+    if (selectedTags.length > 0) {
+      toast({
+        title: "Tags added",
+        description: `Your post was tagged with: ${selectedTags.join(', ')}`,
+      });
+    }
+    
     // Reset the form
     setNewPost("");
     setSelectedImage(null);
     setPostType('text');
     setPollQuestion("");
     setPollOptions(["", ""]);
+    setSelectedTags([]);
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +92,40 @@ const NewPostForm = () => {
     setSelectedImage(null);
     if (!newPost.trim()) {
       setPostType('text');
+    }
+  };
+
+  const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTagInput(value);
+    
+    // Update suggestion query for real-time suggestions
+    if (value.startsWith('@')) {
+      setTagSuggestionQuery(value.substring(1));
+      setShowTagSuggestions(true);
+    } else {
+      setShowTagSuggestions(false);
+    }
+  };
+
+  const addTag = () => {
+    const tag = tagInput.trim().replace(/^@/, '');
+    if (tag && !selectedTags.includes(tag)) {
+      setSelectedTags([...selectedTags, tag]);
+      setTagInput("");
+      setShowTagSuggestions(false);
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleSelectSuggestedTag = (tag: string) => {
+    if (!selectedTags.includes(tag)) {
+      setSelectedTags([...selectedTags, tag]);
+      setTagInput("");
+      setShowTagSuggestions(false);
     }
   };
 
@@ -169,6 +232,51 @@ const NewPostForm = () => {
               </div>
             )}
             
+            {selectedTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-3">
+                {selectedTags.map((tag, index) => (
+                  <div key={index} className="relative inline-block">
+                    <TagBadge tag={tag} />
+                    <button 
+                      className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-white rounded-full flex items-center justify-center text-xs"
+                      onClick={() => removeTag(tag)}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="relative mb-3">
+              <div className="flex items-center gap-2">
+                <Input
+                  ref={tagInputRef}
+                  placeholder="Type @ to add CauseTags..."
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  className="flex-1"
+                />
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={addTag}
+                  disabled={!tagInput.trim()}
+                >
+                  <Tag className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
+              
+              {showTagSuggestions && (
+                <TagSuggestions 
+                  query={tagSuggestionQuery}
+                  tags={TRENDING_TAGS}
+                  onSelectTag={handleSelectSuggestedTag}
+                />
+              )}
+            </div>
+            
             <div className="flex items-center justify-between">
               <div className="flex space-x-2">
                 <Button 
@@ -196,6 +304,16 @@ const NewPostForm = () => {
                 >
                   <BarChart2 className="h-4 w-4 mr-2" />
                   Poll
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="flex items-center text-muted-foreground"
+                  onClick={() => setIsTagDialogOpen(true)}
+                >
+                  <Hash className="h-4 w-4 mr-2" />
+                  Tags
                 </Button>
               </div>
               
@@ -261,6 +379,76 @@ const NewPostForm = () => {
               </Button>
               <Button onClick={createPoll}>
                 Create Poll
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add CauseTags</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="tag-input">New Tag</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  id="tag-input" 
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  placeholder="Enter a tag name..."
+                />
+                <Button 
+                  onClick={addTag}
+                  disabled={!tagInput.trim()}
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+            
+            {selectedTags.length > 0 && (
+              <div>
+                <Label>Selected Tags</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedTags.map((tag, index) => (
+                    <div key={index} className="relative inline-block">
+                      <TagBadge tag={tag} />
+                      <button 
+                        className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-white rounded-full flex items-center justify-center text-xs"
+                        onClick={() => removeTag(tag)}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div>
+              <Label>Trending Tags</Label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {TRENDING_TAGS.map(tag => (
+                  <TagBadge 
+                    key={tag.id} 
+                    tag={tag.name} 
+                    trending={tag.trending}
+                    onClick={() => handleSelectSuggestedTag(tag.name)}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsTagDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => setIsTagDialogOpen(false)}>
+                Done
               </Button>
             </div>
           </div>

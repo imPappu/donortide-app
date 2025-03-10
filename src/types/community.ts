@@ -20,6 +20,13 @@ export interface Poll {
   userVoted?: string; // ID of the option the user voted for
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+  count: number;
+  trending?: boolean;
+}
+
 export interface Post {
   id: string;
   userName: string;
@@ -34,4 +41,5 @@ export interface Post {
   commentData?: Comment[];
   poll?: Poll;
   type: 'text' | 'image' | 'poll';
+  tags?: string[]; // Array of tag names
 }

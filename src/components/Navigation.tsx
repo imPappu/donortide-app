@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, Newspaper, Heart, UsersRound } from "lucide-react";
+import { Home, User, Newspaper, Heart, UsersRound, MessageCircle } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthContext";
 
 const Navigation = () => {
@@ -42,6 +42,16 @@ const Navigation = () => {
           </Link>
           
           <Link
+            to="/community"
+            className={`flex flex-1 flex-col items-center justify-center py-2 ${
+              path === "/community" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <MessageCircle className="h-6 w-6 transition-transform hover:scale-110" />
+            <span className="text-xs mt-1">Community</span>
+          </Link>
+          
+          <Link
             to="/blog"
             className={`flex flex-1 flex-col items-center justify-center py-2 ${
               path === "/blog" ? "text-primary" : "text-muted-foreground"
@@ -49,16 +59,6 @@ const Navigation = () => {
           >
             <Newspaper className="h-6 w-6 transition-transform hover:scale-110" />
             <span className="text-xs mt-1">Blog</span>
-          </Link>
-          
-          <Link
-            to="/volunteers"
-            className={`flex flex-1 flex-col items-center justify-center py-2 ${
-              path === "/volunteers" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <UsersRound className="h-6 w-6 transition-transform hover:scale-110" />
-            <span className="text-xs mt-1">Volunteers</span>
           </Link>
           
           <Link

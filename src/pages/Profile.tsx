@@ -12,6 +12,7 @@ import DonationHistory from "@/components/profile/DonationHistory";
 import Achievements from "@/components/profile/Achievements";
 import VerificationTab from "@/components/profile/VerificationTab";
 import SettingsTab from "@/components/profile/SettingsTab";
+import VolunteerApplicationTab from "@/components/profile/VolunteerApplicationTab";
 
 const Profile = () => {
   const { user, isAuthenticated, updateProfile } = useAuth();
@@ -55,6 +56,7 @@ const Profile = () => {
             <TabsList className="w-full">
               <TabsTrigger value="history" className="flex-1">History</TabsTrigger>
               <TabsTrigger value="achievements" className="flex-1">Achievements</TabsTrigger>
+              <TabsTrigger value="volunteer" className="flex-1">Volunteer</TabsTrigger>
               <TabsTrigger value="verify" className="flex-1">Verify</TabsTrigger>
               <TabsTrigger value="settings" className="flex-1">Settings</TabsTrigger>
             </TabsList>
@@ -64,6 +66,9 @@ const Profile = () => {
               </TabsContent>
               <TabsContent value="achievements">
                 <Achievements />
+              </TabsContent>
+              <TabsContent value="volunteer">
+                <VolunteerApplicationTab />
               </TabsContent>
               <TabsContent value="verify">
                 <VerificationTab />

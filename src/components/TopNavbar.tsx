@@ -1,9 +1,11 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, PlusCircle, Bell } from "lucide-react";
+import { Search, PlusCircle, Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/components/auth/AuthContext";
 
 interface TopNavbarProps {
   onSearch?: (query: string) => void;
@@ -19,6 +21,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
   const location = useLocation();
   const [searchExpanded, setSearchExpanded] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const { user } = useAuth();
 
   const handleSearchClick = () => {
     if (!showSearchBar) return;
@@ -46,9 +49,11 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
         <div className="h-16 flex items-center justify-between">
           {!searchExpanded ? (
             <>
-              <h1 className="text-xl font-bold flex items-center">
-                {title}
-              </h1>
+              <div className="flex items-center">
+                <h1 className="text-xl font-bold flex items-center">
+                  {title}
+                </h1>
+              </div>
               <div className="flex items-center space-x-2">
                 {showSearchBar && (
                   <Button 
@@ -80,6 +85,18 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                     <Bell className="h-5 w-5 transition-transform hover:scale-110" />
                   </Link>
                 </Button>
+                
+                <Link to="/profile">
+                  <Avatar className="h-8 w-8 border border-border">
+                    {user?.avatar ? (
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                    ) : (
+                      <AvatarFallback>
+                        {user?.name?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                </Link>
               </div>
             </>
           ) : (

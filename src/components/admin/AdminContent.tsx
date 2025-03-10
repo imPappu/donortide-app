@@ -63,7 +63,8 @@ const AdminContent = ({
       location: "Downtown",
       urgency: "Urgent",
       createdAt: new Date().toISOString(),
-      status: "Pending"
+      status: "Pending",
+      contactNumber: "+1234567890" // Added the required contactNumber property
     },
     {
       id: 2,
@@ -73,7 +74,8 @@ const AdminContent = ({
       location: "Westside",
       urgency: "High",
       createdAt: new Date(Date.now() - 86400000).toISOString(),
-      status: "Pending"
+      status: "Pending",
+      contactNumber: "+1987654321" // Added the required contactNumber property
     },
     {
       id: 3,
@@ -83,7 +85,8 @@ const AdminContent = ({
       location: "Eastside",
       urgency: "Normal",
       createdAt: new Date(Date.now() - 172800000).toISOString(),
-      status: "Pending"
+      status: "Pending",
+      contactNumber: "+1567890123" // Added the required contactNumber property
     }
   ];
   

@@ -1,14 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, DatabaseIcon, RefreshCw } from 'lucide-react';
+import { DatabaseIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import DatabaseConnectionForm from './DatabaseConnectionForm';
+import DatabaseConnectionActions from './DatabaseConnectionActions';
+import DBErrorAlert from './DBErrorAlert';
 
 interface DatabaseConfig {
   host: string;
@@ -124,12 +121,7 @@ const DatabaseSettings = () => {
 
   return (
     <div className="space-y-6">
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <DBErrorAlert error={error} />
 
       <Card>
         <CardHeader>
@@ -143,113 +135,20 @@ const DatabaseSettings = () => {
         </CardHeader>
         
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="db_type">Database Type</Label>
-                <Select 
-                  value={config.type} 
-                  onValueChange={(value) => handleChange('type', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select database type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="postgresql">PostgreSQL</SelectItem>
-                    <SelectItem value="mysql">MySQL</SelectItem>
-                    <SelectItem value="mariadb">MariaDB</SelectItem>
-                    <SelectItem value="sqlite">SQLite</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="db_host">Host</Label>
-                <Input 
-                  id="db_host" 
-                  value={config.host} 
-                  onChange={(e) => handleChange('host', e.target.value)} 
-                  placeholder="e.g., localhost or 127.0.0.1"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="db_port">Port</Label>
-                <Input 
-                  id="db_port" 
-                  value={config.port} 
-                  onChange={(e) => handleChange('port', e.target.value)} 
-                  placeholder="e.g., 5432 for PostgreSQL"
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="db_name">Database Name</Label>
-                <Input 
-                  id="db_name" 
-                  value={config.database} 
-                  onChange={(e) => handleChange('database', e.target.value)} 
-                  placeholder="e.g., blood_donation"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="db_username">Username</Label>
-                <Input 
-                  id="db_username" 
-                  value={config.username} 
-                  onChange={(e) => handleChange('username', e.target.value)} 
-                  placeholder="e.g., postgres"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="db_password">Password</Label>
-                <Input 
-                  id="db_password" 
-                  type="password"
-                  value={config.password} 
-                  onChange={(e) => handleChange('password', e.target.value)} 
-                  placeholder="Database password"
-                />
-              </div>
-            </div>
-          </div>
+          <DatabaseConnectionForm 
+            config={config} 
+            handleChange={handleChange} 
+          />
           
-          <div className="flex items-center space-x-2 mt-4">
-            <Switch 
-              id="ssl_enabled"
-              checked={config.ssl_enabled}
-              onCheckedChange={(checked) => handleChange('ssl_enabled', checked)}
-            />
-            <Label htmlFor="ssl_enabled">Enable SSL Connection</Label>
-          </div>
+          <DatabaseConnectionActions 
+            config={config}
+            handleChange={handleChange}
+            testConnection={testConnection}
+            saveConfig={saveConfig}
+            testing={testing}
+            loading={loading}
+          />
         </CardContent>
-        
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={testConnection}
-            disabled={testing}
-          >
-            {testing ? (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Testing...
-              </>
-            ) : (
-              'Test Connection'
-            )}
-          </Button>
-          <Button 
-            onClick={saveConfig}
-            disabled={loading}
-          >
-            Save Configuration
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );

@@ -30,7 +30,7 @@ const Register = () => {
       return;
     }
     
-    const success = await register(name, email, password, "user");
+    const success = await register(name, email, password, ['user']);
     if (success) {
       navigate("/verify");
     }

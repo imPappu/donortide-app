@@ -32,8 +32,13 @@ export const useAuthProvider = () => {
       
       if (foundUser) {
         const { password, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem('donor_tide_user', JSON.stringify(userWithoutPassword));
+        // Convert the readonly roles array to a mutable array
+        const userWithMutableRoles = {
+          ...userWithoutPassword,
+          roles: [...userWithoutPassword.roles] // Create a mutable copy of the roles array
+        };
+        setUser(userWithMutableRoles);
+        localStorage.setItem('donor_tide_user', JSON.stringify(userWithMutableRoles));
         toast({
           title: "Login successful",
           description: `Welcome back, ${foundUser.name}!`,

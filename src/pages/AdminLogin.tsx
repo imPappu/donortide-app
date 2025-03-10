@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { getAppSettings, verifyAdminCredentials } from "@/services/dbService";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import LoginCredentials from "@/components/admin/LoginCredentials";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
@@ -84,58 +85,62 @@ const AdminLogin = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl flex justify-center items-center gap-2">
-            <ShieldCheck className="h-6 w-6 text-primary" />
-            Admin Login
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                placeholder="admin"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
+      <div className="w-full max-w-md">
+        <LoginCredentials />
+        
+        <Card className="w-full shadow-lg">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-2xl flex justify-center items-center gap-2">
+              <ShieldCheck className="h-6 w-6 text-primary" />
+              Admin Login
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  id="username"
+                  placeholder="admin"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
               </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login to Dashboard"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            Access the admin dashboard to manage your blood donation system
-          </p>
-        </CardFooter>
-      </Card>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Logging in..." : "Login to Dashboard"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <p className="text-sm text-muted-foreground">
+              Access the admin dashboard to manage your blood donation system
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -24,6 +24,7 @@ import CommunityFeed from "./pages/CommunityFeed";
 import UserStories from "./pages/UserStories";
 import DonationCategories from "./pages/DonationCategories";
 import { AuthProvider } from "@/components/auth/AuthContext";
+import AdminLink from "@/components/AdminLink";
 
 const queryClient = new QueryClient();
 
@@ -108,6 +109,7 @@ const App = () => {
                 </Routes>
               </div>
               <Navigation />
+              <AdminLink adminPath={adminPath} />
             </div>
           </BrowserRouter>
         </AuthProvider>

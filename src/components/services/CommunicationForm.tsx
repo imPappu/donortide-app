@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { PhoneCall, Video, Send } from "lucide-react";
-import { submitCommunicationRequest, CommunicationRequest } from "@/services/servicesService";
+import { submitCommunicationRequest, CommunicationRequest } from "@/services/communicationService";
 
 const CommunicationForm = () => {
   const { toast } = useToast();

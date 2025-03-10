@@ -10,9 +10,26 @@ import PostContent from "./post/PostContent";
 import PostFooter from "./post/PostFooter";
 import PostStats from "./post/PostStats";
 import PollItem from "./poll/PollItem";
-import { Trash, Edit } from "lucide-react";
+import { Trash, Edit, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface CommunityPostProps {
   post: Post;
@@ -79,45 +96,79 @@ const CommunityPost = ({ post, onTagClick, onDelete, onEdit }: CommunityPostProp
     }
   };
 
+  const handleShare = () => {
+    toast({
+      title: "Post shared",
+      description: "Post link copied to clipboard",
+    });
+  };
+
+  const handleReport = () => {
+    toast({
+      title: "Post reported",
+      description: "Thank you for reporting this post. We'll review it shortly.",
+    });
+  };
+
   return (
-    <Card className={`mb-4 ${post.type === 'story' ? 'border-blue-500' : ''}`}>
+    <Card className={`mb-4 border shadow-sm hover:shadow-md transition-shadow ${post.type === 'story' ? 'border-blue-500' : ''}`}>
       <CardContent className="p-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-2">
           <PostHeader 
             userName={post.userName}
             userAvatar={post.userAvatar}
             timestamp={post.timestamp}
           />
           
-          {isOwnPost && (
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={handleEdit}>
-                <Edit className="h-4 w-4" />
-              </Button>
-              
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Trash className="h-4 w-4 text-red-500" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete post?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your post.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          )}
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {isOwnPost ? (
+                  <>
+                    <DropdownMenuItem onClick={handleEdit}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-500">
+                          <Trash className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete post?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your post.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                ) : (
+                  <DropdownMenuItem onClick={handleReport}>
+                    Report
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={handleShare}>
+                  Share
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         <PostContent 

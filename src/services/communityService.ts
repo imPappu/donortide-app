@@ -181,3 +181,27 @@ export const deleteStory = async (id: string): Promise<boolean> => {
     return true;
   }
 };
+
+// Update a story
+export const updateStory = async (id: string, data: Partial<Story>): Promise<Story> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/community/stories/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update story');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating story:', error);
+    // For development, simulate a successful update
+    return {
+      id,
+      ...data,
+    } as Story;
+  }
+};

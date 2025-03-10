@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Image, FileText, MessageSquare } from "lucide-react";
+import { Image, FileText, MessageSquare, Video } from "lucide-react";
 import { NavSection, NavItem } from "../NavSection";
 
 interface SectionProps {
@@ -29,6 +29,13 @@ const ContentSection = ({ activeTab, setActiveTab }: SectionProps) => {
         id="community"
         label="Community Posts"
         icon={<MessageSquare className="mr-2 h-4 w-4" />}
+        activeTab={activeTab}
+        onClick={setActiveTab}
+      />
+      <NavItem
+        id="stories"
+        label="Stories"
+        icon={<Video className="mr-2 h-4 w-4" />}
         activeTab={activeTab}
         onClick={setActiveTab}
       />

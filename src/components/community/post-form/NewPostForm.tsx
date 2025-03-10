@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { User } from "lucide-react";
+import { User, PencilLine } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,7 +26,6 @@ const NewPostForm = () => {
     if (postType === 'poll' && (!pollQuestion.trim() || pollOptions.filter(opt => opt.trim()).length < 2)) return;
     
     // In a real app, we would save the post to the database here
-    // For now, we'll just show a toast message
     
     toast({
       title: "Post created",
@@ -67,25 +66,30 @@ const NewPostForm = () => {
   };
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 border shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start">
           <Avatar className="h-10 w-10 mr-3">
             {user?.avatar ? (
               <AvatarImage src={user.avatar} alt={user.name} />
             ) : (
-              <AvatarFallback>
+              <AvatarFallback className="bg-gray-200 text-gray-700">
                 {user ? user.name.charAt(0) : <User className="h-6 w-6 text-gray-600" />}
               </AvatarFallback>
             )}
           </Avatar>
           <div className="flex-1">
-            <Textarea 
-              placeholder={`What's on your mind, ${user?.name?.split(' ')[0] || 'there'}?`}
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-              className="mb-3"
-            />
+            <div className="relative mb-3">
+              <Textarea 
+                placeholder={`What's on your mind, ${user?.name?.split(' ')[0] || 'there'}?`}
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                className="resize-none pr-10 min-h-[60px]"
+              />
+              <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+                <PencilLine className="h-5 w-5" />
+              </button>
+            </div>
             
             {/* Image preview is handled by ImageUploader component */}
             

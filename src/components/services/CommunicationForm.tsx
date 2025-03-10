@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -7,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { PhoneCall, Video, Send } from "lucide-react";
-import { submitCommunicationRequest, CommunicationRequest } from "@/services/communicationService";
+import { submitCommunicationRequest } from "@/services/communicationService";
+import { CommunicationRequest } from "@/services/types/serviceTypes";
 
 const CommunicationForm = () => {
   const { toast } = useToast();

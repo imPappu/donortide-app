@@ -25,7 +25,6 @@ const TestEnvironment = () => {
       />
       
       <TestConfigSettings 
-        testModeEnabled={testModeEnabled}
         testingInProgress={testingInProgress}
         mockDataEnabled={mockDataEnabled}
         testEndpoints={testEndpoints}

@@ -13,7 +13,7 @@ import DatabaseSettings from "@/components/admin/DatabaseSettings";
 import StaffManagement from "@/components/admin/StaffManagement";
 import VolunteerManagement from "@/components/admin/VolunteerManagement";
 import AmbulanceManagement from "@/components/admin/AmbulanceManagement";
-import { Banner, BlogPost, Notification } from "@/services/dbService";
+import { Banner, BlogPost, Notification } from "@/types/apiTypes";
 
 interface AdminContentProps {
   activeTab: string;

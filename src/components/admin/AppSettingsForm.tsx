@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AppSetting, getAppSettings, updateAppSetting } from '@/services/dbService';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AppSetting } from "@/types/apiTypes";
+import { getAppSettings, updateAppSetting } from "@/services/settingService";
 
 const AppSettingsForm = () => {
   const { toast } = useToast();

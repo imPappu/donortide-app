@@ -1,11 +1,11 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { updateBlogPost, deleteBlogPost, createBlogPost, BlogPost } from "@/services/dbService";
-import BlogPostForm from "@/components/admin/BlogPostForm";
 import { useToast } from '@/hooks/use-toast';
+import { BlogPost } from "@/types/apiTypes";
+import { createBlogPost, updateBlogPost, deleteBlogPost } from "@/services/blogService";
+import BlogPostForm from "@/components/admin/BlogPostForm";
 
 interface BlogManagementProps {
   blogPosts: BlogPost[];

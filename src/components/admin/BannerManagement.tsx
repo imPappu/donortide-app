@@ -1,11 +1,11 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { updateBanner, deleteBanner, createBanner, Banner } from "@/services/dbService";
-import BannerForm from "@/components/admin/BannerForm";
 import { useToast } from '@/hooks/use-toast';
+import { Banner } from "@/types/apiTypes";
+import { createBanner, updateBanner, deleteBanner } from "@/services/bannerService";
+import BannerForm from "@/components/admin/BannerForm";
 
 interface BannerManagementProps {
   banners: Banner[];

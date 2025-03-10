@@ -1,12 +1,12 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bell } from "lucide-react";
-import { Notification, sendNotification } from "@/services/dbService";
 import { useToast } from '@/hooks/use-toast';
+import { Notification } from "@/types/apiTypes";
+import { sendNotification } from "@/services/notificationService";
 
 interface NotificationPanelProps {
   notification: Partial<Notification>;

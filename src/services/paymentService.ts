@@ -1,40 +1,33 @@
 
-import { gatewayConfigs } from "@/components/admin/GatewayFormConfigs";
+// Payment service for handling payment operations
+import { API_BASE_URL } from './apiConfig';
+import { Payment } from '@/types/apiTypes';
 
-export type PaymentGatewaySetting = {
-  id: string;
-  name: string;
-  isEnabled: boolean;
-  icon: React.ReactNode;
+export const processPayment = async (payment: Payment): Promise<Payment | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payment),
+    });
+    
+    if (!response.ok) throw new Error('Failed to process payment');
+    return await response.json();
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    return null;
+  }
 };
 
-// This simulates retrieving settings from a backend
-// In a real app, this would fetch from your API
-export const getEnabledPaymentGateways = async (): Promise<PaymentGatewaySetting[]> => {
-  // Try to get settings from localStorage (saved in PaymentGatewaySettings component)
-  const savedSettings = localStorage.getItem('paymentGatewaySettings');
-  
-  if (savedSettings) {
-    try {
-      const parsedSettings = JSON.parse(savedSettings);
-      
-      // Map to our return type
-      return Object.keys(parsedSettings)
-        .filter(key => parsedSettings[key].isEnabled)
-        .map(key => ({
-          id: key,
-          name: gatewayConfigs[key]?.name || key.charAt(0).toUpperCase() + key.slice(1),
-          isEnabled: true,
-          icon: null, // Icons will be assigned in the component
-        }));
-    } catch (error) {
-      console.error("Error parsing payment gateway settings:", error);
-    }
+export const getPayments = async (): Promise<Payment[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments`);
+    if (!response.ok) throw new Error('Failed to fetch payments');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    return [];
   }
-  
-  // Default fallback - only enable PayPal and card by default
-  return [
-    { id: 'card', name: 'Card', isEnabled: true, icon: null },
-    { id: 'paypal', name: 'PayPal', isEnabled: true, icon: null }
-  ];
 };

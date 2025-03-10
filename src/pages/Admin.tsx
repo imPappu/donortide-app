@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Banner, BlogPost, Notification } from "@/services/dbService";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminContent from "@/components/admin/AdminContent";
 import SystemUpdatePanel from "@/components/admin/SystemUpdatePanel";
 import { useToast } from "@/hooks/use-toast";
+import { Banner, BlogPost, Notification } from "@/types/apiTypes";
 
 const AdminDashboard = () => {
   const { toast } = useToast();

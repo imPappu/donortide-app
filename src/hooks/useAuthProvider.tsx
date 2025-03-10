@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { User } from '@/types/auth';
@@ -41,7 +40,8 @@ export const useAuthProvider = () => {
           role: userWithoutPassword.role,
           isVerified: userWithoutPassword.isVerified || false,
           createdAt: new Date().toISOString(),
-          profileImage: userWithoutPassword.avatar
+          profileImage: userWithoutPassword.avatar,
+          avatar: userWithoutPassword.avatar // For backward compatibility
         };
         
         setUser(userObject);
@@ -96,7 +96,8 @@ export const useAuthProvider = () => {
         role: 'user',
         isVerified: false,
         createdAt: new Date().toISOString(),
-        profileImage: ''
+        profileImage: '',
+        avatar: '' // For backward compatibility
       };
       
       setUser(newUser);

@@ -8,6 +8,7 @@ export interface User {
   lastLogin?: string;
   isVerified: boolean;
   profileImage?: string;
+  avatar?: string; // Adding avatar as an alias for profileImage for backward compatibility
 }
 
 export interface AuthContextType {

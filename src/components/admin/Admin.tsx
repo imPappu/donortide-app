@@ -29,7 +29,7 @@ const Admin: React.FC<AdminProps> = ({ initialTab = 'dashboard' }) => {
       />
       <div className="flex flex-col flex-1 overflow-hidden">
         <AdminHeader activeTab={activeTab} />
-        <AdminContent initialTab={activeTab} />
+        <AdminContent initialTab={initialTab} activeTab={activeTab} />
       </div>
     </div>
   );

@@ -88,8 +88,8 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                 
                 <Link to="/profile">
                   <Avatar className="h-8 w-8 border border-border">
-                    {user?.avatar ? (
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                    {user?.profileImage || user?.avatar ? (
+                      <AvatarImage src={user.profileImage || user.avatar} alt={user.name} />
                     ) : (
                       <AvatarFallback>
                         {user?.name?.charAt(0) || "U"}

@@ -53,13 +53,47 @@ const AdminContent = ({
   loading
 }: AdminContentProps) => {
   
+  // Mock recent requests data for demonstration
+  const mockRequests = [
+    {
+      id: 1,
+      patientName: "John Doe",
+      bloodType: "A+",
+      hospital: "City Hospital",
+      location: "Downtown",
+      urgency: "Urgent",
+      createdAt: new Date().toISOString(),
+      status: "Pending"
+    },
+    {
+      id: 2,
+      patientName: "Jane Smith",
+      bloodType: "O-",
+      hospital: "General Hospital",
+      location: "Westside",
+      urgency: "High",
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      status: "Pending"
+    },
+    {
+      id: 3,
+      patientName: "Robert Brown",
+      bloodType: "B+",
+      hospital: "Memorial Hospital",
+      location: "Eastside",
+      urgency: "Normal",
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+      status: "Pending"
+    }
+  ];
+  
   return (
     <div className="p-4 md:p-6 pb-16">
       {/* Dashboard */}
       {activeTab === "dashboard" && (
         <div className="space-y-6">
           <DashboardStats stats={stats} loading={loading} />
-          <RecentRequests />
+          <RecentRequests requests={mockRequests} />
         </div>
       )}
       

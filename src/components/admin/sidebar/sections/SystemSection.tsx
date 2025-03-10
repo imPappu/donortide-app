@@ -9,7 +9,7 @@ import {
   BrainCircuit,
   Calendar
 } from "lucide-react";
-import NavSection from "../NavSection";
+import { NavSection } from "../NavSection";
 
 interface SystemSectionProps {
   activeTab: string;

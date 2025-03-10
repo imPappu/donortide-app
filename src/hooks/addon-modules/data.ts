@@ -1,4 +1,3 @@
-
 import { AddonModule, RepositoryAddon, ModuleSettings, AddonSpecificSettings, AddonPermissionGroups } from "./types";
 
 // Initial list of installed addons
@@ -54,6 +53,8 @@ export const initialRepositoryAddons: RepositoryAddon[] = [
     version: "2.0.1",
     author: "MedTech Solutions",
     description: "Advanced appointment scheduling system with calendar integration and reminders.",
+    rating: 4.8,
+    downloads: 2500
   },
   {
     id: 102,
@@ -61,6 +62,8 @@ export const initialRepositoryAddons: RepositoryAddon[] = [
     version: "1.5.0",
     author: "Healthcare Connect",
     description: "Direct integration with hospital systems for real-time blood inventory management.",
+    rating: 4.6,
+    downloads: 1800
   },
   {
     id: 103,
@@ -68,6 +71,8 @@ export const initialRepositoryAddons: RepositoryAddon[] = [
     version: "1.1.2",
     author: "Medical Software Inc",
     description: "Tool for checking blood type compatibility between donors and recipients.",
+    rating: 4.2,
+    downloads: 950
   },
   {
     id: 104,
@@ -75,6 +80,8 @@ export const initialRepositoryAddons: RepositoryAddon[] = [
     version: "3.2.1",
     author: "Web Solutions",
     description: "Share donation achievements and event invitations on social media platforms.",
+    rating: 4.9,
+    downloads: 3200
   },
   {
     id: 105,
@@ -82,6 +89,8 @@ export const initialRepositoryAddons: RepositoryAddon[] = [
     version: "2.3.4",
     author: "Community Tools Ltd",
     description: "Complete toolkit for organizing and managing community blood drives.",
+    rating: 4.7,
+    downloads: 2100
   },
   {
     id: 106,
@@ -89,6 +98,8 @@ export const initialRepositoryAddons: RepositoryAddon[] = [
     version: "1.0.3",
     author: "Identity Systems",
     description: "Generate and manage digital donor ID cards with QR codes for quick check-in.",
+    rating: 4.3,
+    downloads: 1200
   }
 ];
 

@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -12,9 +11,10 @@ interface DashboardStatsProps {
     totalRequests: number;
     totalLocations: number;
   };
+  loading?: boolean;
 }
 
-const DashboardStats = ({ stats }: DashboardStatsProps) => {
+const DashboardStats = ({ stats, loading }: DashboardStatsProps) => {
   // Monthly donation data for chart
   const monthlyData = [
     { name: "Jan", donations: 65 },

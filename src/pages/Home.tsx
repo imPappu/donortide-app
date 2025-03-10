@@ -2,12 +2,10 @@
 import React from "react";
 import TopNavbar from "@/components/TopNavbar";
 import HomeBanner from "@/components/HomeBanner";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share2, ThumbsUp, Award } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import TopDonorsRow from "@/components/home/TopDonorsRow";
+import HomeSidebar from "@/components/home/HomeSidebar";
+import CreatePostCard from "@/components/home/CreatePostCard";
+import NewsFeedPost from "@/components/home/NewsFeedPost";
 
 const Home = () => {
   // Sample banner images
@@ -121,98 +119,11 @@ const Home = () => {
       
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
         {/* Top Donors Row */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold flex items-center">
-              <Award className="h-5 w-5 text-yellow-500 mr-2" />
-              Top Donors
-            </h2>
-            <Button variant="link" size="sm" className="text-primary">
-              View All
-            </Button>
-          </div>
-          <div className="flex overflow-x-auto pb-2 space-x-4">
-            <TooltipProvider>
-              {topDonors.map((donor) => (
-                <Tooltip key={donor.id}>
-                  <TooltipTrigger asChild>
-                    <div className="flex flex-col items-center min-w-[80px]">
-                      <Avatar className="h-14 w-14 border-2 border-primary mb-2">
-                        <AvatarImage src={donor.avatar} alt={donor.name} />
-                        <AvatarFallback>{donor.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="text-xs font-medium truncate w-full text-center">{donor.name}</div>
-                      <div className="flex items-center mt-1">
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                          {donor.bloodType}
-                        </Badge>
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div>
-                      <p className="font-semibold">{donor.name}</p>
-                      <p className="text-xs">{donor.donations} donations</p>
-                      <p className="text-xs">Blood Type: {donor.bloodType}</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </TooltipProvider>
-          </div>
-        </div>
+        <TopDonorsRow donors={topDonors} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left sidebar/shortcut column - visible on large screens */}
-          <div className="hidden lg:block">
-            <div className="sticky top-24 space-y-6">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Your Statistics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Donations</span>
-                      <span className="font-medium">12</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Lives Impacted</span>
-                      <span className="font-medium">36</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Last Donated</span>
-                      <span className="font-medium">2 months ago</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full">View Full Profile</Button>
-                </CardFooter>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Upcoming Events</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="border-l-4 border-primary pl-3 py-1">
-                      <h4 className="font-medium">Downtown Blood Drive</h4>
-                      <p className="text-sm text-muted-foreground">This Saturday, 9 AM - 5 PM</p>
-                    </div>
-                    <div className="border-l-4 border-primary pl-3 py-1">
-                      <h4 className="font-medium">Volunteer Training</h4>
-                      <p className="text-sm text-muted-foreground">Next Tuesday, 6 PM - 8 PM</p>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="ghost" className="w-full">See All Events</Button>
-                </CardFooter>
-              </Card>
-            </div>
-          </div>
+          <HomeSidebar />
           
           {/* Main content column */}
           <div className="lg:col-span-2 space-y-6">
@@ -220,65 +131,12 @@ const Home = () => {
             <HomeBanner images={bannerImages} />
             
             {/* Create post card */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                  <Button variant="outline" className="w-full justify-start text-muted-foreground h-12 px-4">
-                    Share your donation story...
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <CreatePostCard />
             
             {/* News Feed */}
             <div className="space-y-4">
               {posts.map((post) => (
-                <Card key={post.id} className={post.isUrgent ? "border-red-500" : ""}>
-                  <CardHeader className="pb-2 flex flex-row items-start gap-4">
-                    <Avatar>
-                      <AvatarImage src={post.author.avatar} />
-                      <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-base">{post.author.name}</CardTitle>
-                        {post.isUrgent && (
-                          <Badge variant="destructive">Urgent</Badge>
-                        )}
-                      </div>
-                      <CardDescription>{post.timeAgo}</CardDescription>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="whitespace-pre-line">{post.content}</p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {post.tags?.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="hover:bg-secondary cursor-pointer">
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="border-t px-6 py-3">
-                    <div className="w-full flex items-center justify-between">
-                      <Button variant="ghost" size="sm" className={post.isLiked ? "text-primary" : ""}>
-                        <ThumbsUp className="h-4 w-4 mr-1" />
-                        {post.likes}
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        {post.comments}
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Share2 className="h-4 w-4 mr-1" />
-                        {post.shares}
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
+                <NewsFeedPost key={post.id} post={post} />
               ))}
             </div>
           </div>

@@ -46,11 +46,21 @@ const SystemUpdatePanel = () => {
     setMobileUpdating(false);
   };
 
-  const handleWebsiteSettingsSave = () => {
+  const handleWebsiteSettingsSave = async (settings: any) => {
+    // Simulate saving settings
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     toast({
       title: "Settings Saved",
       description: "Website settings have been updated successfully.",
     });
+    
+    // Update the local version if it was changed in the settings
+    if (settings && settings.version) {
+      setWebsiteVersion(settings.version);
+    }
+    
+    return Promise.resolve();
   };
   
   return (

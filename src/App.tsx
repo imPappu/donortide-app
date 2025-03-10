@@ -27,6 +27,7 @@ import { AuthProvider, useAuth } from "@/components/auth/AuthContext";
 import AdminLink from "@/components/AdminLink";
 import SplashScreen from "@/components/SplashScreen";
 import LoginSignup from "./pages/LoginSignup";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
@@ -111,7 +112,7 @@ const App = () => {
               
               <div className="flex-1">
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={<Home />} />
                   <Route path="/donors" element={<Donors />} />
                   <Route path="/requests" element={<Requests />} />
                   <Route path="/create" element={<CreateRequest />} />

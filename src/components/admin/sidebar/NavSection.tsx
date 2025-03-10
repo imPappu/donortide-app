@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface NavItemProps {
   id: string;
@@ -12,14 +13,24 @@ interface NavItemProps {
 }
 
 export const NavItem = ({ id, label, icon, activeTab, onClick }: NavItemProps) => {
+  const isActive = activeTab === id;
+  
   return (
     <Button
-      variant={activeTab === id ? "secondary" : "ghost"}
-      className="w-full justify-start"
+      variant={isActive ? "secondary" : "ghost"}
+      className={cn(
+        "w-full justify-start font-medium transition-all",
+        isActive ? "bg-primary/10" : "hover:bg-secondary/80"
+      )}
       onClick={() => onClick(id)}
     >
-      {icon}
-      {label}
+      <div className={cn(
+        "mr-2 flex items-center justify-center",
+        isActive ? "text-primary" : "text-muted-foreground"
+      )}>
+        {icon}
+      </div>
+      <span className={isActive ? "text-primary" : ""}>{label}</span>
     </Button>
   );
 };

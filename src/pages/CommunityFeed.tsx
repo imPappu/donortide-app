@@ -130,7 +130,7 @@ const CommunityFeed = () => {
     {
       id: '1',
       userName: 'Sarah Williams',
-      content: 'Just donated blood today at Memorial Hospital. The staff was amazing and the process was quick and painless. If you've been considering donating, please do it - you can save a life! #DonorHero',
+      content: 'Just donated blood today at Memorial Hospital. The staff was amazing and the process was quick and painless. If you\'ve been considering donating, please do it - you can save a life! #DonorHero',
       likes: 24,
       comments: 5,
       shares: 2,

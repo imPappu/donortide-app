@@ -72,7 +72,7 @@ const Notifications = () => {
     {
       id: '3',
       title: 'New Achievement Unlocked',
-      message: 'Congratulations! You've earned the "Hero Donor" badge for your recent donation.',
+      message: 'Congratulations! You\'ve earned the "Hero Donor" badge for your recent donation.',
       type: 'system',
       timestamp: '1 day ago',
       read: true

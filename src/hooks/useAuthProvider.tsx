@@ -60,7 +60,7 @@ export const useAuthProvider = () => {
     }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string, role: User['role'] = 'user'): Promise<boolean> => {
     setIsLoading(true);
     try {
       // Simulate API request
@@ -83,7 +83,7 @@ export const useAuthProvider = () => {
         email,
         avatar: '',
         isVerified: false,
-        role: 'user' as const
+        role
       };
       
       setUser(newUser);
@@ -91,7 +91,7 @@ export const useAuthProvider = () => {
       
       toast({
         title: "Registration successful",
-        description: "Your account has been created",
+        description: `Your account has been created as a ${role.replace('_', ' ')}`,
       });
       return true;
     } catch (error) {

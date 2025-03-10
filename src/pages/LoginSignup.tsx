@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/components/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Key, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Key, User, UserRound, HeartHandshake, Building2, Briefcase } from "lucide-react";
 import LoginCredentials from "@/components/admin/LoginCredentials";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { User as UserType } from "@/types/auth";
 
 const LoginSignup = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -23,6 +25,7 @@ const LoginSignup = () => {
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [registerRole, setRegisterRole] = useState<UserType['role']>("user");
   const [isRegistering, setIsRegistering] = useState(false);
   
   const { login, register } = useAuth();
@@ -47,12 +50,28 @@ const LoginSignup = () => {
     setIsRegistering(true);
     
     try {
-      const success = await register(registerName, registerEmail, registerPassword);
+      const success = await register(registerName, registerEmail, registerPassword, registerRole);
       if (success) {
         navigate("/profile");
       }
     } finally {
       setIsRegistering(false);
+    }
+  };
+  
+  // Helper function to get role icon
+  const getRoleIcon = (role: UserType['role']) => {
+    switch (role) {
+      case 'donor':
+        return <HeartHandshake className="h-4 w-4" />;
+      case 'service_provider':
+        return <Briefcase className="h-4 w-4" />;
+      case 'volunteer':
+        return <UserRound className="h-4 w-4" />;
+      case 'organization':
+        return <Building2 className="h-4 w-4" />;
+      default:
+        return <User className="h-4 w-4" />;
     }
   };
 
@@ -189,6 +208,50 @@ const LoginSignup = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="role">I am registering as a</Label>
+                  <Select
+                    value={registerRole}
+                    onValueChange={(value) => setRegisterRole(value as UserType['role'])}
+                  >
+                    <SelectTrigger id="role" className="w-full">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">
+                        <div className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Regular User</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="donor">
+                        <div className="flex items-center">
+                          <HeartHandshake className="mr-2 h-4 w-4" />
+                          <span>Blood Donor</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="service_provider">
+                        <div className="flex items-center">
+                          <Briefcase className="mr-2 h-4 w-4" />
+                          <span>Service Provider</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="volunteer">
+                        <div className="flex items-center">
+                          <UserRound className="mr-2 h-4 w-4" />
+                          <span>Volunteer</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="organization">
+                        <div className="flex items-center">
+                          <Building2 className="mr-2 h-4 w-4" />
+                          <span>Organization</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <Button type="submit" className="w-full" disabled={isRegistering}>

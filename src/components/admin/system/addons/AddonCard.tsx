@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Package, RefreshCw, Settings, Shield } from "lucide-react";
+import { Package, RefreshCw, Settings, Shield, Star } from "lucide-react";
 
 interface AddonModule {
   id: number;
@@ -13,6 +13,7 @@ interface AddonModule {
   description: string;
   hasSettings: boolean;
   permissions?: string[];
+  isCustom?: boolean;
 }
 
 interface AddonCardProps {
@@ -25,16 +26,23 @@ interface AddonCardProps {
 const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: AddonCardProps) => {
   return (
     <div className="border rounded-lg overflow-hidden">
-      <div className="bg-muted/30 p-4">
+      <div className={`${addon.isCustom ? 'bg-primary/20' : 'bg-muted/30'} p-4`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-primary/10 p-2 rounded-md">
-              <Package className="h-5 w-5 text-primary" />
+            <div className={`${addon.isCustom ? 'bg-primary/20' : 'bg-primary/10'} p-2 rounded-md`}>
+              {addon.isCustom ? (
+                <Star className="h-5 w-5 text-primary" />
+              ) : (
+                <Package className="h-5 w-5 text-primary" />
+              )}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-medium">{addon.name}</h3>
                 <span className="text-xs bg-muted px-2 py-0.5 rounded-full">v{addon.version}</span>
+                {addon.isCustom && (
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Custom</span>
+                )}
               </div>
               <p className="text-xs text-muted-foreground">By {addon.author}</p>
             </div>
@@ -63,8 +71,10 @@ const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: Ad
             variant="outline" 
             size="sm"
             onClick={() => uninstallAddon(addon.id, addon.name)}
+            disabled={addon.isCustom}
+            className={addon.isCustom ? "opacity-50 cursor-not-allowed" : ""}
           >
-            Uninstall
+            {addon.isCustom ? "Core Module" : "Uninstall"}
           </Button>
           <div className="flex gap-2">
             {addon.status === "Needs Update" && (
@@ -83,10 +93,12 @@ const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: Ad
                 Settings
               </Button>
             )}
-            <Button variant="outline" size="sm">
-              <Shield className="h-4 w-4 mr-1" />
-              Permissions
-            </Button>
+            {addon.permissions && addon.permissions.length > 0 && (
+              <Button variant="outline" size="sm">
+                <Shield className="h-4 w-4 mr-1" />
+                Permissions
+              </Button>
+            )}
           </div>
         </div>
       </div>

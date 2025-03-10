@@ -8,17 +8,7 @@ import InstalledAddonsTab from "./addons/InstalledAddonsTab";
 import RepositoryTab from "./addons/RepositoryTab";
 import UploadTab from "./addons/UploadTab";
 import ModuleSettings from "./addons/ModuleSettings";
-
-interface AddonModule {
-  id: number;
-  name: string;
-  version: string;
-  status: "Active" | "Inactive" | "Needs Update";
-  author: string;
-  description: string;
-  hasSettings: boolean;
-  permissions?: string[];
-}
+import { AddonModule, RepositoryAddon, ModuleSettings as ModuleSettingsType } from "./types";
 
 const AddonModules = () => {
   const { toast } = useToast();
@@ -27,47 +17,53 @@ const AddonModules = () => {
   const [installingFromRepo, setInstallingFromRepo] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   
+  // Updated addon list - removed third-party addons and added custom ones
   const [installedAddons, setInstalledAddons] = useState<AddonModule[]>([
     { 
       id: 1, 
-      name: "Payment Gateway Plus", 
-      version: "1.2.0", 
+      name: "Blood Matching Algorithm", 
+      version: "1.0.0", 
       status: "Active",
-      author: "DonorTide Team",
-      description: "Extended payment gateway options including PayPal, Apple Pay and Google Pay.",
+      author: "Internal Team",
+      description: "Advanced blood type matching and compatibility engine for donor-recipient pairing.",
       hasSettings: true,
-      permissions: ["admin.payments.manage", "admin.payments.view"]
+      permissions: ["admin.blood.match", "admin.blood.view"],
+      isCustom: true
     },
     { 
       id: 2, 
-      name: "Analytics Dashboard", 
-      version: "2.0.1", 
+      name: "Donor Eligibility Check", 
+      version: "1.1.0", 
       status: "Active",
-      author: "Data Insights Ltd",
-      description: "Advanced analytics dashboard with custom report generation.",
+      author: "Internal Team",
+      description: "Automated donor eligibility verification based on health criteria and donation history.",
       hasSettings: true,
-      permissions: ["admin.analytics.view", "admin.analytics.export"]
+      permissions: ["admin.eligibility.manage", "admin.eligibility.view"],
+      isCustom: true
     },
     { 
       id: 3, 
-      name: "Community Manager", 
-      version: "1.0.5", 
-      status: "Inactive",
-      author: "Social Connect",
-      description: "Enhanced community management tools with moderation features.",
-      hasSettings: false,
-      permissions: ["admin.community.moderate"]
+      name: "Donation Inventory", 
+      version: "1.0.2", 
+      status: "Active",
+      author: "Internal Team",
+      description: "Blood inventory tracking with expiration monitoring and shortage alerts.",
+      hasSettings: true,
+      permissions: ["admin.inventory.manage", "admin.inventory.view"],
+      isCustom: true
     },
   ]);
   
-  const repositoryAddons = [
+  // Updated repository addons with more relevant modules for blood donation
+  const repositoryAddons: RepositoryAddon[] = [
     { 
       id: 101, 
       name: "Donor CRM", 
       version: "3.1.2", 
       author: "CRM Solutions",
       description: "Complete donor relationship management tools.",
-      installed: false
+      installed: false,
+      category: "Management"
     },
     { 
       id: 102, 
@@ -75,19 +71,30 @@ const AddonModules = () => {
       version: "2.0.0", 
       author: "Event Tech",
       description: "Blood donation event planning and management tools.",
-      installed: false
+      installed: false,
+      category: "Events"
     },
     { 
       id: 103, 
-      name: "Email Campaign", 
-      version: "1.5.3", 
-      author: "Email Marketing Pro",
-      description: "Create, schedule and track email campaigns to donors.",
-      installed: false
+      name: "Blood Analytics", 
+      version: "1.2.0", 
+      author: "Data Insights",
+      description: "Advanced analytics dashboard for blood donation patterns and trends.",
+      installed: false,
+      category: "Analytics"
+    },
+    { 
+      id: 104, 
+      name: "Mobile Collection", 
+      version: "1.0.5", 
+      author: "BloodTech",
+      description: "Mobile blood collection management with location tracking and scheduling.",
+      installed: false,
+      category: "Field Operations"
     },
   ];
 
-  const [moduleSettings, setModuleSettings] = useState({
+  const [moduleSettings, setModuleSettings] = useState<ModuleSettingsType>({
     autoUpdates: true,
     compatibilityCheck: true,
     developmentMode: false,
@@ -105,7 +112,7 @@ const AddonModules = () => {
         
         toast({
           title: "Addon System Ready",
-          description: "Addon module system has been initialized successfully",
+          description: "Custom blood donation addon modules have been initialized successfully",
         });
       } catch (error) {
         console.error("Error initializing addon system:", error);
@@ -188,7 +195,7 @@ const AddonModules = () => {
     
     try {
       // Simulate installation
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       const repoAddon = repositoryAddons.find(a => a.id === id);
       if (!repoAddon) throw new Error("Addon not found in repository");
@@ -200,7 +207,8 @@ const AddonModules = () => {
         status: "Inactive",
         author: repoAddon.author,
         description: repoAddon.description,
-        hasSettings: false
+        hasSettings: false,
+        isCustom: false
       };
       
       setInstalledAddons(prev => [...prev, newAddon]);
@@ -223,6 +231,17 @@ const AddonModules = () => {
   };
   
   const uninstallAddon = (id: number, name: string) => {
+    // Don't allow uninstalling custom addons
+    const addon = installedAddons.find(a => a.id === id);
+    if (addon?.isCustom) {
+      toast({
+        title: "Cannot Uninstall",
+        description: `${name} is a core custom addon and cannot be uninstalled.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Confirmation dialog could be added here
     setInstalledAddons(prev => prev.filter(addon => addon.id !== id));
     
@@ -272,13 +291,58 @@ const AddonModules = () => {
     }));
   };
 
+  const handleUploadAddon = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    setUploadingAddon(true);
+    const file = e.target.files[0];
+    
+    try {
+      // Simulate upload and installation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check if file is valid addon package
+      if (!file.name.endsWith('.zip') && !file.name.endsWith('.addon')) {
+        throw new Error("Invalid addon file format");
+      }
+      
+      const newAddon: AddonModule = {
+        id: Date.now(),
+        name: file.name.replace(/\.(zip|addon)$/, ""),
+        version: "1.0.0",
+        status: "Inactive",
+        author: "Custom Upload",
+        description: "Manually uploaded addon module.",
+        hasSettings: false,
+        isCustom: false
+      };
+      
+      setInstalledAddons(prev => [...prev, newAddon]);
+      
+      toast({
+        title: "Addon Installed",
+        description: `Successfully installed ${file.name}`,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast({
+        title: "Installation Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingAddon(false);
+      setActiveTab("installed");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <Component className="mr-2 h-5 w-5 text-primary" />
-            Addon Modules
+            Blood Donation Addon Modules
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -288,7 +352,7 @@ const AddonModules = () => {
                 <RefreshCw className="h-10 w-10 mx-auto text-primary animate-spin mb-3" />
                 <h3 className="font-medium">Initializing Addon System</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Please wait while we set up the addon module system...
+                  Please wait while we set up the custom blood donation addon modules...
                 </p>
               </div>
             </div>

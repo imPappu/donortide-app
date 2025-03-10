@@ -1,24 +1,46 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Box, Cog } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Box, Cog, AlertTriangle } from "lucide-react";
 import AddonUploader from "../components/AddonUploader";
+import { AddonModule } from "../types";
 
-interface InstalledAddon {
-  id: number;
-  name: string;
-  version: string;
-  status: "Active" | "Inactive" | "Needs Update";
-}
-
-interface AddonsTabProps {
-  uploadingAddon: boolean;
-  handleUploadAddon: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  installedAddons: InstalledAddon[];
-}
-
-const AddonsTab = ({ uploadingAddon, handleUploadAddon, installedAddons }: AddonsTabProps) => {
+const AddonsTab = () => {
+  const [uploadingAddon, setUploadingAddon] = useState(false);
+  
+  // Updated addon types to match our new type definition
+  const installedAddons: AddonModule[] = [
+    { 
+      id: 1, 
+      name: "Blood Matching Algorithm", 
+      version: "1.0.0", 
+      status: "Active",
+      author: "Internal Team",
+      description: "Blood type matching engine",
+      hasSettings: true
+    },
+    { 
+      id: 2, 
+      name: "Donor Eligibility Check", 
+      version: "1.1.0", 
+      status: "Active",
+      author: "Internal Team",
+      description: "Donor eligibility verification",
+      hasSettings: true
+    },
+    { 
+      id: 3, 
+      name: "Donation Inventory", 
+      version: "1.0.2", 
+      status: "Inactive",
+      author: "Internal Team",
+      description: "Inventory tracking system",
+      hasSettings: false
+    },
+  ];
+  
   return (
     <div className="space-y-4">
       <Card>
@@ -26,10 +48,24 @@ const AddonsTab = ({ uploadingAddon, handleUploadAddon, installedAddons }: Addon
           <CardTitle>Install New Addon</CardTitle>
         </CardHeader>
         <CardContent>
-          <AddonUploader 
-            uploadingAddon={uploadingAddon} 
-            handleUploadAddon={handleUploadAddon} 
-          />
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Upload addon modules to extend system functionality.
+              Addons should be in the .zip format.
+            </p>
+            
+            <AddonUploader 
+              uploadingAddon={uploadingAddon}
+              setUploadingAddon={setUploadingAddon}
+            />
+            
+            <Alert className="bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription>
+                Only install addons from trusted sources. Malicious addons can compromise your system security.
+              </AlertDescription>
+            </Alert>
+          </div>
         </CardContent>
       </Card>
       

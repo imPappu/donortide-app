@@ -12,6 +12,7 @@ interface AddonModule {
   description: string;
   hasSettings: boolean;
   permissions?: string[];
+  isCustom?: boolean;
 }
 
 interface InstalledAddonsTabProps {
@@ -27,6 +28,13 @@ const InstalledAddonsTab = ({
   uninstallAddon, 
   updateAddon 
 }: InstalledAddonsTabProps) => {
+  // First render custom addons, then regular addons
+  const sortedAddons = [...installedAddons].sort((a, b) => {
+    if (a.isCustom && !b.isCustom) return -1;
+    if (!a.isCustom && b.isCustom) return 1;
+    return 0;
+  });
+
   return (
     <div className="space-y-4">
       {installedAddons.length === 0 ? (
@@ -39,7 +47,7 @@ const InstalledAddonsTab = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {installedAddons.map(addon => (
+          {sortedAddons.map(addon => (
             <AddonCard
               key={addon.id}
               addon={addon}

@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, CheckCircle } from "lucide-react";
+import { RefreshCw, CheckCircle, Tag } from "lucide-react";
 
 interface RepositoryAddon {
   id: number;
@@ -10,6 +10,7 @@ interface RepositoryAddon {
   author: string;
   description: string;
   installed: boolean;
+  category?: string;
 }
 
 interface RepositoryAddonCardProps {
@@ -33,6 +34,12 @@ const RepositoryAddonCard = ({
             <div className="flex items-center gap-2">
               <h3 className="font-medium">{addon.name}</h3>
               <span className="text-xs bg-muted px-2 py-0.5 rounded-full">v{addon.version}</span>
+              {addon.category && (
+                <span className="text-xs flex items-center gap-1 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-2 py-0.5 rounded-full">
+                  <Tag className="h-3 w-3" />
+                  {addon.category}
+                </span>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">By {addon.author}</p>
           </div>

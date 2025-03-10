@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Package, RefreshCw, Settings, Shield, Star } from "lucide-react";
+import { Package, RefreshCw, Settings, Shield, Star, Trash } from "lucide-react";
 
 interface AddonModule {
   id: number;
@@ -57,10 +57,13 @@ const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: Ad
             }`}>
               {addon.status}
             </span>
-            <Switch 
-              checked={addon.status === "Active"} 
-              onCheckedChange={() => toggleAddonStatus(addon.id)}
-            />
+            <div className="flex items-center gap-1">
+              <span className="text-xs mr-1">{addon.status === "Active" ? "Enabled" : "Disabled"}</span>
+              <Switch 
+                checked={addon.status === "Active"} 
+                onCheckedChange={() => toggleAddonStatus(addon.id)}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -74,7 +77,14 @@ const AddonCard = ({ addon, toggleAddonStatus, uninstallAddon, updateAddon }: Ad
             disabled={addon.isCustom}
             className={addon.isCustom ? "opacity-50 cursor-not-allowed" : ""}
           >
-            {addon.isCustom ? "Core Module" : "Uninstall"}
+            {addon.isCustom ? (
+              <>Core Module</>
+            ) : (
+              <>
+                <Trash className="h-4 w-4 mr-1 text-red-500" />
+                Delete
+              </>
+            )}
           </Button>
           <div className="flex gap-2">
             {addon.status === "Needs Update" && (

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +16,6 @@ const AddonModules = () => {
   const [installingFromRepo, setInstallingFromRepo] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   
-  // Updated addon list - removed third-party addons and added custom ones
   const [installedAddons, setInstalledAddons] = useState<AddonModule[]>([
     { 
       id: 1, 
@@ -54,26 +52,7 @@ const AddonModules = () => {
     },
   ]);
   
-  // Updated repository addons with more relevant modules for blood donation
   const repositoryAddons: RepositoryAddon[] = [
-    { 
-      id: 101, 
-      name: "Donor CRM", 
-      version: "3.1.2", 
-      author: "CRM Solutions",
-      description: "Complete donor relationship management tools.",
-      installed: false,
-      category: "Management"
-    },
-    { 
-      id: 102, 
-      name: "Event Manager", 
-      version: "2.0.0", 
-      author: "Event Tech",
-      description: "Blood donation event planning and management tools.",
-      installed: false,
-      category: "Events"
-    },
     { 
       id: 103, 
       name: "Blood Analytics", 
@@ -82,15 +61,6 @@ const AddonModules = () => {
       description: "Advanced analytics dashboard for blood donation patterns and trends.",
       installed: false,
       category: "Analytics"
-    },
-    { 
-      id: 104, 
-      name: "Mobile Collection", 
-      version: "1.0.5", 
-      author: "BloodTech",
-      description: "Mobile blood collection management with location tracking and scheduling.",
-      installed: false,
-      category: "Field Operations"
     },
   ];
 
@@ -101,11 +71,9 @@ const AddonModules = () => {
     securityScanning: true
   });
 
-  // Initialize the addon module system
   useEffect(() => {
     const initializeAddonSystem = async () => {
       try {
-        // Simulate API call to initialize addon system
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log("Addon module system initialized");
         setIsInitialized(true);
@@ -134,10 +102,8 @@ const AddonModules = () => {
     const file = e.target.files[0];
     
     try {
-      // Simulate upload and installation
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Check if file is valid addon package
       if (!file.name.endsWith('.zip') && !file.name.endsWith('.addon')) {
         throw new Error("Invalid addon file format");
       }
@@ -177,7 +143,6 @@ const AddonModules = () => {
       if (addon.id === id) {
         const newStatus = addon.status === "Active" ? "Inactive" : "Active";
         
-        // Simulate API call to change addon status
         setTimeout(() => {
           toast({
             title: newStatus === "Active" ? "Addon Activated" : "Addon Deactivated",
@@ -195,7 +160,6 @@ const AddonModules = () => {
     setInstallingFromRepo(true);
     
     try {
-      // Simulate installation
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       const repoAddon = repositoryAddons.find(a => a.id === id);
@@ -232,7 +196,6 @@ const AddonModules = () => {
   };
   
   const uninstallAddon = (id: number, name: string) => {
-    // Don't allow uninstalling custom addons
     const addon = installedAddons.find(a => a.id === id);
     if (addon?.isCustom) {
       toast({
@@ -243,7 +206,6 @@ const AddonModules = () => {
       return;
     }
     
-    // Confirmation dialog could be added here
     setInstalledAddons(prev => prev.filter(addon => addon.id !== id));
     
     toast({
@@ -254,7 +216,6 @@ const AddonModules = () => {
   
   const updateAddon = async (id: number, name: string) => {
     try {
-      // Simulate update process
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setInstalledAddons(prev => prev.map(addon => {

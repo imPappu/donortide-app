@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Post, Story } from "@/types/community";
 import { MOCK_POSTS, TRENDING_TAGS } from "@/data/mockPosts";
@@ -177,6 +176,7 @@ export function useCommunityFeed() {
     toggleFollowTag,
     handleAddStory,
     handleDeletePost,
-    handleEditPost
+    handleEditPost,
+    TRENDING_TAGS
   };
 }

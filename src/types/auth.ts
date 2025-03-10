@@ -13,6 +13,7 @@ export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isAdmin: boolean; // Added isAdmin property
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string, roles: User['roles']) => Promise<boolean>;
   logout: () => void;

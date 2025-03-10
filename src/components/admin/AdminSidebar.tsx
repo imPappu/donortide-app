@@ -1,24 +1,23 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
-  LogOut, 
-  Settings, 
-  LayoutDashboard, 
-  Image, 
+  Users, 
   Bell, 
-  CreditCard, 
+  Settings, 
+  LogOut, 
+  Home, 
+  LayoutDashboard, 
   FileText, 
-  Palette,
-  Database,
-  Users,
-  UserCheck,
-  Ambulance,
-  Briefcase,
-  Building,
+  Image, 
+  Database, 
+  CreditCard, 
+  AlertCircle, 
+  Truck, 
+  BarChartHorizontal, 
+  Building, 
   MessageSquare,
-  Flame,
-  BadgeDollarSign
+  Brain,
+  Activity
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -28,6 +27,15 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarProps) => {
+  const sidebarItems = [
+    { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-5 w-5" /> },
+    { id: "algorithm", label: "Matching Algorithm", icon: <Brain className="h-5 w-5" /> },
+    { id: "donors", label: "Donor Management", icon: <Users className="h-5 w-5" /> },
+    { id: "requests", label: "Request Management", icon: <Bell className="h-5 w-5" /> },
+    { id: "organizations", label: "Organizations", icon: <Building className="h-5 w-5" /> },
+    { id: "community", label: "Community Posts", icon: <MessageSquare className="h-5 w-5" /> }
+  ];
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -216,18 +224,11 @@ const AdminSidebar = ({ activeTab, setActiveTab, handleLogout }: AdminSidebarPro
       {/* Mobile navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 z-10">
         <div className="flex justify-around p-2">
-          <Button variant="ghost" size="sm" onClick={() => setActiveTab("dashboard")}>
-            <LayoutDashboard className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => setActiveTab("banners")}>
-            <Image className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => setActiveTab("donors")}>
-            <Users className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => setActiveTab("app-settings")}>
-            <Settings className="h-5 w-5" />
-          </Button>
+          {sidebarItems.map(item => (
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab(item.id)} key={item.id}>
+              {item.icon}
+            </Button>
+          ))}
           <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-500">
             <LogOut className="h-5 w-5" />
           </Button>

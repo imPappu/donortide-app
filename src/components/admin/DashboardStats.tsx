@@ -1,6 +1,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, DropletIcon, Bell, Globe } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Users, DropletIcon, Bell, Globe, Brain, Activity, Calculator } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface DashboardStatsProps {

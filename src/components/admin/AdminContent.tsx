@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import DashboardStats from "@/components/admin/DashboardStats";
@@ -21,6 +20,7 @@ import AdsManagement from "@/components/admin/AdsManagement";
 import AIManagement from "@/components/admin/AIManagement";
 import { Banner, BlogPost, Notification } from "@/types/apiTypes";
 import { Skeleton } from "@/components/ui/skeleton";
+import AlgorithmDashboard from "./algorithm/AlgorithmDashboard";
 
 interface AdminContentProps {
   activeTab: string;
@@ -91,16 +91,24 @@ const AdminContent = ({
   }
 
   return (
-    <main className="p-4 md:p-6">
-      {activeTab === "dashboard" && <DashboardStats stats={stats} />}
+    <div className="p-6">
+      {activeTab === "dashboard" && (
+        <DashboardStats stats={stats} />
+      )}
+      
+      {activeTab === "algorithm" && (
+        <AlgorithmDashboard />
+      )}
+      
+      {activeTab === "donors" && (
+        <DonorManagement />
+      )}
       
       {activeTab === "banners" && <BannerManagement banners={banners} setBanners={setBanners} />}
       
       {activeTab === "blog" && <BlogManagement blogPosts={blogPosts} setBlogPosts={setBlogPosts} />}
       
       {activeTab === "staff" && <StaffManagement />}
-      
-      {activeTab === "donors" && <DonorManagement />}
       
       {activeTab === "volunteers" && <VolunteerManagement />}
       
@@ -138,7 +146,7 @@ const AdminContent = ({
       )}
       
       {activeTab === "splash-screen" && <SplashScreenSettings />}
-    </main>
+    </div>
   );
 };
 

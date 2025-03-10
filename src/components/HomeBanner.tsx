@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 interface BannerProps {
   images: {
@@ -32,17 +31,17 @@ const HomeBanner = ({ images, autoPlay = true, interval = 5000 }: BannerProps) =
   useEffect(() => {
     if (!autoPlay) return;
 
-    const intervalId = setInterval(goToNext, interval);
-    return () => clearInterval(intervalId);
-  }, [autoPlay, interval]);
+    const interval = setInterval(goToNext, 5000);
+    return () => clearInterval(interval);
+  }, [autoPlay]);
 
   return (
-    <div className="relative overflow-hidden rounded-lg shadow-md">
-      <div className="relative h-64 md:h-80">
+    <div className="relative overflow-hidden rounded-lg">
+      <div className="relative h-48">
         {images.map((image, index) => (
-          <Link
+          <a
             key={index}
-            to={image.url}
+            href={image.url}
             className={`absolute inset-0 transition-opacity duration-500 ${
               index === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
@@ -51,17 +50,8 @@ const HomeBanner = ({ images, autoPlay = true, interval = 5000 }: BannerProps) =
               src={image.src}
               alt={image.alt}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/placeholder.svg";
-              }}
             />
-            <div className="absolute inset-0 bg-black bg-opacity-30 flex items-end">
-              <div className="p-4 text-white">
-                <h3 className="text-xl font-semibold">{image.alt}</h3>
-              </div>
-            </div>
-          </Link>
+          </a>
         ))}
       </div>
 
@@ -91,7 +81,6 @@ const HomeBanner = ({ images, autoPlay = true, interval = 5000 }: BannerProps) =
               index === currentIndex ? "bg-white" : "bg-white/50"
             }`}
             onClick={() => goToIndex(index)}
-            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>

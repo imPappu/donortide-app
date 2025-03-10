@@ -1,6 +1,5 @@
 
 import { AddonModule, RepositoryAddon, ModuleSettings, AddonSpecificSettings, AddonPermissionGroups } from "./types";
-import { eventManagementAddon, eventManagementSettings, eventManagementPermissions } from "./data/eventManagementAddon";
 
 // Initial state for installed addons
 export const initialInstalledAddons: AddonModule[] = [
@@ -37,8 +36,6 @@ export const initialInstalledAddons: AddonModule[] = [
     permissions: ["admin.inventory.manage", "admin.inventory.view"],
     isCustom: true
   },
-  // Add our new Event Management addon
-  eventManagementAddon
 ];
 
 // Repository addons (empty initially)
@@ -71,9 +68,7 @@ export const initialAddonSpecificSettings: AddonSpecificSettings = {
     expiryNotificationDays: 7,
     trackByBloodType: true,
     trackByLocation: true
-  },
-  // Add settings for our new Event Management addon
-  101: eventManagementSettings
+  }
 };
 
 // Initial permission groups
@@ -92,7 +87,5 @@ export const initialAddonPermissionGroups: AddonPermissionGroups = {
     { id: 1, name: "View Inventory", key: "admin.inventory.view", enabled: true },
     { id: 2, name: "Manage Inventory", key: "admin.inventory.manage", enabled: true },
     { id: 3, name: "Transfer Inventory", key: "admin.inventory.transfer", enabled: false }
-  ],
-  // Add permissions for our new Event Management addon
-  101: eventManagementPermissions
+  ]
 };

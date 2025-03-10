@@ -1,91 +1,258 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Users,
-  ListChecks,
-  CreditCard,
-  Settings,
-  Bell,
-  MessageSquare,
-  BarChart4,
-  Calendar,
-  BookOpen,
-  FileText,
-  Menu,
-} from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-import NavSection from "./NavSection";
-import NavItem from "./NavItem";
+import { 
+  Users, 
+  Bell, 
+  Settings, 
+  LogOut, 
+  Home, 
+  LayoutDashboard, 
+  FileText, 
+  Image, 
+  Database, 
+  CreditCard, 
+  AlertCircle, 
+  Truck, 
+  BarChartHorizontal, 
+  Building, 
+  MessageSquare,
+  Brain,
+  Activity,
+  Briefcase,
+  UserCheck,
+  Ambulance,
+  Flame,
+  BadgeDollarSign,
+  Palette,
+  Server,
+  Package,
+  TestTube,
+  Shield,
+  Power,
+  Cog,
+  Component
+} from "lucide-react";
+import { NavSection, NavItem } from "./NavSection";
 
 interface DesktopSidebarProps {
-  isCollapsed?: boolean;
-  onToggle?: () => void;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  handleLogout: () => void;
 }
 
-const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
-  isCollapsed = false,
-  onToggle,
-}) => {
+const DesktopSidebar = ({ activeTab, setActiveTab, handleLogout }: DesktopSidebarProps) => {
   return (
-    <aside
-      className={cn(
-        "hidden border-r bg-background lg:block transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64"
-      )}
-    >
-      <div className="sticky top-0 z-10 flex h-16 items-center justify-between border-b px-4">
-        {!isCollapsed && (
-          <Link to="/" className="flex items-center gap-2 font-semibold">
-            <span className="text-primary font-bold">Donor</span>
-            <span>Tide</span>
-          </Link>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="ml-auto h-8 w-8"
-          onClick={onToggle}
-        >
-          <Menu className="h-4 w-4" />
-          <span className="sr-only">Toggle sidebar</span>
-        </Button>
+    <div className="hidden md:flex w-64 flex-col bg-white dark:bg-gray-800 border-r dark:border-gray-700 shadow-sm">
+      <div className="p-4 border-b dark:border-gray-700">
+        <h1 className="text-xl font-bold">Admin Dashboard</h1>
+        <p className="text-sm text-muted-foreground">Manage your application</p>
       </div>
-      <ScrollArea className="h-[calc(100vh-4rem)]">
-        <div className="px-3 py-4">
-          <div className="space-y-4">
-            <NavSection title={isCollapsed ? "" : "General"}>
-              <NavItem
-                href="/admin/dashboard"
-                icon={<LayoutDashboard className="h-4 w-4" />}
-                label={isCollapsed ? "" : "Dashboard"}
-                isActive={true}
-              />
-              <NavItem
-                href="/admin/donors"
-                icon={<Users className="h-4 w-4" />}
-                label={isCollapsed ? "" : "Donors"}
-              />
-              <NavItem
-                href="/admin/requests"
-                icon={<ListChecks className="h-4 w-4" />}
-                label={isCollapsed ? "" : "Blood Requests"}
-              />
-              <NavItem
-                href="/admin/payments"
-                icon={<CreditCard className="h-4 w-4" />}
-                label={isCollapsed ? "" : "Payments"}
-              />
-            </NavSection>
-            {/* Add other NavSection components as needed */}
-          </div>
+      
+      <div className="flex flex-col flex-1 py-4 overflow-y-auto">
+        <nav className="flex-1">
+          {/* DASHBOARD SECTION */}
+          <NavSection title="Dashboard">
+            <NavItem
+              id="dashboard"
+              label="Dashboard"
+              icon={<LayoutDashboard className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="algorithm"
+              label="Matching Algorithm"
+              icon={<Brain className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+          
+          {/* CONTENT MANAGEMENT */}
+          <NavSection title="Content">
+            <NavItem
+              id="banners"
+              label="Banners"
+              icon={<Image className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="blog"
+              label="Blog Posts"
+              icon={<FileText className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="community"
+              label="Community Posts"
+              icon={<MessageSquare className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+          
+          {/* USER MANAGEMENT */}
+          <NavSection title="Users">
+            <NavItem
+              id="staff"
+              label="Staff"
+              icon={<Briefcase className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="donors"
+              label="Donors"
+              icon={<Users className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="volunteers"
+              label="Volunteers"
+              icon={<UserCheck className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+          
+          {/* ORGANIZATION MANAGEMENT */}
+          <NavSection title="Organizations">
+            <NavItem
+              id="organizations"
+              label="Organizations"
+              icon={<Building className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="ambulances"
+              label="Ambulances"
+              icon={<Ambulance className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+          
+          {/* MARKETING & NOTIFICATIONS */}
+          <NavSection title="Marketing">
+            <NavItem
+              id="push-notifications"
+              label="Firebase Push"
+              icon={<Flame className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="notifications"
+              label="Notifications"
+              icon={<Bell className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="ads"
+              label="Ads Management"
+              icon={<BadgeDollarSign className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+          
+          {/* SYSTEM & AI */}
+          <NavSection title="System">
+            <NavItem
+              id="system-updates"
+              label="System Updates"
+              icon={<Server className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="addons"
+              label="Addon Modules"
+              icon={<Component className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="ai-config"
+              label="AI Configuration"
+              icon={<Brain className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="test-mode"
+              label="Test Environment"
+              icon={<TestTube className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="maintenance"
+              label="Maintenance Mode"
+              icon={<Cog className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+          
+          {/* SETTINGS */}
+          <NavSection title="Settings">
+            <NavItem
+              id="app-branding"
+              label="App Branding"
+              icon={<Palette className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="database"
+              label="Database"
+              icon={<Database className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="payment"
+              label="Payment Gateways"
+              icon={<CreditCard className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="app-settings"
+              label="App Settings"
+              icon={<Settings className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+            <NavItem
+              id="splash-screen"
+              label="Splash Screen"
+              icon={<Palette className="mr-2 h-4 w-4" />}
+              activeTab={activeTab}
+              onClick={setActiveTab}
+            />
+          </NavSection>
+        </nav>
+        
+        <div className="px-3 py-2 mt-auto">
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
         </div>
-      </ScrollArea>
-    </aside>
+      </div>
+    </div>
   );
 };
 

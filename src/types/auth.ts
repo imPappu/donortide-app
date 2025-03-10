@@ -1,14 +1,11 @@
 
 export interface User {
   id: string;
-  email: string;
   name: string;
-  role: string;
-  createdAt: string;
-  lastLogin?: string;
+  email: string;
+  avatar?: string;
   isVerified: boolean;
-  profileImage?: string;
-  avatar?: string; // Adding avatar as an alias for profileImage for backward compatibility
+  role: 'user' | 'admin';
 }
 
 export interface AuthContextType {

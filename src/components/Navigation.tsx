@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, PlusCircle, User, Newspaper, Building } from "lucide-react";
+import { Home, User, Newspaper, Heart, UsersRound, Building } from "lucide-react";
 
 const Navigation = () => {
   const location = useLocation();
@@ -16,28 +17,18 @@ const Navigation = () => {
               path === "/" ? "text-primary" : "text-muted-foreground"
             }`}
           >
-            <Home className="h-6 w-6" />
+            <Home className="h-6 w-6 transition-transform hover:scale-110" />
             <span className="text-xs mt-1">Home</span>
           </Link>
           
           <Link
-            to="/donors"
+            to="/requests"
             className={`flex flex-1 flex-col items-center justify-center py-2 ${
-              path === "/donors" ? "text-primary" : "text-muted-foreground"
+              path === "/requests" ? "text-primary" : "text-muted-foreground"
             }`}
           >
-            <Search className="h-6 w-6" />
-            <span className="text-xs mt-1">Donors</span>
-          </Link>
-          
-          <Link
-            to="/create"
-            className={`flex flex-1 flex-col items-center justify-center py-2 ${
-              path === "/create" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <PlusCircle className="h-6 w-6" />
-            <span className="text-xs mt-1">Request</span>
+            <Heart className="h-6 w-6 transition-transform hover:scale-110" />
+            <span className="text-xs mt-1">Requests</span>
           </Link>
           
           <Link
@@ -46,18 +37,8 @@ const Navigation = () => {
               path === "/blog" ? "text-primary" : "text-muted-foreground"
             }`}
           >
-            <Newspaper className="h-6 w-6" />
+            <Newspaper className="h-6 w-6 transition-transform hover:scale-110" />
             <span className="text-xs mt-1">Blog</span>
-          </Link>
-          
-          <Link
-            to="/profile"
-            className={`flex flex-1 flex-col items-center justify-center py-2 ${
-              path === "/profile" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <User className="h-6 w-6" />
-            <span className="text-xs mt-1">Profile</span>
           </Link>
           
           <Link
@@ -66,18 +47,18 @@ const Navigation = () => {
               path === "/volunteers" ? "text-primary" : "text-muted-foreground"
             }`}
           >
-            <User className="w-5 h-5" />
+            <UsersRound className="h-6 w-6 transition-transform hover:scale-110" />
             <span className="text-xs mt-1">Volunteers</span>
           </Link>
           
           <Link
-            to="/charities"
+            to="/profile"
             className={`flex flex-1 flex-col items-center justify-center py-2 ${
-              path === "/charities" ? "text-primary" : "text-muted-foreground"
+              path === "/profile" ? "text-primary" : "text-muted-foreground"
             }`}
           >
-            <Building className="w-5 h-5" />
-            <span className="text-xs mt-1">Organizations</span>
+            <User className="h-6 w-6 transition-transform hover:scale-110" />
+            <span className="text-xs mt-1">Profile</span>
           </Link>
         </div>
       </div>

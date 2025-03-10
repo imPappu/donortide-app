@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, MapPin, Clock, Calendar, DropletIcon, Phone } from "lucide-react";
+import { MapPin, Clock, Calendar, DropletIcon, Phone } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
 import { sendNotification } from "@/services/dbService";
+import TopNavbar from "@/components/TopNavbar";
 
 const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, distance, hospital, notes, contactNumber }) => {
   const [responded, setResponded] = useState(false);
@@ -122,6 +122,9 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
 };
 
 const Requests = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredRequests, setFilteredRequests] = useState([]);
+  
   const requests = [
     {
       name: "Emily Johnson",
@@ -158,54 +161,94 @@ const Requests = () => {
     }
   ];
 
+  // Handle search
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    
+    if (!query.trim()) {
+      setFilteredRequests([]);
+      return;
+    }
+    
+    const filtered = requests.filter(
+      request => 
+        request.name.toLowerCase().includes(query.toLowerCase()) ||
+        request.bloodType.toLowerCase().includes(query.toLowerCase()) ||
+        request.location.toLowerCase().includes(query.toLowerCase()) ||
+        request.hospital.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    setFilteredRequests(filtered);
+  };
+
+  // Determine which requests to display
+  const displayRequests = searchQuery.trim() ? filteredRequests : requests;
+
   return (
-    <div className="container max-w-md mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Blood Requests</h1>
+    <div className="flex flex-col min-h-screen">
+      <TopNavbar 
+        title="Blood Requests"
+        showSearchBar={true}
+        onSearch={handleSearch}
+      />
+      
+      <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
+        <Alert className="mb-4 border-red-200 bg-red-50 text-red-800">
+          <AlertDescription className="flex items-center">
+            <DropletIcon className="h-4 w-4 mr-2" /> 
+            3 urgent requests in your area
+          </AlertDescription>
+        </Alert>
+
+        <Tabs defaultValue="all" className="mb-6">
+          <TabsList className="w-full">
+            <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
+            <TabsTrigger value="nearby" className="flex-1">Nearby</TabsTrigger>
+            <TabsTrigger value="urgent" className="flex-1">Urgent</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">
+            <div className="mt-4">
+              {displayRequests.length > 0 ? (
+                displayRequests.map((request, index) => (
+                  <BloodRequestCard key={index} {...request} />
+                ))
+              ) : (
+                searchQuery.trim() ? (
+                  <p className="text-center py-4 text-muted-foreground">No results matching "{searchQuery}"</p>
+                ) : (
+                  <p className="text-center py-4 text-muted-foreground">No requests available</p>
+                )
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="nearby">
+            <div className="mt-4">
+              {displayRequests.filter(r => parseFloat(r.distance) < 4).length > 0 ? (
+                displayRequests
+                  .filter(r => parseFloat(r.distance) < 4)
+                  .map((request, index) => (
+                    <BloodRequestCard key={index} {...request} />
+                  ))
+              ) : (
+                <p className="text-center py-4 text-muted-foreground">No nearby requests found</p>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="urgent">
+            <div className="mt-4">
+              {displayRequests.filter(r => r.urgency === "Urgent").length > 0 ? (
+                displayRequests
+                  .filter(r => r.urgency === "Urgent")
+                  .map((request, index) => (
+                    <BloodRequestCard key={index} {...request} />
+                  ))
+              ) : (
+                <p className="text-center py-4 text-muted-foreground">No urgent requests found</p>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Alert className="mb-4 border-red-200 bg-red-50 text-red-800">
-        <AlertDescription className="flex items-center">
-          <DropletIcon className="h-4 w-4 mr-2" /> 
-          3 urgent requests in your area
-        </AlertDescription>
-      </Alert>
-
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder="Search by location, blood type..." />
-        </div>
-      </div>
-
-      <Tabs defaultValue="all" className="mb-6">
-        <TabsList className="w-full">
-          <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
-          <TabsTrigger value="nearby" className="flex-1">Nearby</TabsTrigger>
-          <TabsTrigger value="urgent" className="flex-1">Urgent</TabsTrigger>
-        </TabsList>
-        <TabsContent value="all">
-          <div className="mt-4">
-            {requests.map((request, index) => (
-              <BloodRequestCard key={index} {...request} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="nearby">
-          <div className="mt-4">
-            {requests.filter(r => parseFloat(r.distance) < 4).map((request, index) => (
-              <BloodRequestCard key={index} {...request} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="urgent">
-          <div className="mt-4">
-            {requests.filter(r => r.urgency === "Urgent").map((request, index) => (
-              <BloodRequestCard key={index} {...request} />
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

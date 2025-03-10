@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,10 @@ import AdminLogin from "./pages/AdminLogin";
 import Install from "./pages/Install";
 import Volunteers from "./pages/Volunteers";
 import Charities from "./pages/Charities";
+import Notifications from "./pages/Notifications";
+import CommunityFeed from "./pages/CommunityFeed";
+import UserStories from "./pages/UserStories";
+import DonationCategories from "./pages/DonationCategories";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +96,10 @@ const App = () => {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/volunteers" element={<Volunteers />} />
                 <Route path="/charities" element={<Charities />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/community" element={<CommunityFeed />} />
+                <Route path="/stories" element={<UserStories />} />
+                <Route path="/donate" element={<DonationCategories />} />
                 <Route path={`/${adminPath}`} element={<AdminLogin />} />
                 <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
                 <Route path="*" element={<NotFound />} />

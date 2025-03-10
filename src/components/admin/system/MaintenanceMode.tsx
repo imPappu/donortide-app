@@ -1,62 +1,60 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, Clock, Tool, Calendar, Power } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  AlertCircle, 
+  Clock, 
+  Settings, 
+  Calendar, 
+  Users,
+  MessageSquare,
+  Check,
+  Wrench
+} from "lucide-react";
 
 const MaintenanceMode = () => {
   const { toast } = useToast();
-  const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
+  const [maintenanceActive, setMaintenanceActive] = useState(false);
   const [scheduledMaintenance, setScheduledMaintenance] = useState(false);
-  const [maintenanceMessage, setMaintenanceMessage] = useState(
-    "Our system is currently undergoing scheduled maintenance. We'll be back shortly. Thank you for your patience."
-  );
+  const [maintenanceMessage, setMaintenanceMessage] = useState("We're currently performing maintenance. Please check back soon.");
   const [maintenanceDate, setMaintenanceDate] = useState("");
   const [maintenanceTime, setMaintenanceTime] = useState("");
   const [maintenanceDuration, setMaintenanceDuration] = useState("60");
-  const [whitelistedIPs, setWhitelistedIPs] = useState("127.0.0.1");
+  const [saving, setSaving] = useState(false);
 
-  const toggleMaintenanceMode = () => {
-    const newStatus = !maintenanceEnabled;
-    setMaintenanceEnabled(newStatus);
-    
-    toast({
-      title: newStatus ? "Maintenance Mode Activated" : "Maintenance Mode Deactivated",
-      description: newStatus 
-        ? "Your site is now in maintenance mode and is not accessible to regular users." 
-        : "Your site is now live and accessible to all users.",
-    });
+  const toggleMaintenance = () => {
+    setMaintenanceActive(!maintenanceActive);
   };
 
-  const saveMaintenanceSettings = () => {
-    toast({
-      title: "Settings Saved",
-      description: "Maintenance mode settings have been updated successfully.",
-    });
-  };
-
-  const scheduleMaintenanceWindow = () => {
-    if (!maintenanceDate || !maintenanceTime || !maintenanceDuration) {
+  const saveSettings = async () => {
+    try {
+      setSaving(true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       toast({
-        title: "Validation Error",
-        description: "Please fill all required fields for scheduled maintenance.",
-        variant: "destructive"
+        title: maintenanceActive ? "Maintenance Mode Activated" : "Maintenance Mode Deactivated",
+        description: maintenanceActive 
+          ? "Your site is now in maintenance mode and is inaccessible to regular users." 
+          : "Your site is now live and accessible to all users.",
       });
-      return;
+      
+    } catch (error) {
+      console.error("Error saving maintenance settings:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save maintenance settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
     }
-    
-    toast({
-      title: "Maintenance Scheduled",
-      description: `Maintenance has been scheduled for ${maintenanceDate} at ${maintenanceTime} for ${maintenanceDuration} minutes.`,
-    });
-    
-    setScheduledMaintenance(true);
   };
 
   return (
@@ -64,160 +62,179 @@ const MaintenanceMode = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Tool className="mr-2 h-5 w-5 text-amber-500" />
+            <Wrench className="mr-2 h-5 w-5 text-orange-500" />
             Maintenance Mode
           </CardTitle>
+          <CardDescription>
+            Enable maintenance mode to make your site inaccessible to regular users while you perform updates.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {maintenanceEnabled && (
-            <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-              <AlertDescription className="text-amber-800 dark:text-amber-200">
-                Maintenance mode is currently active. Only administrators and whitelisted IPs can access the site.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <div className="flex items-center justify-between border p-4 rounded-lg">
-            <div>
-              <h3 className="font-medium">Maintenance Mode</h3>
-              <p className="text-sm text-muted-foreground">
-                {maintenanceEnabled 
-                  ? "Visitors will see a maintenance page" 
-                  : "Site is currently live for all visitors"}
-              </p>
-            </div>
-            <Switch 
-              checked={maintenanceEnabled} 
-              onCheckedChange={toggleMaintenanceMode}
-            />
-          </div>
-
-          <div className="border rounded-lg p-4 space-y-4">
-            <h3 className="font-medium">Maintenance Message</h3>
-            <Textarea 
-              value={maintenanceMessage} 
-              onChange={(e) => setMaintenanceMessage(e.target.value)}
-              className="min-h-[100px]"
-              placeholder="Enter the message to display during maintenance"
-            />
-          </div>
-
-          <div className="border rounded-lg p-4 space-y-4">
-            <h3 className="font-medium">IP Whitelist</h3>
-            <p className="text-sm text-muted-foreground">
-              These IPs will still be able to access the site during maintenance
-            </p>
-            <Textarea 
-              value={whitelistedIPs} 
-              onChange={(e) => setWhitelistedIPs(e.target.value)}
-              placeholder="Enter IP addresses, one per line"
-              className="min-h-[80px]"
-            />
-            <p className="text-xs text-muted-foreground">
-              Enter one IP address per line. Your current IP is automatically whitelisted.
-            </p>
-          </div>
-          
-          <div className="border rounded-lg p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium">Schedule Maintenance</h3>
-                <p className="text-sm text-muted-foreground">
-                  Plan ahead and schedule maintenance windows
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {scheduledMaintenance ? "Maintenance Scheduled" : "No Schedule"}
-                </span>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="maintenance-date">Date</Label>
-                <Input 
-                  id="maintenance-date"
-                  type="date" 
-                  value={maintenanceDate}
-                  onChange={(e) => setMaintenanceDate(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="maintenance-time">Time</Label>
-                <Input 
-                  id="maintenance-time"
-                  type="time" 
-                  value={maintenanceTime}
-                  onChange={(e) => setMaintenanceTime(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="maintenance-duration">Duration (minutes)</Label>
-              <Input 
-                id="maintenance-duration"
-                type="number" 
-                min="5"
-                value={maintenanceDuration}
-                onChange={(e) => setMaintenanceDuration(e.target.value)}
-                className="mt-1"
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch 
+                checked={maintenanceActive} 
+                onCheckedChange={toggleMaintenance}
+                id="maintenance-mode"
               />
+              <Label htmlFor="maintenance-mode" className="font-medium">
+                {maintenanceActive ? "Maintenance Mode Active" : "Maintenance Mode Inactive"}
+              </Label>
             </div>
-            
-            <Button onClick={scheduleMaintenanceWindow}>
-              <Clock className="mr-2 h-4 w-4" />
-              Schedule Maintenance
-            </Button>
+            <div>
+              {maintenanceActive && (
+                <span className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs px-2 py-1 rounded-full">
+                  Site Offline
+                </span>
+              )}
+            </div>
           </div>
           
-          <div className="flex justify-end">
-            <Button onClick={saveMaintenanceSettings}>
-              Save Maintenance Settings
+          {maintenanceActive && (
+            <div className="mt-6 space-y-4">
+              <div>
+                <Label htmlFor="maintenance-message">Maintenance Message</Label>
+                <Textarea
+                  id="maintenance-message"
+                  value={maintenanceMessage}
+                  onChange={(e) => setMaintenanceMessage(e.target.value)}
+                  placeholder="Enter the message to display to users"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2 mt-4">
+                <Switch 
+                  checked={scheduledMaintenance} 
+                  onCheckedChange={setScheduledMaintenance}
+                  id="scheduled-maintenance"
+                />
+                <Label htmlFor="scheduled-maintenance" className="font-medium">
+                  Schedule Maintenance
+                </Label>
+              </div>
+              
+              {scheduledMaintenance && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <Label htmlFor="maintenance-date">Maintenance Date</Label>
+                    <Input
+                      id="maintenance-date"
+                      type="date"
+                      value={maintenanceDate}
+                      onChange={(e) => setMaintenanceDate(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="maintenance-time">Maintenance Time</Label>
+                    <Input
+                      id="maintenance-time"
+                      type="time"
+                      value={maintenanceTime}
+                      onChange={(e) => setMaintenanceTime(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="maintenance-duration">Duration (minutes)</Label>
+                    <Input
+                      id="maintenance-duration"
+                      type="number"
+                      value={maintenanceDuration}
+                      onChange={(e) => setMaintenanceDuration(e.target.value)}
+                      min="1"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              <div className="bg-muted p-4 rounded-md mt-4">
+                <h4 className="text-sm font-medium mb-2 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1 text-amber-500" />
+                  Important Notes
+                </h4>
+                <ul className="text-sm space-y-1 text-muted-foreground">
+                  <li className="flex items-start">
+                    <Check className="h-3 w-3 mr-1 mt-1 text-green-500" />
+                    Admin users can still access the site during maintenance
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-3 w-3 mr-1 mt-1 text-green-500" />
+                    You can customize who can bypass maintenance mode in settings
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-3 w-3 mr-1 mt-1 text-green-500" />
+                    API endpoints can still be accessed by authenticated requests
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+          
+          <div className="mt-6">
+            <Button 
+              onClick={saveSettings} 
+              disabled={saving}
+              className="w-full md:w-auto"
+            >
+              {saving ? "Saving..." : "Save Settings"}
             </Button>
           </div>
         </CardContent>
       </Card>
       
-      {scheduledMaintenance && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="mr-2 h-5 w-5 text-blue-500" />
-              Scheduled Maintenance
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="border rounded-lg p-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-sm font-medium">Date</p>
-                  <p className="text-lg">{maintenanceDate}</p>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Users className="mr-2 h-5 w-5 text-blue-500" />
+            Whitelist Access
+          </CardTitle>
+          <CardDescription>
+            Configure IP addresses and user roles that can bypass maintenance mode
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="ip-whitelist">IP Whitelist (one per line)</Label>
+              <Textarea
+                id="ip-whitelist"
+                placeholder="127.0.0.1
+192.168.1.100"
+                className="mt-1 font-mono text-sm"
+              />
+            </div>
+            
+            <div>
+              <Label>Roles with Access</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch id="role-admin" defaultChecked={true} disabled />
+                  <Label htmlFor="role-admin">Administrators</Label>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Time</p>
-                  <p className="text-lg">{maintenanceTime}</p>
+                <div className="flex items-center space-x-2">
+                  <Switch id="role-staff" defaultChecked={false} />
+                  <Label htmlFor="role-staff">Staff</Label>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Duration</p>
-                  <p className="text-lg">{maintenanceDuration} minutes</p>
+                <div className="flex items-center space-x-2">
+                  <Switch id="role-editors" defaultChecked={false} />
+                  <Label htmlFor="role-editors">Editors</Label>
                 </div>
-              </div>
-              
-              <div className="mt-4 flex justify-end">
-                <Button variant="destructive" size="sm" onClick={() => setScheduledMaintenance(false)}>
-                  Cancel Scheduled Maintenance
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Switch id="role-moderators" defaultChecked={false} />
+                  <Label htmlFor="role-moderators">Moderators</Label>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            
+            <Button variant="outline" className="w-full mt-4">
+              Update Access Settings
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

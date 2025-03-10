@@ -1,101 +1,75 @@
 
 import React from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import AIModelCard from "./AIModelCard";
 import { AIModelsState } from "../types";
+import AIModelCard from "./AIModelCard";
 
 interface AIModelsTabProps {
-  aiModels: AIModelsState;
-  showApiKeys: Record<string, boolean>;
-  toggleShowApiKey: (model: string) => void;
-  handleAIModelChange: (model: string, field: string, value: any) => void;
-  testAIConnection: (model: string) => void;
+  models: AIModelsState;
+  handleChange: (model: keyof AIModelsState, field: string, value: any) => void;
+  testConnection: (model: keyof AIModelsState) => Promise<void>;
   saving: boolean;
-  saveAIConfiguration: () => Promise<void>;
 }
 
 const AIModelsTab: React.FC<AIModelsTabProps> = ({
-  aiModels,
-  showApiKeys,
-  toggleShowApiKey,
-  handleAIModelChange,
-  testAIConnection,
-  saving,
-  saveAIConfiguration,
+  models,
+  handleChange,
+  testConnection,
+  saving
 }) => {
-  const modelConfigs = [
-    {
-      key: 'chatgpt',
-      name: 'ChatGPT / OpenAI',
-      color: 'text-green-500',
-      options: [
-        { value: 'gpt-4o', label: 'GPT-4o' },
-        { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-        { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
-      ]
-    },
-    {
-      key: 'deepseek',
-      name: 'DeepSeek',
-      color: 'text-purple-500',
-      options: [
-        { value: 'deepseek-v2', label: 'DeepSeek-V2' },
-        { value: 'deepseek-coder', label: 'DeepSeek Coder' }
-      ]
-    },
-    {
-      key: 'grok',
-      name: 'Grok',
-      color: 'text-red-500',
-      options: [
-        { value: 'grok-1.5', label: 'Grok 1.5' },
-        { value: 'grok-1', label: 'Grok 1' }
-      ]
-    },
-    {
-      key: 'qwen',
-      name: 'Qwen',
-      color: 'text-blue-500',
-      options: [
-        { value: 'qwen-72b', label: 'Qwen 72B' },
-        { value: 'qwen-max', label: 'Qwen Max' }
-      ]
-    }
-  ];
-
   return (
-    <div className="space-y-4">
-      <Alert className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-        <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        <AlertDescription className="text-blue-700 dark:text-blue-300">
-          Configure AI models to power your platform monitoring and automation. All processing happens on your server to protect user data privacy.
-        </AlertDescription>
-      </Alert>
-      
-      {modelConfigs.map(model => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <AIModelCard
-          key={model.key}
-          modelKey={model.key}
-          modelName={model.name}
-          iconColor={model.color}
-          modelConfig={aiModels[model.key as keyof AIModelsState]}
-          modelOptions={model.options}
-          showApiKey={showApiKeys[model.key]}
-          onToggleShowApiKey={toggleShowApiKey}
-          onModelChange={handleAIModelChange}
-          onTestConnection={testAIConnection}
-        />
-      ))}
-      
-      <div className="flex justify-end mt-6">
-        <Button 
-          onClick={saveAIConfiguration} 
+          id="chatgpt"
+          name="ChatGPT"
+          description="OpenAI's powerful language model for natural language processing"
+          model={models.chatgpt}
+          onChange={(field, value) => handleChange('chatgpt', field, value)}
+          testConnection={() => testConnection('chatgpt')}
           disabled={saving}
-        >
-          {saving ? 'Saving...' : 'Save AI Configuration'}
-        </Button>
+        />
+        
+        <AIModelCard
+          id="deepseek"
+          name="DeepSeek"
+          description="Specialized AI model for deep code understanding and generation"
+          model={models.deepseek}
+          onChange={(field, value) => handleChange('deepseek', field, value)}
+          testConnection={() => testConnection('deepseek')}
+          disabled={saving}
+        />
+        
+        <AIModelCard
+          id="grok"
+          name="Grok"
+          description="Real-time AI assistant with up-to-date information and reasoning"
+          model={models.grok}
+          onChange={(field, value) => handleChange('grok', field, value)}
+          testConnection={() => testConnection('grok')}
+          disabled={saving}
+        />
+        
+        <AIModelCard
+          id="qwen"
+          name="Qwen"
+          description="Multilingual AI model with strong capabilities in various languages"
+          model={models.qwen}
+          onChange={(field, value) => handleChange('qwen', field, value)}
+          testConnection={() => testConnection('qwen')}
+          disabled={saving}
+        />
+      </div>
+      
+      <div className="bg-muted p-4 rounded-md">
+        <h4 className="text-sm font-medium mb-2">About AI Models</h4>
+        <p className="text-sm text-muted-foreground">
+          Configure the AI models that power your platform's advanced features. 
+          At least one model must be enabled and properly configured for AI features to function.
+          Each model requires a valid API key from its respective provider.
+        </p>
       </div>
     </div>
   );

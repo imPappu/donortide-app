@@ -1,54 +1,79 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Brain } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  Brain, 
+  Twitter, 
+  Facebook, 
+  Instagram, 
+  Youtube, 
+  Check, 
+  AlertCircle,
+  MessageSquare
+} from "lucide-react";
+import { AIModelsState, SocialMediaState, MonitoringSettings, SocialMediaConfig } from "../types";
 import AIModelsTab from "../ai/AIModelsTab";
 import MonitoringTab from "../ai/MonitoringTab";
 import SocialMediaTab from "../ai/SocialMediaTab";
-import { AIModelsState, MonitoringSettings, SocialMediaState } from "../types";
 
 const AIConfiguration = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("models");
   const [saving, setSaving] = useState(false);
-  const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
-    chatgpt: false,
-    deepseek: false,
-    grok: false,
-    qwen: false,
-  });
   
   // AI Models state
   const [aiModels, setAiModels] = useState<AIModelsState>({
-    chatgpt: { 
-      enabled: true, 
-      apiKey: "sk-.......................", 
-      model: "gpt-4o", 
-      connectionTested: true,
-      connectionSuccess: true
-    },
-    deepseek: { 
-      enabled: false, 
-      apiKey: "", 
-      model: "deepseek-v2", 
+    chatgpt: {
+      enabled: true,
+      apiKey: "",
+      model: "gpt-4o",
       connectionTested: false
     },
-    grok: { 
-      enabled: false, 
-      apiKey: "", 
-      model: "grok-1.5", 
+    deepseek: {
+      enabled: false,
+      apiKey: "",
+      model: "deepseek-coder",
       connectionTested: false
     },
-    qwen: { 
-      enabled: true, 
-      apiKey: "qw-.......................", 
-      model: "qwen-72b", 
-      connectionTested: true,
-      connectionSuccess: true
+    grok: {
+      enabled: false,
+      apiKey: "",
+      model: "grok-1",
+      connectionTested: false
+    },
+    qwen: {
+      enabled: false,
+      apiKey: "",
+      model: "qwen-72b",
+      connectionTested: false
+    }
+  });
+  
+  // Social Media state
+  const [socialMedia, setSocialMedia] = useState<SocialMediaState>({
+    twitter: {
+      enabled: false,
+      autoPost: false,
+      schedule: "weekly"
+    },
+    facebook: {
+      enabled: false,
+      autoPost: false,
+      schedule: "daily"
+    },
+    instagram: {
+      enabled: false,
+      autoPost: false,
+      schedule: "weekly"
+    },
+    youtube: {
+      enabled: false,
+      autoPost: false,
+      schedule: "monthly"
     }
   });
   
@@ -58,43 +83,58 @@ const AIConfiguration = () => {
     spamDetection: true,
     contentModeration: true,
     dataAnalysis: false,
-    scheduledReports: true
+    scheduledReports: false
   });
   
-  // Social media settings
-  const [socialMedia, setSocialMedia] = useState<SocialMediaState>({
-    twitter: { enabled: true, autoPost: true, schedule: "daily" },
-    facebook: { enabled: true, autoPost: false, schedule: "weekly" },
-    instagram: { enabled: false, autoPost: false, schedule: "manual" },
-    youtube: { enabled: false, autoPost: false, schedule: "manual" }
-  });
-  
-  const toggleShowApiKey = (model: string) => {
-    setShowApiKeys(prev => ({
-      ...prev,
-      [model]: !prev[model]
-    }));
-  };
-  
-  const handleAIModelChange = (model: string, field: string, value: any) => {
+  // Handle AI model changes
+  const handleModelChange = (model: keyof AIModelsState, field: string, value: any) => {
     setAiModels(prev => ({
       ...prev,
       [model]: {
-        ...prev[model as keyof AIModelsState],
-        [field]: value,
-        // Reset connection test status when API key or model changes
-        ...(field === 'apiKey' || field === 'model' ? { connectionTested: false, connectionSuccess: undefined } : {})
+        ...prev[model],
+        [field]: value
       }
     }));
   };
   
-  const handleMonitoringChange = (setting: keyof MonitoringSettings, value: boolean) => {
-    setMonitoringSettings(prev => ({
-      ...prev,
-      [setting]: value
-    }));
+  // Test AI connection
+  const testConnection = async (model: keyof AIModelsState) => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulate successful connection
+      setAiModels(prev => ({
+        ...prev,
+        [model]: {
+          ...prev[model],
+          connectionTested: true,
+          connectionSuccess: true
+        }
+      }));
+      
+      toast({
+        title: "Connection Successful",
+        description: `Successfully connected to ${model} API.`,
+      });
+    } catch (error) {
+      setAiModels(prev => ({
+        ...prev,
+        [model]: {
+          ...prev[model],
+          connectionTested: true,
+          connectionSuccess: false
+        }
+      }));
+      
+      toast({
+        title: "Connection Failed",
+        description: `Failed to connect to ${model} API. Please check your API key.`,
+        variant: "destructive",
+      });
+    }
   };
   
+  // Handle social media changes
   const handleSocialMediaChange = (platform: keyof SocialMediaState, field: keyof SocialMediaConfig, value: any) => {
     setSocialMedia(prev => ({
       ...prev,
@@ -105,65 +145,36 @@ const AIConfiguration = () => {
     }));
   };
   
-  const testAIConnection = async (model: string) => {
-    const modelConfig = aiModels[model as keyof AIModelsState];
-    
-    if (!modelConfig.apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter an API key before testing the connection.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Set as testing
-    setAiModels(prev => ({
+  // Handle monitoring setting changes
+  const handleMonitoringChange = (setting: keyof MonitoringSettings, value: boolean) => {
+    setMonitoringSettings(prev => ({
       ...prev,
-      [model]: {
-        ...prev[model as keyof AIModelsState],
-        connectionTested: false
-      }
+      [setting]: value
     }));
-    
-    // Simulate API connection test
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // For demo, make OpenAI and Qwen successful, others failed
-    const success = model === 'chatgpt' || model === 'qwen';
-    
-    setAiModels(prev => ({
-      ...prev,
-      [model]: {
-        ...prev[model as keyof AIModelsState],
-        connectionTested: true,
-        connectionSuccess: success
-      }
-    }));
-    
-    toast({
-      title: success ? "Connection Successful" : "Connection Failed",
-      description: success 
-        ? `Successfully connected to ${model} API` 
-        : `Failed to connect to ${model} API. Please check your credentials.`,
-      variant: success ? "default" : "destructive"
-    });
   };
   
-  const saveAIConfiguration = async () => {
-    setSaving(true);
-    
-    // Simulate saving
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-      title: "Configuration Saved",
-      description: "AI configuration has been updated successfully."
-    });
-    
-    setSaving(false);
+  // Save settings
+  const saveSettings = async () => {
+    try {
+      setSaving(true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast({
+        title: "Settings Saved",
+        description: "AI configuration has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save AI configuration. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
-
+  
   return (
     <div className="space-y-6">
       <Card>
@@ -172,10 +183,13 @@ const AIConfiguration = () => {
             <Brain className="mr-2 h-5 w-5 text-purple-500" />
             AI Configuration
           </CardTitle>
+          <CardDescription>
+            Configure AI models, social media integration, and monitoring tools for your platform.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <Tabs defaultValue="models" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-3 mb-6">
               <TabsTrigger value="models">AI Models</TabsTrigger>
               <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
               <TabsTrigger value="social">Social Media</TabsTrigger>
@@ -183,44 +197,45 @@ const AIConfiguration = () => {
             
             <TabsContent value="models">
               <AIModelsTab 
-                aiModels={aiModels}
-                showApiKeys={showApiKeys}
-                toggleShowApiKey={toggleShowApiKey}
-                handleAIModelChange={handleAIModelChange}
-                testAIConnection={testAIConnection}
+                models={aiModels}
+                handleChange={handleModelChange}
+                testConnection={testConnection}
                 saving={saving}
-                saveAIConfiguration={saveAIConfiguration}
               />
             </TabsContent>
             
             <TabsContent value="monitoring">
               <MonitoringTab 
-                settings={monitoringSettings}
+                monitoringSettings={monitoringSettings}
                 handleChange={handleMonitoringChange}
                 saving={saving}
-                saveSettings={saveAIConfiguration}
+                saveSettings={saveSettings}
               />
             </TabsContent>
             
             <TabsContent value="social">
               <SocialMediaTab 
-                socialMedia={socialMedia}
+                socialMediaState={socialMedia}
                 handleChange={handleSocialMediaChange}
                 saving={saving}
-                saveSettings={saveAIConfiguration}
+                saveSettings={saveSettings}
               />
             </TabsContent>
           </Tabs>
+          
+          <div className="mt-6">
+            <Button 
+              onClick={saveSettings} 
+              disabled={saving}
+              className="w-full md:w-auto"
+            >
+              {saving ? "Saving..." : "Save Configuration"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 };
-
-interface SocialMediaConfig {
-  enabled: boolean;
-  autoPost: boolean;
-  schedule: string;
-}
 
 export default AIConfiguration;

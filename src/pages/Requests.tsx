@@ -131,7 +131,8 @@ const Requests = () => {
       urgency: "Urgent",
       postedTime: "30 min ago",
       hospital: "Memorial Hospital, Floor 3, Room 302",
-      notes: "Needed for emergency surgery, any donors welcome."
+      notes: "Needed for emergency surgery, any donors welcome.",
+      contactNumber: "555-123-4567"
     },
     {
       name: "Michael Chen",
@@ -141,7 +142,8 @@ const Requests = () => {
       urgency: "High",
       postedTime: "2 hours ago",
       hospital: "City Medical Center, ER Department",
-      notes: "Patient needs blood for scheduled surgery tomorrow morning."
+      notes: "Patient needs blood for scheduled surgery tomorrow morning.",
+      contactNumber: "555-987-6543"
     },
     {
       name: "Sophia Martinez",
@@ -151,7 +153,8 @@ const Requests = () => {
       urgency: "Medium",
       postedTime: "5 hours ago",
       hospital: "University Hospital, Hematology Department",
-      notes: "Needed for a patient with ongoing treatment."
+      notes: "Needed for a patient with ongoing treatment.",
+      contactNumber: "555-456-7890"
     }
   ];
 

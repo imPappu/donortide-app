@@ -9,7 +9,7 @@ import RepositoryTab from "./addons/RepositoryTab";
 import UploadTab from "./addons/UploadTab";
 import ModuleSettings from "./addons/ModuleSettings";
 import AddonSystemLoading from "./addons/AddonSystemLoading";
-import { RepositoryAddon as AdminRepositoryAddon } from "../system/types";
+import { RepositoryAddon } from "./types";
 
 const AddonModules = () => {
   const [activeTab, setActiveTab] = useState("installed");
@@ -38,11 +38,11 @@ const AddonModules = () => {
   } = useAddonModules();
 
   // Convert repository addons to the format expected by RepositoryTab
-  const convertedRepoAddons: AdminRepositoryAddon[] = repositoryAddons.map(addon => ({
+  const convertedRepoAddons: RepositoryAddon[] = repositoryAddons.map(addon => ({
     ...addon,
     rating: 4.5, // Default rating
     downloads: 1200, // Default downloads
-    installed: installedAddons.some(installed => installed.name === addon.name)
+    installed: installedAddons.some(installed => installed.name === addon.name) || false
   }));
 
   return (

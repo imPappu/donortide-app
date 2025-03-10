@@ -4,14 +4,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Globe, Save } from "lucide-react";
-
-export interface WebsiteTabProps {
-  websiteVersion: string;
-  handleWebsiteSettingsSave: () => void;
-}
+import { WebsiteTabProps } from "../types";
 
 const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabProps) => {
   const [localVersion, setLocalVersion] = useState(websiteVersion);
+  const [maintenanceWindow, setMaintenanceWindow] = useState("2023-12-25T02:00");
+  
+  const handleSave = () => {
+    const settings = {
+      version: localVersion,
+      maintenanceWindow
+    };
+    
+    handleWebsiteSettingsSave(settings);
+  };
   
   return (
     <div className="space-y-4">
@@ -49,7 +55,8 @@ const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabPro
                 <Input 
                   id="maintenanceWindow"
                   type="datetime-local"
-                  defaultValue="2023-12-25T02:00"
+                  value={maintenanceWindow}
+                  onChange={(e) => setMaintenanceWindow(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
                   Schedule a maintenance window for your website
@@ -59,7 +66,7 @@ const WebsiteTab = ({ websiteVersion, handleWebsiteSettingsSave }: WebsiteTabPro
             
             <Button 
               className="w-full" 
-              onClick={handleWebsiteSettingsSave}
+              onClick={handleSave}
             >
               <Save className="mr-2 h-4 w-4" />
               Save Settings

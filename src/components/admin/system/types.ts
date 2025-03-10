@@ -19,7 +19,7 @@ export interface RepositoryAddon {
   description: string;
   rating: number;
   downloads: number;
-  installed?: boolean;
+  installed: boolean; // Making this required to match how it's used in AddonModules.tsx
   category?: string;
 }
 
@@ -39,7 +39,7 @@ export interface CoreSystemTabProps {
 
 export interface MobileTabProps {
   mobileUpdating: boolean;
-  handleMobileUpdate: () => Promise<void>;
+  handleMobileUpdate: (platform: string) => Promise<void>; // Updated to match implementation
 }
 
 export interface WebsiteTabProps {

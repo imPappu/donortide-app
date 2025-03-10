@@ -38,7 +38,7 @@ const SystemUpdatePanel = () => {
     setUpdating(false);
   };
   
-  const handleMobileUpdate = async () => {
+  const handleMobileUpdate = async (platform: string) => {
     setMobileUpdating(true);
     
     // Simulate update process

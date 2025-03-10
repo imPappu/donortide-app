@@ -2,13 +2,34 @@
 import React from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import DashboardContent from './DashboardContent';
+import { BloodRequest } from '@/services/dbService';
+import { Banner, BlogPost, Notification } from '@/types/apiTypes';
 
 export interface AdminContentProps {
   initialTab?: string;
-  activeTab?: string; // Add this prop to match what's being passed from Admin.tsx
+  activeTab?: string;
+  stats?: {
+    totalUsers: number;
+    totalDonations: number;
+    totalRequests: number;
+    totalLocations: number;
+    recentRequests?: BloodRequest[];
+  };
+  banners?: Banner[];
+  setBanners?: React.Dispatch<React.SetStateAction<Banner[]>>;
+  blogPosts?: BlogPost[];
+  setBlogPosts?: React.Dispatch<React.SetStateAction<BlogPost[]>>;
+  notification?: Partial<Notification>;
+  setNotification?: React.Dispatch<React.SetStateAction<Partial<Notification>>>;
+  loading?: boolean;
 }
 
-const AdminContent: React.FC<AdminContentProps> = ({ initialTab = 'dashboard', activeTab }) => {
+const AdminContent: React.FC<AdminContentProps> = ({ 
+  initialTab = 'dashboard', 
+  activeTab,
+  stats,
+  loading = false
+}) => {
   // Use activeTab if provided, otherwise fall back to initialTab
   const currentTab = activeTab || initialTab;
   

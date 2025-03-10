@@ -9,6 +9,7 @@ import DonationCategories from "@/pages/DonationCategories";
 import Events from "@/pages/Events";
 import Admin from "@/components/admin/Admin";
 import Home from "@/pages/Home";
+import Profile from "@/pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/dashboard",
     element: <Admin initialTab="dashboard" />
+  },
+  {
+    path: "/profile",
+    element: <Profile />
   },
 ]);
 

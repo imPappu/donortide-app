@@ -16,6 +16,7 @@ export * from './settingService';
 export * from './consultantService';
 export * from './ambulanceService';
 export * from './communicationService';
+export * from './communityService';  // Add the export for communityService
 export * from './types/serviceTypes';
 
 // Re-export types (for backward compatibility)

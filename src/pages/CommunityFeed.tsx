@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import TopNavbar from "@/components/TopNavbar";
 import NewPostForm from "@/components/community/NewPostForm";
@@ -12,11 +11,17 @@ import FollowedTags from "@/components/community/feed/FollowedTags";
 import { Story } from "@/types/community";
 import StoriesSection from "@/components/community/stories/StoriesSection";
 import { v4 as uuidv4 } from "uuid";
-import { communityService } from "@/services";
+import { 
+  getCommunityPosts, 
+  createCommunityPost,
+  updateCommunityPost,
+  deleteCommunityPost,
+  createStory,
+  getStories,
+  deleteStory
+} from "@/services";
 
-// Add some sample poll data to demonstrate functionality
 const ENHANCED_POSTS = MOCK_POSTS.map((post, index) => {
-  // Add a poll to the first post
   if (index === 0) {
     return {
       ...post,
@@ -33,7 +38,6 @@ const ENHANCED_POSTS = MOCK_POSTS.map((post, index) => {
       }
     };
   }
-  // Add an image to the second post
   else if (index === 1) {
     return {
       ...post,
@@ -45,7 +49,6 @@ const ENHANCED_POSTS = MOCK_POSTS.map((post, index) => {
   return { ...post, type: 'text' as const };
 });
 
-// Sample stories
 const SAMPLE_STORIES: Story[] = [
   {
     id: "story1",
@@ -86,7 +89,6 @@ const CommunityFeed = () => {
   const [posts, setPosts] = useState(ENHANCED_POSTS);
   const [stories, setStories] = useState<Story[]>(SAMPLE_STORIES);
   
-  // Filter posts based on search query and active tag
   const filteredPosts = posts.filter(post => {
     const matchesSearch = 
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -148,7 +150,6 @@ const CommunityFeed = () => {
     });
   };
 
-  // Simulate receiving a tag notification
   useEffect(() => {
     if (followedTags.length > 0) {
       const randomIndex = Math.floor(Math.random() * followedTags.length);
@@ -170,10 +171,8 @@ const CommunityFeed = () => {
       <TopNavbar title="Community Feed" showSearchBar={true} onSearch={setSearchQuery} />
       
       <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
-        {/* Stories section */}
         <StoriesSection stories={stories} onAddStory={handleAddStory} />
         
-        {/* Active tag filter indicator */}
         <FilterBar 
           activeTag={activeTag} 
           clearTagFilter={clearTagFilter}
@@ -183,12 +182,10 @@ const CommunityFeed = () => {
         
         <NewPostForm />
         
-        {/* Trending tags section */}
         <div className="mb-4">
           <TrendingTags tags={TRENDING_TAGS} onTagClick={handleTagClick} />
         </div>
         
-        {/* Followed tags section */}
         <FollowedTags 
           followedTags={followedTags}
           handleTagClick={handleTagClick}

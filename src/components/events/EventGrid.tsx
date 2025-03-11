@@ -15,8 +15,20 @@ const EventGrid = ({
   cols = 2,
   compact = false 
 }: EventGridProps) => {
+  // Create a grid template columns style to properly handle the cols prop
+  const gridCols = {
+    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`
+  };
+
   return (
-    <div className={`grid md:grid-cols-${cols} gap-6 ${className}`}>
+    <div 
+      className={`grid gap-6 ${className}`}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(1, minmax(0, 1fr))`,
+        '@media (min-width: 768px)': gridCols
+      }}
+    >
       {events.map((event) => (
         <EventCard
           key={event.id}

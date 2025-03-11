@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -77,15 +76,21 @@ const Index = () => {
       id: "1",
       title: "Blood Drive at Central Park",
       date: "May 15, 2023",
+      time: "9:00 AM - 5:00 PM",
       location: "Central Park, New York",
-      type: "Blood Drive"
+      organizer: "Red Cross",
+      description: "Join us for our annual blood drive at Central Park. Your donation can save up to three lives!",
+      image: "https://placehold.co/600x400/red/white?text=Blood+Drive"
     },
     {
       id: "2",
       title: "Donor Appreciation Day",
       date: "June 14, 2023",
+      time: "12:00 PM - 3:00 PM",
       location: "Memorial Hospital",
-      type: "Appreciation"
+      organizer: "Memorial Hospital",
+      description: "A special event to thank our regular donors. Refreshments and recognition awards will be provided.",
+      image: "https://placehold.co/600x400/blue/white?text=Donor+Appreciation"
     }
   ];
 
@@ -95,14 +100,18 @@ const Index = () => {
       title: "Summer Blood Drive Campaign",
       goal: "500 donors",
       progress: 65,
-      endDate: "Aug 31, 2023"
+      endDate: "Aug 31, 2023",
+      description: "Help us reach our summer donation goal of 500 donors. Each donation makes a difference during this critical season.",
+      image: "https://placehold.co/600x400/orange/white?text=Summer+Campaign"
     },
     {
       id: "2",
       title: "Hospital Emergency Reserves",
       goal: "1000 units",
       progress: 42,
-      endDate: "July 15, 2023"
+      endDate: "July 15, 2023",
+      description: "Our local hospitals are experiencing shortages in emergency blood reserves. Your donation directly supports emergency care.",
+      image: "https://placehold.co/600x400/red/white?text=Emergency+Reserves"
     }
   ];
 
@@ -139,6 +148,9 @@ const Index = () => {
           <HomeBanner images={bannerImages} />
         </div>
 
+        {/* Urgent Requests Row - Now directly below banner for both mobile and desktop */}
+        <UrgentRequestsRow requests={urgentRequests} />
+
         {/* Urgent Requests Alert - Mobile Only */}
         <div className="md:hidden">
           <Alert className="mb-6 border-red-200 bg-red-50 text-red-800">
@@ -148,9 +160,6 @@ const Index = () => {
             </AlertDescription>
           </Alert>
         </div>
-
-        {/* NEW: Urgent Requests Row */}
-        <UrgentRequestsRow requests={urgentRequests} />
 
         {/* Quick Actions */}
         <QuickActionsGrid />

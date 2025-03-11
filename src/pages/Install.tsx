@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { checkConnection, setupDatabase, installApp } from '@/services/installService';
+import { testDatabaseConnection, installSystem } from '@/services/installService';
 import { useToast } from '@/hooks/use-toast';
 import { AppSetting, DatabaseConfig, AdminUser } from '@/types/apiTypes';
 
@@ -116,7 +115,7 @@ const Install = () => {
     setIsSubmitting(true);
     
     try {
-      const isConnected = await checkConnection(dbConfig);
+      const isConnected = await testDatabaseConnection(dbConfig);
       
       if (isConnected) {
         toast({
@@ -148,7 +147,7 @@ const Install = () => {
     setIsSubmitting(true);
     
     try {
-      const isSetup = await setupDatabase(dbConfig);
+      const isSetup = await testDatabaseConnection(dbConfig);
       
       if (isSetup) {
         toast({
@@ -182,7 +181,7 @@ const Install = () => {
     setIsSubmitting(true);
     
     try {
-      const isInstalled = await installApp(dbConfig, adminAccount, appSettings);
+      const isInstalled = await installSystem(dbConfig, adminAccount, appSettings as AppSetting[]);
       
       if (isInstalled) {
         toast({

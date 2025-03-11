@@ -22,8 +22,23 @@ const RequestTabs: React.FC<RequestTabsProps> = ({
 }) => {
   const getFilteredRequests = () => {
     if (activeTab === "all") return filteredRequests;
-    if (activeTab === "nearby") return filteredRequests.filter(r => parseFloat(r.distance || "10") < 4);
-    if (activeTab === "urgent") return filteredRequests.filter(r => r.urgency === "Urgent");
+    
+    // For nearby, we're using a mock implementation since distance isn't in the type
+    // We can assume any request with a mock distance < 4 is nearby
+    if (activeTab === "nearby") {
+      return filteredRequests.filter(r => {
+        // Handle the case where distance might not exist in the type
+        const distanceStr = (r as any).distance || "10 km";
+        const distance = parseFloat(distanceStr.split(' ')[0]);
+        return distance < 4;
+      });
+    }
+    
+    // For urgent tab, filter by urgency being "urgent" - note the case sensitivity
+    if (activeTab === "urgent") {
+      return filteredRequests.filter(r => r.urgency === "urgent" || r.urgency === "critical");
+    }
+    
     return filteredRequests;
   };
 
@@ -51,7 +66,12 @@ const RequestTabs: React.FC<RequestTabsProps> = ({
       <div className="mt-4">
         {displayRequests.length > 0 ? (
           displayRequests.map((request, index) => (
-            <BloodRequestCard key={index} {...request} />
+            <BloodRequestCard 
+              key={index} 
+              {...request} 
+              postedTime={(request as any).postedTime || "Recently"}
+              distance={(request as any).distance || "Unknown"} 
+            />
           ))
         ) : (
           <EmptyRequestsState searchQuery={searchQuery} activeTab={activeTab} />

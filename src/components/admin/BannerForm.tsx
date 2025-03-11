@@ -32,11 +32,10 @@ const BannerForm = ({ banner, onSubmit, onCancel, isLoading = false }: BannerFor
     }
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleFieldChange = (field: string, value: any) => {
     setFormData({
       ...formData,
-      [name]: value,
+      [field]: value,
     });
   };
 
@@ -98,7 +97,7 @@ const BannerForm = ({ banner, onSubmit, onCancel, isLoading = false }: BannerFor
         <CardContent className="space-y-6">
           <BannerBasicFields 
             formData={formData}
-            onChange={handleInputChange}
+            onChange={handleFieldChange}
           />
           
           <BannerImageUpload 

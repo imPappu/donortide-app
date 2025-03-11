@@ -1,40 +1,62 @@
 
-import React from 'react';
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-interface BannerImageUploadProps {
-  previewUrl: string;
-  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+export interface BannerImageUploadProps {
+  currentImage?: string;  // Make this property exist and optional
+  onImageUpload: (imageUrl: string) => void;
 }
 
-const BannerImageUpload = ({ 
-  previewUrl, 
-  handleImageChange 
-}: BannerImageUploadProps) => {
+const BannerImageUpload: React.FC<BannerImageUploadProps> = ({ 
+  currentImage, 
+  onImageUpload 
+}) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentImage || null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+
+    // Create a local preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setPreviewUrl(result);
+      onImageUpload(result);
+      setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="space-y-2">
-      <Label htmlFor="bannerImage">Banner Image *</Label>
-      <div className="flex flex-col space-y-2">
-        <Input 
-          id="bannerImage" 
-          name="bannerImage" 
-          type="file" 
-          accept="image/*"
-          onChange={handleImageChange}
-          className="cursor-pointer"
-        />
-        {previewUrl && (
-          <div className="mt-2">
-            <p className="text-sm mb-1">Preview:</p>
-            <img 
-              src={previewUrl} 
-              alt="Banner preview" 
-              className="w-full max-h-40 object-cover rounded-md" 
-            />
-          </div>
-        )}
-      </div>
+      <Label htmlFor="banner-image">Banner Image</Label>
+      
+      {previewUrl && (
+        <div className="mb-2">
+          <img 
+            src={previewUrl} 
+            alt="Banner preview" 
+            className="max-h-48 rounded-md border border-gray-200 object-contain" 
+          />
+        </div>
+      )}
+      
+      <Input
+        id="banner-image"
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        disabled={isUploading}
+      />
+      <p className="text-xs text-muted-foreground">
+        Recommended size: 1200 x 400 pixels
+      </p>
     </div>
   );
 };

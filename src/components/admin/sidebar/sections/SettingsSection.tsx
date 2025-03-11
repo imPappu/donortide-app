@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Palette, Database, CreditCard, Settings } from "lucide-react";
+import { Palette, Database, CreditCard, Settings, MapPin, MessageCircle, Mail } from "lucide-react";
 import { NavSection, NavItem } from "../NavSection";
 
 interface SectionProps {
@@ -29,6 +29,27 @@ const SettingsSection = ({ activeTab, setActiveTab }: SectionProps) => {
         id="payment"
         label="Payment Gateways"
         icon={<CreditCard className="mr-2 h-4 w-4" />}
+        activeTab={activeTab}
+        onClick={setActiveTab}
+      />
+      <NavItem
+        id="map-configuration"
+        label="Map Configuration"
+        icon={<MapPin className="mr-2 h-4 w-4" />}
+        activeTab={activeTab}
+        onClick={setActiveTab}
+      />
+      <NavItem
+        id="email-templates"
+        label="Email Templates"
+        icon={<Mail className="mr-2 h-4 w-4" />}
+        activeTab={activeTab}
+        onClick={setActiveTab}
+      />
+      <NavItem
+        id="social-media-ads"
+        label="Social Media & Ads"
+        icon={<MessageCircle className="mr-2 h-4 w-4" />}
         activeTab={activeTab}
         onClick={setActiveTab}
       />

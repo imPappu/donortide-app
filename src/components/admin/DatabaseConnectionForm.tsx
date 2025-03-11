@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DB_CONFIG } from '@/services/apiConfig';
 
 interface DatabaseConfig {
   host: string;
@@ -30,6 +31,21 @@ const DatabaseConnectionForm = ({
   showPassword, 
   setShowPassword 
 }: DatabaseConnectionFormProps) => {
+  // Pre-populate the form with our database configuration
+  React.useEffect(() => {
+    if (DB_CONFIG) {
+      handleChange('host', DB_CONFIG.host || config.host);
+      handleChange('database', DB_CONFIG.name || config.database);
+      handleChange('username', DB_CONFIG.user || config.username);
+      handleChange('type', DB_CONFIG.type || config.type);
+      
+      // Only set password if it's not already set and we have one in the config
+      if (DB_CONFIG.password && !config.password) {
+        handleChange('password', DB_CONFIG.password);
+      }
+    }
+  }, []);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-4">

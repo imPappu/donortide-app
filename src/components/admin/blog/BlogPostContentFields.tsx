@@ -1,56 +1,57 @@
+
 import React from 'react';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { BlogPost } from "@/types/apiTypes";
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { BlogPost } from '@/types/apiTypes';
 
 interface BlogPostContentFieldsProps {
-  post: Partial<BlogPost>;
-  onChange: (field: string, value: any) => void;
+  formData: BlogPost;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onPublishToggle: (published: boolean) => void;
 }
 
-const BlogPostContentFields = ({ post, onChange }: BlogPostContentFieldsProps) => {
+const BlogPostContentFields = ({ formData, onChange, onPublishToggle }: BlogPostContentFieldsProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="imageUrl">Image URL</Label>
-        <Input 
-          id="imageUrl" 
-          name="imageUrl" 
-          value={post.imageUrl || ''} 
-          onChange={(e) => onChange('imageUrl', e.target.value)} 
+        <Label htmlFor="content">Content</Label>
+        <textarea
+          id="content"
+          name="content"
+          value={formData.content}
+          onChange={onChange}
+          className="w-full min-h-[300px] p-3 border rounded-md"
+          placeholder="Write your blog post content here..."
         />
+        <p className="text-sm text-muted-foreground">
+          Support markdown formatting for rich content.
+        </p>
       </div>
       
-      <div className="space-y-2">
-        <Label htmlFor="tags">Tags (comma separated)</Label>
-        <Input 
-          id="tags" 
-          name="tags" 
-          value={post.tags?.join(', ') || ''} 
-          onChange={(e) => onChange('tags', e.target.value)} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="content">Content *</Label>
-        <textarea 
-          id="content" 
-          name="content" 
-          value={post.content} 
-          onChange={(e) => onChange('content', e.target.value)} 
-          className="w-full px-3 py-2 border border-gray-300 rounded-md min-h-[200px]"
-          required 
-        />
+      <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+        <div className="flex-1 space-y-2">
+          <Label htmlFor="excerpt">Excerpt</Label>
+          <textarea
+            id="excerpt"
+            name="excerpt"
+            value={formData.excerpt}
+            onChange={onChange}
+            className="w-full min-h-[100px] p-3 border rounded-md"
+            placeholder="A short summary of the post"
+          />
+          <p className="text-sm text-muted-foreground">
+            This will be displayed in blog post listings.
+          </p>
+        </div>
       </div>
       
       <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="published" 
-          checked={post.isPublished} 
-          onCheckedChange={(checked) => onChange('isPublished', checked)}
+        <Switch 
+          id="published"
+          checked={formData.isPublished}
+          onCheckedChange={onPublishToggle}
         />
-        <Label htmlFor="published" className="cursor-pointer">Publish this post</Label>
+        <Label htmlFor="published">Publish this post</Label>
       </div>
     </div>
   );

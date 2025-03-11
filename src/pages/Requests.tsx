@@ -1,14 +1,50 @@
+
 import React, { useState, useEffect } from 'react';
 import TopNavbar from '@/components/TopNavbar';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Filter, MapPin, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Plus, Filter, MapPin, Calendar, Clock, AlertCircle, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getBloodRequests } from '@/services/bloodRequestService';
 import { BloodRequest } from '@/types/apiTypes';
 import { sendNotification } from '@/services/notificationService';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { 
+  Avatar, 
+  AvatarImage, 
+  AvatarFallback 
+} from '@/components/ui/avatar';
+import { 
+  Alert, 
+  AlertDescription 
+} from '@/components/ui/alert';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger
+} from '@/components/ui/tabs';
 
-const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, distance, hospital, notes, contactNumber }) => {
+// Custom icon component to avoid missing DropletIcon
+const DropletIcon = (props) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+  </svg>
+);
+
+const BloodRequestCard = ({ patientName, bloodType, location, urgency, postedTime, distance, hospital, notes, contactNumber }) => {
+  const { toast } = useToast();
   const [responded, setResponded] = useState(false);
 
   const handleRespond = async () => {
@@ -16,7 +52,7 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
     
     toast({
       title: "Response sent",
-      description: `You have responded to ${name}'s blood request.`,
+      description: `You have responded to ${patientName}'s blood request.`,
     });
     
     try {
@@ -24,7 +60,8 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
         title: `Response to your ${bloodType} blood request`,
         message: `A donor has responded to your blood request at ${hospital}. They will contact you soon.`,
         targetType: 'specific_users',
-        targetData: { requesterId: name.replace(/\s+/g, '-').toLowerCase() }
+        // This uses targetData which needs to be properly handled by the sendNotification
+        userId: patientName.replace(/\s+/g, '-').toLowerCase()
       });
     } catch (error) {
       console.error("Failed to send push notification:", error);
@@ -36,11 +73,11 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
     
     toast({
       title: "Calling requester",
-      description: `Dialing ${name}`,
+      description: `Dialing ${patientName}`,
     });
   };
 
-  const nameInitial = name.charAt(0);
+  const nameInitial = patientName.charAt(0);
   
   const getBgColor = () => {
     switch (bloodType) {
@@ -62,13 +99,13 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
             <Avatar className="h-9 w-9 mr-3">
-              <AvatarImage src="" alt={name} />
+              <AvatarImage src="" alt={patientName} />
               <AvatarFallback className="bg-gray-100 text-primary font-medium">
                 {nameInitial}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-medium text-sm">{name}</h3>
+              <h3 className="font-medium text-sm">{patientName}</h3>
               <p className="text-xs text-muted-foreground flex items-center">
                 <MapPin className="h-3 w-3 mr-1" />
                 {location} • <span className="font-medium text-green-600 ml-1">{distance}</span>
@@ -141,6 +178,7 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
 };
 
 const Requests = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
@@ -150,7 +188,13 @@ const Requests = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       const data = await getBloodRequests();
-      setRequests(data);
+      // Add distance and other UI-specific properties for display
+      const enhancedData = data.map(request => ({
+        ...request,
+        distance: '2.3 km', // Mock distance
+        postedTime: `${Math.floor(Math.random() * 12) + 1}h ago`, // Mock time
+      }));
+      setRequests(enhancedData);
     };
 
     fetchRequests();
@@ -166,7 +210,7 @@ const Requests = () => {
     
     const filtered = requests.filter(
       request => 
-        request.name.toLowerCase().includes(query.toLowerCase()) ||
+        request.patientName.toLowerCase().includes(query.toLowerCase()) ||
         request.bloodType.toLowerCase().includes(query.toLowerCase()) ||
         request.location.toLowerCase().includes(query.toLowerCase()) ||
         request.hospital.toLowerCase().includes(query.toLowerCase())

@@ -65,15 +65,19 @@ const MapApiConfiguration = () => {
     try {
       const location = await getCurrentLocation();
       
-      setLocationTestResult({
-        success: true,
-        message: `Successfully obtained location: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)} (Accuracy: ${location.accuracy?.toFixed(1)}m)`
-      });
-      
-      toast({
-        title: "Location Test Successful",
-        description: "Successfully retrieved user location",
-      });
+      if (location) {
+        setLocationTestResult({
+          success: true,
+          message: `Successfully obtained location: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`
+        });
+        
+        toast({
+          title: "Location Test Successful",
+          description: "Successfully retrieved user location",
+        });
+      } else {
+        throw new Error("Could not get location");
+      }
     } catch (error) {
       console.error('Location test failed:', error);
       

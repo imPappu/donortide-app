@@ -1,534 +1,424 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  CheckCircle2, Database, ShieldCheck, Server, AlertTriangle,
-  Settings, UserPlus
-} from "lucide-react";
-import { 
-  installSystem, 
-  testDatabaseConnection 
-} from '@/services/installService';
-import { AppSetting } from '@/types/apiTypes';
 
-interface InstallStep {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  completed: boolean;
-}
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { checkConnection, setupDatabase, installApp } from '@/services/installService';
+import { useToast } from '@/hooks/use-toast';
+import { AppSetting, DatabaseConfig, AdminUser } from '@/types/apiTypes';
 
 const Install = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("welcome");
-  const [loading, setLoading] = useState(false);
   
-  // Database configuration
-  const [dbHost, setDbHost] = useState("localhost");
-  const [dbName, setDbName] = useState("");
-  const [dbUser, setDbUser] = useState("");
-  const [dbPassword, setDbPassword] = useState("");
-  const [dbConnectionStatus, setDbConnectionStatus] = useState<"idle" | "testing" | "success" | "error">("idle");
+  const [activeStep, setActiveStep] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Admin user
-  const [adminUsername, setAdminUsername] = useState("admin");
-  const [adminPassword, setAdminPassword] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminConfirmPassword, setAdminConfirmPassword] = useState("");
+  // DB config state
+  const [dbConfig, setDbConfig] = useState<DatabaseConfig>({
+    host: 'localhost',
+    name: 'bloodmate',
+    user: 'root',
+    password: '',
+    port: '3306',
+    type: 'mysql',
+  });
   
-  // App settings
-  const [appName, setAppName] = useState("Blood Donation System");
-  const [adminPath, setAdminPath] = useState("admin");
-
-  // Installation steps
-  const [steps, setSteps] = useState<InstallStep[]>([
-    { id: "welcome", title: "Welcome", icon: <CheckCircle2 className="h-5 w-5" />, completed: true },
-    { id: "database", title: "Database", icon: <Database className="h-5 w-5" />, completed: false },
-    { id: "admin", title: "Admin User", icon: <UserPlus className="h-5 w-5" />, completed: false },
-    { id: "settings", title: "Settings", icon: <Settings className="h-5 w-5" />, completed: false },
-    { id: "finish", title: "Finish", icon: <ShieldCheck className="h-5 w-5" />, completed: false },
+  // Admin account state
+  const [adminAccount, setAdminAccount] = useState<AdminUser>({
+    username: 'admin',
+    email: '',
+    password: '',
+  });
+  
+  // App settings state
+  const [appSettings, setAppSettings] = useState<Partial<AppSetting>[]>([
+    { settingKey: 'app_name', settingValue: 'BloodMate' },
+    { settingKey: 'app_description', settingValue: 'Blood Donation Management System' },
+    { settingKey: 'primary_color', settingValue: '#ef4444' },
+    { settingKey: 'enable_pwa', settingValue: 'true' },
+    { settingKey: 'enable_notifications', settingValue: 'true' },
   ]);
-
-  const updateStepCompletion = (stepId: string, isCompleted: boolean) => {
-    setSteps(steps.map(step => 
-      step.id === stepId ? { ...step, completed: isCompleted } : step
+  
+  const handleDbConfigChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDbConfig({
+      ...dbConfig,
+      [name]: value,
+    });
+  };
+  
+  const handleAdminAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAdminAccount({
+      ...adminAccount,
+      [name]: value,
+    });
+  };
+  
+  const handleSettingChange = (key: string, value: string) => {
+    setAppSettings(appSettings.map(setting => 
+      setting.settingKey === key ? { ...setting, settingValue: value } : setting
     ));
   };
 
-  const handleDatabaseTest = async () => {
-    if (!dbHost || !dbName || !dbUser) {
+  const validateDbConfig = () => {
+    if (!dbConfig.host.trim() || !dbConfig.name.trim() || !dbConfig.user.trim()) {
       toast({
-        title: "Missing fields",
+        title: "Validation Error",
         description: "Please fill in all required database fields",
         variant: "destructive",
       });
-      return;
+      return false;
     }
-
-    setDbConnectionStatus("testing");
+    return true;
+  };
+  
+  const validateAdminAccount = () => {
+    if (!adminAccount.email.trim() || !adminAccount.password.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required admin account fields",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (adminAccount.password.length < 8) {
+      toast({
+        title: "Validation Error",
+        description: "Password must be at least 8 characters long",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (!adminAccount.email.includes('@')) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    return true;
+  };
+  
+  const handleTestConnection = async () => {
+    if (!validateDbConfig()) return;
+    
+    setIsSubmitting(true);
     
     try {
-      // Fixed to use the correct property names
-      const connected = await testDatabaseConnection({
-        host: dbHost,
-        name: dbName, // Changed from database to name
-        user: dbUser,
-        password: dbPassword,
-        type: "mysql" // Added default type
-      });
+      const isConnected = await checkConnection(dbConfig);
       
-      if (connected) {
-        setDbConnectionStatus("success");
-        updateStepCompletion("database", true);
+      if (isConnected) {
         toast({
-          title: "Database connection successful",
+          title: "Connection Successful",
           description: "Successfully connected to the database",
         });
       } else {
-        setDbConnectionStatus("error");
         toast({
-          title: "Connection failed",
+          title: "Connection Failed",
           description: "Could not connect to the database with the provided details",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Database connection error:", error);
-      setDbConnectionStatus("error");
+      console.error("Error testing connection:", error);
       toast({
-        title: "Connection error",
-        description: "An error occurred while testing the database connection",
+        title: "Connection Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const handleCreateAdmin = () => {
-    if (!adminUsername || !adminEmail || !adminPassword) {
-      toast({
-        title: "Missing fields",
-        description: "Please fill in all required admin user fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (adminPassword !== adminConfirmPassword) {
-      toast({
-        title: "Password mismatch",
-        description: "The passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // In a real implementation, this would validate and store the admin credentials
-    updateStepCompletion("admin", true);
-    toast({
-      title: "Admin user ready",
-      description: "Admin user configuration is valid",
-    });
-  };
-
-  const handleSettingsSave = () => {
-    if (!appName || !adminPath) {
-      toast({
-        title: "Missing fields",
-        description: "Please fill in all required settings fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    updateStepCompletion("settings", true);
-    toast({
-      title: "Settings saved",
-      description: "Application settings have been configured",
-    });
-  };
-
-  const handleInstallSystem = async () => {
-    if (!steps.find(step => step.id === "database")?.completed ||
-        !steps.find(step => step.id === "admin")?.completed ||
-        !steps.find(step => step.id === "settings")?.completed) {
-      toast({
-        title: "Incomplete setup",
-        description: "Please complete all previous steps before finishing the installation",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-
+  
+  const handleSetupDatabase = async () => {
+    if (!validateDbConfig()) return;
+    
+    setIsSubmitting(true);
+    
     try {
-      // Prepare database config with correct property names
-      const dbConfig = {
-        host: dbHost,
-        name: dbName, // Using name instead of database
-        user: dbUser,
-        password: dbPassword,
-        type: "mysql" // Added default type
-      };
-
-      // Prepare admin user
-      const adminUser = {
-        username: adminUsername,
-        email: adminEmail,
-        password: adminPassword
-      };
-
-      // Prepare app settings
-      const appSettings: AppSetting[] = [
-        { settingKey: 'app_name', settingValue: appName, description: 'Application name' },
-        { settingKey: 'admin_url_path', settingValue: adminPath, description: 'Admin dashboard URL path' },
-        { settingKey: 'app_installed', settingValue: 'true', description: 'Installation status' }
-      ];
-
-      // Call the installation API
-      const installed = await installSystem(dbConfig, adminUser, appSettings);
+      const isSetup = await setupDatabase(dbConfig);
       
-      if (installed) {
-        updateStepCompletion("finish", true);
+      if (isSetup) {
         toast({
-          title: "Installation complete",
-          description: "Your blood donation system has been successfully installed",
+          title: "Setup Successful",
+          description: "Database has been set up successfully",
         });
-        
-        // Create the admin user
-        // await createAdminUser(adminUser);
-        
-        // Redirect to home page after 3 seconds
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 3000);
+        setActiveStep(2);
+        setProgress(33);
       } else {
         toast({
-          title: "Installation failed",
-          description: "There was a problem installing the system",
+          title: "Setup Failed",
+          description: "Could not set up the database",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Installation error:", error);
+      console.error("Error setting up database:", error);
       toast({
-        title: "Installation error",
-        description: "An error occurred during the installation process",
+        title: "Setup Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
-
-  const handleNextStep = () => {
-    const currentIndex = steps.findIndex(step => step.id === activeTab);
-    if (currentIndex < steps.length - 1) {
-      setActiveTab(steps[currentIndex + 1].id);
+  
+  const handleFinishInstallation = async () => {
+    if (!validateAdminAccount()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const isInstalled = await installApp(dbConfig, adminAccount, appSettings);
+      
+      if (isInstalled) {
+        toast({
+          title: "Installation Complete",
+          description: "BloodMate has been successfully installed",
+        });
+        setProgress(100);
+        setTimeout(() => {
+          navigate('/admin');
+        }, 2000);
+      } else {
+        toast({
+          title: "Installation Failed",
+          description: "Could not complete the installation",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error during installation:", error);
+      toast({
+        title: "Installation Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const handlePreviousStep = () => {
-    const currentIndex = steps.findIndex(step => step.id === activeTab);
-    if (currentIndex > 0) {
-      setActiveTab(steps[currentIndex - 1].id);
+  
+  const handleContinue = () => {
+    if (activeStep === 1) {
+      handleSetupDatabase();
+    } else if (activeStep === 2) {
+      setActiveStep(3);
+      setProgress(66);
+    } else if (activeStep === 3) {
+      handleFinishInstallation();
     }
   };
-
+  
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="container mx-auto max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Blood Donation System</h1>
-          <p className="text-muted-foreground">Installation Wizard</p>
-        </div>
-        
-        <Card className="shadow-lg">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>System Installation</CardTitle>
-              <div className="flex gap-2">
-                {steps.map((step, index) => (
-                  <div 
-                    key={step.id}
-                    className={`flex items-center ${activeTab === step.id ? 'text-primary' : 'text-muted-foreground'}`}
-                  >
-                    {index > 0 && <div className="h-px w-4 bg-gray-300 dark:bg-gray-700 mx-1" />}
-                    <div 
-                      className={`flex items-center justify-center h-8 w-8 rounded-full text-sm
-                        ${step.completed 
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
-                          : activeTab === step.id 
-                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                            : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-                        }`}
-                    >
-                      {step.icon}
-                    </div>
-                  </div>
-                ))}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <Card className="w-full max-w-2xl">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">
+            BloodMate Installation
+          </CardTitle>
+          <CardDescription className="text-center">
+            Set up your BloodMate application
+          </CardDescription>
+          <Progress value={progress} className="h-2 mt-2" />
+        </CardHeader>
+        <CardContent>
+          <Tabs value={`step-${activeStep}`} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="step-1" disabled={activeStep !== 1}>Database</TabsTrigger>
+              <TabsTrigger value="step-2" disabled={activeStep !== 2}>Admin Account</TabsTrigger>
+              <TabsTrigger value="step-3" disabled={activeStep !== 3}>App Settings</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="step-1" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="host">Database Host</Label>
+                <Input
+                  id="host"
+                  name="host"
+                  value={dbConfig.host}
+                  onChange={handleDbConfigChange}
+                  placeholder="localhost"
+                />
               </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="hidden">
-                {steps.map(step => (
-                  <TabsTrigger key={step.id} value={step.id}>{step.title}</TabsTrigger>
-                ))}
-              </TabsList>
               
-              <TabsContent value="welcome" className="space-y-4">
-                <div className="text-center py-6">
-                  <Server className="h-16 w-16 mx-auto text-primary mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Welcome to Blood Donation System</h2>
-                  <p className="mb-4 text-muted-foreground max-w-md mx-auto">
-                    This wizard will guide you through the installation process.
-                    You'll set up your database, create an admin user, and configure basic settings.
-                  </p>
-                  
-                  <Alert className="my-4 max-w-md mx-auto">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Make sure you have a PostgreSQL database ready before proceeding.
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              </TabsContent>
+              <div className="space-y-2">
+                <Label htmlFor="name">Database Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={dbConfig.name}
+                  onChange={handleDbConfigChange}
+                  placeholder="bloodmate"
+                />
+              </div>
               
-              <TabsContent value="database" className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4">Database Configuration</h2>
-                <p className="mb-4 text-muted-foreground">
-                  Enter your PostgreSQL database details to connect to your database server.
+              <div className="space-y-2">
+                <Label htmlFor="user">Database User</Label>
+                <Input
+                  id="user"
+                  name="user"
+                  value={dbConfig.user}
+                  onChange={handleDbConfigChange}
+                  placeholder="root"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Database Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={dbConfig.password}
+                  onChange={handleDbConfigChange}
+                  placeholder="Enter database password"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="port">Database Port (Optional)</Label>
+                <Input
+                  id="port"
+                  name="port"
+                  value={dbConfig.port}
+                  onChange={handleDbConfigChange}
+                  placeholder="3306"
+                />
+              </div>
+              
+              <Button 
+                variant="outline" 
+                onClick={handleTestConnection}
+                disabled={isSubmitting}
+                className="w-full"
+              >
+                Test Connection
+              </Button>
+            </TabsContent>
+            
+            <TabsContent value="step-2" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Admin Username</Label>
+                <Input
+                  id="username"
+                  name="username"
+                  value={adminAccount.username}
+                  onChange={handleAdminAccountChange}
+                  placeholder="admin"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Admin Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={adminAccount.email}
+                  onChange={handleAdminAccountChange}
+                  placeholder="admin@example.com"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="admin-password">Admin Password</Label>
+                <Input
+                  id="admin-password"
+                  name="password"
+                  type="password"
+                  value={adminAccount.password}
+                  onChange={handleAdminAccountChange}
+                  placeholder="Enter a secure password"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Password must be at least 8 characters long
                 </p>
-                
-                <div className="grid gap-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="db-host">Host</Label>
-                      <Input 
-                        id="db-host" 
-                        placeholder="localhost" 
-                        value={dbHost}
-                        onChange={(e) => setDbHost(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="db-name">Database Name</Label>
-                      <Input 
-                        id="db-name" 
-                        placeholder="blood_donation" 
-                        value={dbName}
-                        onChange={(e) => setDbName(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="db-user">Username</Label>
-                      <Input 
-                        id="db-user" 
-                        placeholder="postgres" 
-                        value={dbUser}
-                        onChange={(e) => setDbUser(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="db-password">Password</Label>
-                      <Input 
-                        id="db-password" 
-                        type="password" 
-                        placeholder="••••••••"
-                        value={dbPassword}
-                        onChange={(e) => setDbPassword(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex justify-end mt-4">
-                  <Button 
-                    onClick={handleDatabaseTest} 
-                    variant="secondary"
-                    className="mr-2"
-                    disabled={dbConnectionStatus === "testing"}
-                  >
-                    {dbConnectionStatus === "testing" ? "Testing..." : "Test Connection"}
-                  </Button>
-                </div>
-                
-                {dbConnectionStatus === "success" && (
-                  <Alert className="bg-green-100 dark:bg-green-900 border-green-200 dark:border-green-800">
-                    <CheckCircle2 className="h-4 w-4 text-green-700 dark:text-green-300" />
-                    <AlertDescription className="text-green-700 dark:text-green-300">
-                      Successfully connected to the database.
-                    </AlertDescription>
-                  </Alert>
-                )}
-                
-                {dbConnectionStatus === "error" && (
-                  <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Failed to connect to the database. Please check your credentials.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </TabsContent>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="step-3" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="app_name">Application Name</Label>
+                <Input
+                  id="app_name"
+                  value={appSettings.find(s => s.settingKey === 'app_name')?.settingValue || ''}
+                  onChange={(e) => handleSettingChange('app_name', e.target.value)}
+                  placeholder="BloodMate"
+                />
+              </div>
               
-              <TabsContent value="admin" className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4">Admin User Creation</h2>
-                <p className="mb-4 text-muted-foreground">
-                  Create an administrator account to manage your blood donation system.
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="admin-username">Username</Label>
-                      <Input 
-                        id="admin-username" 
-                        placeholder="admin" 
-                        value={adminUsername}
-                        onChange={(e) => setAdminUsername(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="admin-email">Email</Label>
-                      <Input 
-                        id="admin-email" 
-                        type="email" 
-                        placeholder="admin@example.com"
-                        value={adminEmail}
-                        onChange={(e) => setAdminEmail(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="admin-password">Password</Label>
-                      <Input 
-                        id="admin-password" 
-                        type="password" 
-                        placeholder="••••••••"
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="admin-confirm-password">Confirm Password</Label>
-                      <Input 
-                        id="admin-confirm-password" 
-                        type="password" 
-                        placeholder="••••••••"
-                        value={adminConfirmPassword}
-                        onChange={(e) => setAdminConfirmPassword(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex justify-end mt-4">
-                  <Button 
-                    onClick={handleCreateAdmin} 
-                    variant="secondary"
-                  >
-                    Validate Admin
-                  </Button>
-                </div>
-              </TabsContent>
+              <div className="space-y-2">
+                <Label htmlFor="app_description">Application Description</Label>
+                <Input
+                  id="app_description"
+                  value={appSettings.find(s => s.settingKey === 'app_description')?.settingValue || ''}
+                  onChange={(e) => handleSettingChange('app_description', e.target.value)}
+                  placeholder="Blood Donation Management System"
+                />
+              </div>
               
-              <TabsContent value="settings" className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4">Application Settings</h2>
-                <p className="mb-4 text-muted-foreground">
-                  Configure basic settings for your blood donation system.
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="app-name">Application Name</Label>
-                    <Input 
-                      id="app-name" 
-                      placeholder="Blood Donation System" 
-                      value={appName}
-                      onChange={(e) => setAppName(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="admin-path">Admin URL Path</Label>
-                    <Input 
-                      id="admin-path" 
-                      placeholder="admin" 
-                      value={adminPath}
-                      onChange={(e) => setAdminPath(e.target.value)}
-                    />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      This will be the URL path to access your admin dashboard (e.g., yourdomain.com/{adminPath})
-                    </p>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="primary_color">Primary Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="primary_color"
+                    type="color"
+                    className="w-16 h-10 p-1"
+                    value={appSettings.find(s => s.settingKey === 'primary_color')?.settingValue || '#ef4444'}
+                    onChange={(e) => handleSettingChange('primary_color', e.target.value)}
+                  />
+                  <Input
+                    value={appSettings.find(s => s.settingKey === 'primary_color')?.settingValue || '#ef4444'}
+                    onChange={(e) => handleSettingChange('primary_color', e.target.value)}
+                    placeholder="#ef4444"
+                    className="flex-1"
+                  />
                 </div>
-                
-                <div className="flex justify-end mt-4">
-                  <Button 
-                    onClick={handleSettingsSave} 
-                    variant="secondary"
-                  >
-                    Save Settings
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="finish" className="space-y-4">
-                <div className="text-center py-6">
-                  <CheckCircle2 className="h-16 w-16 mx-auto text-green-600 dark:text-green-400 mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Ready to Install</h2>
-                  <p className="mb-6 text-muted-foreground max-w-md mx-auto">
-                    All configuration is complete. Click the button below to install your blood donation system.
-                  </p>
-                  
-                  <Button 
-                    onClick={handleInstallSystem}
-                    className="px-8" 
-                    disabled={loading}
-                  >
-                    {loading ? "Installing..." : "Complete Installation"}
-                  </Button>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-          
-          <CardFooter className="flex justify-between">
-            <Button 
-              variant="outline" 
-              onClick={handlePreviousStep}
-              disabled={activeTab === "welcome"}
-            >
-              Previous
-            </Button>
-            <Button 
-              onClick={handleNextStep}
-              disabled={activeTab === "finish" || (
-                // Don't allow moving to the next step if the current step is not completed
-                (activeTab === "database" && !steps.find(s => s.id === "database")?.completed) ||
-                (activeTab === "admin" && !steps.find(s => s.id === "admin")?.completed) ||
-                (activeTab === "settings" && !steps.find(s => s.id === "settings")?.completed)
-              )}
-            >
-              Next
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (activeStep > 1) {
+                setActiveStep(activeStep - 1);
+                setProgress(((activeStep - 2) / 3) * 100);
+              }
+            }}
+            disabled={activeStep === 1 || isSubmitting}
+          >
+            Back
+          </Button>
+          <Button
+            onClick={handleContinue}
+            disabled={isSubmitting}
+          >
+            {isSubmitting 
+              ? "Processing..." 
+              : activeStep === 3 
+                ? "Finish Installation" 
+                : "Continue"}
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 };

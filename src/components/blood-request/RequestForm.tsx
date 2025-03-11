@@ -8,7 +8,7 @@ import { DropletIcon, MapPin, Phone, AlertCircle } from "lucide-react";
 import { BloodTypeSelector } from "./BloodTypeSelector";
 import { useRequestForm } from "@/hooks/useRequestForm";
 
-// Changed from "Standard", "High", "Urgent" to match the enum values in the BloodRequest type
+// Changed to match the enum values in the BloodRequest type
 const urgencyLevels = ["standard", "urgent", "critical"];
 
 export function RequestForm() {

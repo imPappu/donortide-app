@@ -1,145 +1,137 @@
+
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Banner } from "@/types/apiTypes";
-import { createBanner, updateBanner } from "@/services/bannerService";
-import { useToast } from "@/hooks/use-toast";
-import { BannerBasicFields } from "./banner/BannerBasicFields";
-import { BannerImageUpload } from "./banner/BannerImageUpload";
+import { useToast } from '@/hooks/use-toast';
+import { Banner } from '@/types/apiTypes';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import BannerBasicFields from './banner/BannerBasicFields';
+import BannerImageUpload from './banner/BannerImageUpload';
 
 interface BannerFormProps {
-  initialData?: Banner;
-  onSubmit: (data: Banner) => void;
+  banner?: Partial<Banner>;
+  onSubmit: (banner: Banner) => void;
   onCancel: () => void;
+  isLoading?: boolean;
 }
 
-const BannerForm = ({ initialData, onSubmit, onCancel }: BannerFormProps) => {
+const BannerForm = ({ banner, onSubmit, onCancel, isLoading = false }: BannerFormProps) => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<Banner>(
-    initialData || {
+  const [formData, setFormData] = useState<Partial<Banner>>(
+    banner || {
       title: '',
-      description: '',
+      content: '',
       imageUrl: '',
-      linkUrl: '',
-      active: true,
-      displayOrder: 0
+      link: '',
+      description: '',
+      linkUrl: '', 
+      displayOrder: 0,
+      isActive: true,
+      startDate: new Date().toISOString(),
     }
   );
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>(initialData?.imageUrl || '');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: parseInt(value) }));
+  const handleImageUpload = (imageUrl: string) => {
+    setFormData({
+      ...formData,
+      imageUrl,
+    });
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
+  const handleSwitchChange = (checked: boolean) => {
+    setFormData({
+      ...formData,
+      isActive: checked,
+    });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImageFile(file);
-      
-      // Create a preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.title) {
       toast({
         title: "Error",
-        description: "Please enter a banner title",
+        description: "Banner title is required",
         variant: "destructive",
       });
       return;
     }
-    
-    // Handle image upload
-    if (imageFile) {
-      try {
-        // In a real implementation, you would upload the image to your server here
-        // For now, we'll simulate by setting the imageUrl to the file name
-        const fileName = `/lovable-uploads/${Date.now()}-${imageFile.name}`;
-        
-        // Update form data with the new image URL
-        setFormData(prev => ({ ...prev, imageUrl: fileName }));
-        
-        // Submit the form with the updated imageUrl
-        onSubmit({
-          ...formData,
-          imageUrl: fileName
-        });
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        toast({
-          title: "Error",
-          description: "Failed to upload image",
-          variant: "destructive",
-        });
-      }
-    } else if (!previewUrl && !formData.imageUrl) {
+
+    if (!formData.content) {
       toast({
         title: "Error",
-        description: "Please select an image for the banner",
+        description: "Banner content is required",
         variant: "destructive",
       });
       return;
+    }
+
+    if (formData.id) {
+      onSubmit(formData as Banner);
     } else {
-      // No new image, submit with existing data
-      onSubmit(formData);
+      // Create new banner
+      const newBanner: Banner = {
+        ...formData,
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+      } as Banner;
+      
+      onSubmit(newBanner);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <BannerBasicFields
-        formData={formData}
-        handleChange={handleChange}
-        handleNumberChange={handleNumberChange}
-      />
-      
-      <BannerImageUpload
-        previewUrl={previewUrl}
-        handleImageChange={handleImageChange}
-      />
-      
-      <div className="flex items-center space-x-2">
-        <input 
-          type="checkbox" 
-          id="active" 
-          name="active" 
-          checked={formData.active} 
-          onChange={handleCheckboxChange} 
-          className="w-4 h-4"
-        />
-        <Label htmlFor="active">Active</Label>
-      </div>
-      
-      <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit">
-          {initialData ? 'Update' : 'Create'} Banner
-        </Button>
-      </div>
-    </form>
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle>{banner?.id ? 'Edit Banner' : 'Create New Banner'}</CardTitle>
+      </CardHeader>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6">
+          <BannerBasicFields 
+            formData={formData}
+            onChange={handleInputChange}
+          />
+          
+          <BannerImageUpload 
+            currentImage={formData.imageUrl}
+            onImageUpload={handleImageUpload}
+          />
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="banner-active"
+              checked={formData.isActive}
+              onCheckedChange={handleSwitchChange}
+            />
+            <Label htmlFor="banner-active">Banner Active</Label>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end space-x-2">
+          <Button 
+            variant="outline" 
+            onClick={onCancel}
+            type="button"
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : (banner?.id ? 'Update Banner' : 'Create Banner')}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 };
 

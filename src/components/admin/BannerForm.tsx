@@ -1,11 +1,12 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Banner } from '@/services/dbService';
-import { useToast } from '@/hooks/use-toast';
-import BannerBasicFields from './banner/BannerBasicFields';
-import BannerImageUpload from './banner/BannerImageUpload';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Banner } from "@/types/apiTypes";
+import { createBanner, updateBanner } from "@/services/bannerService";
+import { useToast } from "@/hooks/use-toast";
+import { BannerBasicFields } from "./banner/BannerBasicFields";
+import { BannerImageUpload } from "./banner/BannerImageUpload";
 
 interface BannerFormProps {
   initialData?: Banner;

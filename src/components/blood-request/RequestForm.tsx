@@ -8,7 +8,8 @@ import { DropletIcon, MapPin, Phone, AlertCircle } from "lucide-react";
 import { BloodTypeSelector } from "./BloodTypeSelector";
 import { useRequestForm } from "@/hooks/useRequestForm";
 
-const urgencyLevels = ["Standard", "High", "Urgent"];
+// Changed from "Standard", "High", "Urgent" to match the enum values in the BloodRequest type
+const urgencyLevels = ["standard", "urgent", "critical"];
 
 export function RequestForm() {
   const {
@@ -100,11 +101,11 @@ export function RequestForm() {
                   key={level}
                   type="button"
                   variant={requestForm.urgency === level ? "default" : "outline"}
-                  className={level === "Urgent" && requestForm.urgency === level ? "bg-red-500 hover:bg-red-600" : ""}
-                  onClick={() => handleUrgencySelect(level as 'Standard' | 'High' | 'Urgent')}
+                  className={level === "critical" && requestForm.urgency === level ? "bg-red-500 hover:bg-red-600" : ""}
+                  onClick={() => handleUrgencySelect(level as 'standard' | 'urgent' | 'critical')}
                 >
-                  {level === "Urgent" && <AlertCircle className="h-4 w-4 mr-1" />}
-                  {level}
+                  {level === "critical" && <AlertCircle className="h-4 w-4 mr-1" />}
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
                 </Button>
               ))}
             </div>

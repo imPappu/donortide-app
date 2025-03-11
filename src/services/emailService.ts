@@ -1,6 +1,10 @@
 
 import { API_BASE_URL } from './apiConfig';
 
+// Define EmailTemplateType to support EmailTemplatesManagement component
+export type EmailTemplateType = 'welcome' | 'verification' | 'password_reset' | 'donation_request' | 
+  'campaign_announce' | 'event_invite' | 'donation_thank_you' | 'monthly_newsletter';
+
 // Email service for handling email operations
 export const sendEmail = async (to: string, subject: string, body: string, template?: string): Promise<boolean> => {
   try {

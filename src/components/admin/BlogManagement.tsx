@@ -1,81 +1,118 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Trash2, Plus } from "lucide-react";
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/hooks/use-toast';
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BlogPost } from "@/types/apiTypes";
-import { createBlogPost, updateBlogPost, deleteBlogPost } from "@/services/blogService";
-import BlogPostForm from "@/components/admin/BlogPostForm";
+import { getBlogPosts, deleteBlogPost } from "@/services/blogService";
+import { Link } from 'react-router-dom';
+import { Edit, Trash2, Eye } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
-interface BlogManagementProps {
-  blogPosts: BlogPost[];
-  setBlogPosts: React.Dispatch<React.SetStateAction<BlogPost[]>>;
-}
-
-const BlogManagement = ({ blogPosts, setBlogPosts }: BlogManagementProps) => {
+const BlogManagement = () => {
   const { toast } = useToast();
-  const [editingBlogPost, setEditingBlogPost] = useState<BlogPost | null>(null);
-  const [showBlogForm, setShowBlogForm] = useState(false);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAddBlogPost = () => {
-    setEditingBlogPost(null);
-    setShowBlogForm(true);
+  useEffect(() => {
+    // Simulate fetching blog posts from an API
+    setTimeout(() => {
+      // Updated to match BlogPost type
+      const mockData = [
+        {
+          id: "1",
+          title: "The Importance of Regular Blood Donation",
+          content: "<p>Regular blood donation is vital for maintaining adequate supplies for patients in need...</p>",
+          excerpt: "Learn why regular blood donation is important and how it helps save lives.",
+          author: "Dr. Jane Smith",
+          imageUrl: "/placeholder.svg",
+          tags: ["health", "donation", "blood"],
+          category: "Health",
+          publishDate: "2023-05-15T00:00:00Z",
+          isPublished: true,
+          createdAt: "2023-05-10T00:00:00Z",
+          updatedAt: "2023-05-10T00:00:00Z"
+        },
+        {
+          id: "2",
+          title: "Blood Types Explained",
+          content: "<p>Understanding blood types is essential for effective blood donation and transfusion...</p>",
+          excerpt: "A comprehensive guide to understanding different blood types and compatibility.",
+          author: "Dr. Michael Johnson",
+          imageUrl: "/placeholder.svg",
+          tags: ["education", "blood-types", "science"],
+          category: "Education",
+          publishDate: "2023-06-01T00:00:00Z",
+          isPublished: true,
+          createdAt: "2023-05-25T00:00:00Z",
+          updatedAt: "2023-05-25T00:00:00Z"
+        },
+        {
+          id: "3",
+          title: "Preparing for Your First Blood Donation",
+          content: "<p>If you're considering donating blood for the first time, here's what you need to know...</p>",
+          excerpt: "Tips and guidance for first-time blood donors to ensure a positive experience.",
+          author: "Sarah Williams",
+          imageUrl: "/placeholder.svg",
+          tags: ["first-time", "preparation", "tips"],
+          category: "Guides",
+          publishDate: "2023-06-15T00:00:00Z",
+          isPublished: false,
+          createdAt: "2023-06-10T00:00:00Z",
+          updatedAt: "2023-06-10T00:00:00Z"
+        }
+      ];
+
+      setPosts(mockData);
+      setFilteredPosts(mockData);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    const filtered = posts.filter(post =>
+      post.title.toLowerCase().includes(query.toLowerCase()) ||
+      (post.category || '').toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredPosts(filtered);
   };
 
-  const handleEditBlogPost = (post: BlogPost) => {
-    setEditingBlogPost(post);
-    setShowBlogForm(true);
+  const handlePreviewPost = (post: BlogPost) => {
+    // Implement preview logic here
+    toast({
+      title: "Preview Blog Post",
+      description: `Previewing "${post.title}"`,
+    });
   };
 
-  const handleDeleteBlogPost = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this blog post?')) {
-      try {
-        await deleteBlogPost(id);
-        setBlogPosts(prevPosts => prevPosts.filter(post => post.id !== id));
-        toast({
-          title: "Success",
-          description: "Blog post deleted successfully",
-        });
-      } catch (error) {
-        console.error('Error deleting blog post:', error);
-        toast({
-          title: "Error",
-          description: "Failed to delete blog post",
-          variant: "destructive",
-        });
-      }
-    }
+  const handleEditPost = (post: BlogPost) => {
+    // Implement edit logic here
+    toast({
+      title: "Edit Blog Post",
+      description: `Editing "${post.title}"`,
+    });
   };
 
-  const handleBlogSubmit = async (data: BlogPost) => {
+  const handleDeletePost = async (postId: string) => {
     try {
-      if (editingBlogPost?.id) {
-        const updated = await updateBlogPost(editingBlogPost.id, data);
-        if (updated) {
-          setBlogPosts(prevPosts => 
-            prevPosts.map(post => post.id === editingBlogPost.id ? updated : post)
-          );
-          toast({
-            title: "Success",
-            description: "Blog post updated successfully",
-          });
-        }
-      } else {
-        const newPost = await createBlogPost(data);
-        if (newPost) {
-          setBlogPosts(prevPosts => [newPost, ...prevPosts]);
-          toast({
-            title: "Success",
-            description: "Blog post created successfully",
-          });
-        }
-      }
-      setShowBlogForm(false);
+      // Simulate deleting a blog post
+      await deleteBlogPost(postId);
+      // Update the state to remove the deleted post
+      setPosts(posts.filter(post => post.id !== postId));
+      setFilteredPosts(filteredPosts.filter(post => post.id !== postId));
+      toast({
+        title: "Blog Post Deleted",
+        description: "The blog post has been successfully deleted.",
+      });
     } catch (error) {
-      console.error('Error saving blog post:', error);
+      console.error("Error deleting blog post:", error);
       toast({
         title: "Error",
-        description: "Failed to save blog post",
+        description: "Failed to delete the blog post. Please try again.",
         variant: "destructive",
       });
     }
@@ -83,61 +120,63 @@ const BlogManagement = ({ blogPosts, setBlogPosts }: BlogManagementProps) => {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Blog Management</CardTitle>
-        <Button onClick={handleAddBlogPost}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Post
-        </Button>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle>Blog Posts Management</CardTitle>
+          <Link to="/admin/blog/new">
+            <Button>
+              Create New
+            </Button>
+          </Link>
+        </div>
+        <CardDescription>Manage and edit your blog posts</CardDescription>
       </CardHeader>
+      
       <CardContent>
-        {showBlogForm ? (
-          <BlogPostForm 
-            initialData={editingBlogPost || undefined}
-            onSubmit={handleBlogSubmit}
-            onCancel={() => setShowBlogForm(false)}
-          />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 text-left">Title</th>
-                  <th className="py-2 text-left">Author</th>
-                  <th className="py-2 text-left">Category</th>
-                  <th className="py-2 text-left">Status</th>
-                  <th className="py-2 text-left">Date</th>
-                  <th className="py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {blogPosts.map((post) => (
-                  <tr key={post.id} className="border-b">
-                    <td className="py-2">{post.title}</td>
-                    <td className="py-2">{post.author}</td>
-                    <td className="py-2">{post.category || '-'}</td>
-                    <td className="py-2">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        post.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {post.published ? 'Published' : 'Draft'}
+        <div className="space-y-4">
+          <Input type="search" placeholder="Search blog posts..." value={searchQuery} onChange={handleSearch} />
+          
+          {isLoading ? (
+            <div className="text-center py-4">Loading blog posts...</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredPosts.map((post) => (
+                  <TableRow key={post.id}>
+                    <TableCell className="font-medium">{post.title}</TableCell>
+                    <TableCell>{post.category || 'Uncategorized'}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs ${post.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {post.isPublished ? 'Published' : 'Draft'}
                       </span>
-                    </td>
-                    <td className="py-2">{new Date(post.publishedAt || post.createdAt || '').toLocaleDateString()}</td>
-                    <td className="py-2 text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditBlogPost(post)}>
+                    </TableCell>
+                    <TableCell>{new Date(post.publishDate).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" onClick={() => handlePreviewPost(post)} title="Preview Blog Post">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleEditPost(post)} title="Edit Blog Post">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteBlogPost(post.id!)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                      <Button variant="ghost" size="icon" onClick={() => handleDeletePost(post.id)} title="Delete Blog Post">
+                        <Trash2 className="h-4 w-4" />
                       </Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              </TableBody>
+            </Table>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

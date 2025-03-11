@@ -16,7 +16,7 @@ export function useRequestForm() {
     hospital: '',
     location: '',
     contactNumber: '',
-    urgency: 'standard', // Changed from "Standard" to "standard"
+    urgency: 'standard', // Using the correct value
     notes: '',
     units: 1,
     status: 'open',

@@ -1,15 +1,12 @@
-
-import React, { useState } from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Clock, Calendar, DropletIcon, Phone } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "@/hooks/use-toast";
-import { sendNotification } from "@/services/dbService";
-import TopNavbar from "@/components/TopNavbar";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React, { useState, useEffect } from 'react';
+import TopNavbar from '@/components/TopNavbar';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus, Filter, MapPin, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { getBloodRequests } from '@/services/bloodRequestService';
+import { BloodRequest } from '@/types/apiTypes';
+import { sendNotification } from '@/services/notificationService';
 
 const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, distance, hospital, notes, contactNumber }) => {
   const [responded, setResponded] = useState(false);
@@ -17,13 +14,11 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
   const handleRespond = async () => {
     setResponded(true);
     
-    // Show toast notification
     toast({
       title: "Response sent",
       description: `You have responded to ${name}'s blood request.`,
     });
     
-    // Send push notification to the requester
     try {
       await sendNotification({
         title: `Response to your ${bloodType} blood request`,
@@ -37,7 +32,6 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
   };
   
   const handleCall = () => {
-    // Launch phone dialer with the contact number
     window.location.href = `tel:${contactNumber || "1234567890"}`;
     
     toast({
@@ -46,10 +40,8 @@ const BloodRequestCard = ({ name, bloodType, location, urgency, postedTime, dist
     });
   };
 
-  // Generate initial for avatar
   const nameInitial = name.charAt(0);
   
-  // Generate background color based on blood type
   const getBgColor = () => {
     switch (bloodType) {
       case "O-": return "bg-red-600";
@@ -152,44 +144,18 @@ const Requests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
-  
-  const requests = [
-    {
-      name: "Emily Johnson",
-      bloodType: "O-",
-      location: "Memorial Hospital",
-      distance: "2.5 miles",
-      urgency: "Urgent",
-      postedTime: "30 min ago",
-      hospital: "Memorial Hospital, Floor 3, Room 302",
-      notes: "Needed for emergency surgery, any donors welcome.",
-      contactNumber: "555-123-4567"
-    },
-    {
-      name: "Michael Chen",
-      bloodType: "A+",
-      location: "City Medical Center",
-      distance: "4.2 miles",
-      urgency: "High",
-      postedTime: "2 hours ago",
-      hospital: "City Medical Center, ER Department",
-      notes: "Patient needs blood for scheduled surgery tomorrow morning.",
-      contactNumber: "555-987-6543"
-    },
-    {
-      name: "Sophia Martinez",
-      bloodType: "B-",
-      location: "University Hospital",
-      distance: "3.7 miles",
-      urgency: "Medium",
-      postedTime: "5 hours ago",
-      hospital: "University Hospital, Hematology Department",
-      notes: "Needed for a patient with ongoing treatment.",
-      contactNumber: "555-456-7890"
-    }
-  ];
+  const [requests, setRequests] = useState<BloodRequest[]>([]);
+  const navigate = useNavigate();
 
-  // Handle search
+  useEffect(() => {
+    const fetchRequests = async () => {
+      const data = await getBloodRequests();
+      setRequests(data);
+    };
+
+    fetchRequests();
+  }, []);
+
   const handleSearch = (query) => {
     setSearchQuery(query);
     
@@ -209,10 +175,8 @@ const Requests = () => {
     setFilteredRequests(filtered);
   };
 
-  // Determine which requests to display
   const displayRequests = searchQuery.trim() ? filteredRequests : requests;
   
-  // Filter requests based on active tab
   const getFilteredRequests = () => {
     if (activeTab === "all") return displayRequests;
     if (activeTab === "nearby") return displayRequests.filter(r => parseFloat(r.distance) < 4);

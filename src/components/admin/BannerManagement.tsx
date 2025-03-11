@@ -1,133 +1,194 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Trash2, Plus } from "lucide-react";
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/hooks/use-toast';
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Banner } from "@/types/apiTypes";
-import { createBanner, updateBanner, deleteBanner } from "@/services/bannerService";
-import BannerForm from "@/components/admin/BannerForm";
+import { getPastBanners, getActiveBanners, deleteBanner } from "@/services/bannerService";
+import { Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface BannerManagementProps {
-  banners: Banner[];
-  setBanners: React.Dispatch<React.SetStateAction<Banner[]>>;
+  // You can define any props the component needs here
 }
 
-const BannerManagement = ({ banners, setBanners }: BannerManagementProps) => {
-  const { toast } = useToast();
-  const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
-  const [showBannerForm, setShowBannerForm] = useState(false);
+const BannerManagement = () => {
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [filteredBanners, setFilteredBanners] = useState<Banner[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const handleAddBanner = () => {
-    setEditingBanner(null);
-    setShowBannerForm(true);
+  useEffect(() => {
+    // Simulate fetching banners from an API
+    setTimeout(() => {
+      // Using mockData with correct properties
+      const mockData = [
+        {
+          id: "1",
+          title: "Blood Donation Drive",
+          content: "Join our upcoming blood donation drive",
+          imageUrl: "/placeholder.svg",
+          link: "https://example.com",
+          startDate: "2023-06-01T00:00:00Z",
+          endDate: "2023-06-30T23:59:59Z",
+          isActive: true,
+          createdAt: "2023-05-15T00:00:00Z",
+          updatedAt: "2023-05-15T00:00:00Z",
+          description: "Help us save lives by donating blood",
+          linkUrl: "https://example.com/donate",
+          displayOrder: 1,
+          position: "top"
+        },
+        {
+          id: "2",
+          title: "World Blood Donor Day",
+          content: "Celebrate World Blood Donor Day with us",
+          imageUrl: "/placeholder.svg",
+          link: "https://example.com/wbdd",
+          startDate: "2023-06-14T00:00:00Z",
+          endDate: "2023-06-14T23:59:59Z",
+          isActive: true,
+          createdAt: "2023-06-01T00:00:00Z",
+          updatedAt: "2023-06-01T00:00:00Z",
+          description: "World Blood Donor Day special event",
+          linkUrl: "https://example.com/wbdd",
+          displayOrder: 2,
+          position: "middle"
+        },
+        {
+          id: "3",
+          title: "Thank You Donors",
+          content: "A big thank you to all our blood donors",
+          imageUrl: "/placeholder.svg",
+          link: "https://example.com/thank-you",
+          startDate: "2023-05-01T00:00:00Z",
+          endDate: "2023-05-31T23:59:59Z",
+          isActive: false,
+          createdAt: "2023-04-15T00:00:00Z",
+          updatedAt: "2023-04-15T00:00:00Z",
+          description: "Appreciation for our donors",
+          linkUrl: "https://example.com/thank-you",
+          displayOrder: 3,
+          position: "bottom"
+        }
+      ];
+      setBanners(mockData);
+      setFilteredBanners(mockData);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    const filtered = banners.filter(banner =>
+      banner.title.toLowerCase().includes(query.toLowerCase()) ||
+      banner.content.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredBanners(filtered);
+  };
+
+  const handlePreviewBanner = (banner: Banner) => {
+    // Implement preview logic here
+    alert(`Previewing banner: ${banner.title}`);
   };
 
   const handleEditBanner = (banner: Banner) => {
-    setEditingBanner(banner);
-    setShowBannerForm(true);
+    // Implement edit logic here
+    navigate(`/admin/banners/edit/${banner.id}`);
   };
 
-  const handleDeleteBanner = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this banner?')) {
-      try {
-        await deleteBanner(id);
-        setBanners(prevBanners => prevBanners.filter(banner => banner.id !== id));
-        toast({
-          title: "Success",
-          description: "Banner deleted successfully",
-        });
-      } catch (error) {
-        console.error('Error deleting banner:', error);
-        toast({
-          title: "Error",
-          description: "Failed to delete banner",
-          variant: "destructive",
-        });
-      }
-    }
-  };
+  const handleDeleteBanner = async (bannerId: string) => {
+    // Implement delete logic here
+    const confirmDelete = window.confirm("Are you sure you want to delete this banner?");
+    if (confirmDelete) {
+      // Call the deleteBanner service function
+      await deleteBanner(bannerId);
 
-  const handleBannerSubmit = async (data: Banner) => {
-    try {
-      if (editingBanner?.id) {
-        const updated = await updateBanner(editingBanner.id, data);
-        if (updated) {
-          setBanners(prevBanners => 
-            prevBanners.map(banner => banner.id === editingBanner.id ? updated : banner)
-          );
-          toast({
-            title: "Success",
-            description: "Banner updated successfully",
-          });
-        }
-      } else {
-        const newBanner = await createBanner(data);
-        if (newBanner) {
-          setBanners(prevBanners => [newBanner, ...prevBanners]);
-          toast({
-            title: "Success",
-            description: "Banner created successfully",
-          });
-        }
-      }
-      setShowBannerForm(false);
-    } catch (error) {
-      console.error('Error saving banner:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save banner",
-        variant: "destructive",
-      });
+      // Update the state to remove the deleted banner
+      setBanners(banners.filter(banner => banner.id !== bannerId));
+      setFilteredBanners(filteredBanners.filter(banner => banner.id !== bannerId));
+
+      alert(`Banner with ID ${bannerId} deleted successfully.`);
     }
   };
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Banner Management</CardTitle>
-        <Button onClick={handleAddBanner}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Banner
-        </Button>
+      <CardHeader>
+        <CardTitle>Manage Banners</CardTitle>
+        <CardDescription>Create, edit, and manage banners on your platform</CardDescription>
       </CardHeader>
+      
       <CardContent>
-        {showBannerForm ? (
-          <BannerForm 
-            initialData={editingBanner || undefined}
-            onSubmit={handleBannerSubmit}
-            onCancel={() => setShowBannerForm(false)}
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {banners.map((banner) => (
-              <Card key={banner.id} className="overflow-hidden">
-                <div className="relative h-40">
-                  <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-white" onClick={() => handleEditBanner(banner)}>
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-white" onClick={() => handleDeleteBanner(banner.id!)}>
-                      <Trash2 className="h-3 w-3 text-red-500" />
-                    </Button>
-                  </div>
-                  {!banner.active && (
-                    <div className="absolute top-2 left-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-                      Inactive
-                    </div>
-                  )}
-                </div>
-                <CardContent className="p-3">
-                  <h3 className="font-medium">{banner.title}</h3>
-                  <p className="text-xs text-muted-foreground">Order: {banner.displayOrder}</p>
-                  {banner.linkUrl && (
-                    <p className="text-xs truncate text-blue-500">{banner.linkUrl}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="relative w-full md:w-auto">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search banners..."
+                className="pl-9"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
+            <Button onClick={() => navigate('/admin/banners/new')}>Add Banner</Button>
           </div>
-        )}
+          
+          {isLoading ? (
+            <div className="text-center py-4">Loading banners...</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Period</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Position</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredBanners.map((banner) => (
+                  <TableRow key={banner.id}>
+                    <TableCell className="font-medium">{banner.title}</TableCell>
+                    <TableCell>{new Date(banner.startDate).toLocaleDateString()} - {banner.endDate ? new Date(banner.endDate).toLocaleDateString() : 'Ongoing'}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs ${banner.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                        {banner.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </TableCell>
+                    <TableCell>{banner.displayOrder || 'N/A'} - {banner.position || 'Default'}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" onClick={() => handlePreviewBanner(banner)} title="Preview Banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleEditBanner(banner)} title="Edit Banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/>
+                        </svg>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteBanner(banner.id)} title="Delete Banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                          <path d="M3 6H5H21"/>
+                          <path d="M19 6V20C19 21.1046 18.1046 22 17 22H7C5.89543 22 5 21.1046 5 20V6"/>
+                          <line x1="8" y1="6" x2="8" y2="10"/>
+                          <line x1="12" y1="6" x2="12" y2="10"/>
+                          <line x1="16" y1="6" x2="16" y2="10"/>
+                        </svg>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,7 +1,29 @@
-
 import { API_BASE_URL } from './apiConfig';
 
 // Location service for handling location-related operations
+
+// Add the missing getCurrentLocation function
+export const getCurrentLocation = async (): Promise<{lat: number, lng: number} | null> => {
+  return new Promise((resolve) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        () => {
+          console.error('Error getting current location');
+          resolve(null);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser');
+      resolve(null);
+    }
+  });
+};
 
 // Get all locations
 export const getLocations = async (): Promise<any[]> => {

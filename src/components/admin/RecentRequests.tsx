@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BloodRequest } from "@/services/dbService";
+import { BloodRequest } from "@/types/apiTypes";
 
 interface RecentRequestsProps {
   requests: BloodRequest[];
@@ -30,8 +30,8 @@ const RecentRequests = ({ requests }: RecentRequestsProps) => {
                 </div>
                 <div className="text-right">
                   <span className={`text-xs px-2 py-1 rounded-full ${
-                    request.urgency === 'Urgent' ? 'bg-red-100 text-red-800' :
-                    request.urgency === 'High' ? 'bg-yellow-100 text-yellow-800' :
+                    request.urgency === 'critical' ? 'bg-red-100 text-red-800' :
+                    request.urgency === 'urgent' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-green-100 text-green-800'
                   }`}>
                     {request.urgency}

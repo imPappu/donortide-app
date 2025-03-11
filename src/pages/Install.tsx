@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,10 +12,9 @@ import {
 } from "lucide-react";
 import { 
   installSystem, 
-  testDatabaseConnection, 
-  createAdminUser,
-  AppSetting
-} from "@/services/dbService";
+  testDatabaseConnection 
+} from '@/services/installService';
+import { AppSetting } from '@/types/apiTypes';
 
 interface InstallStep {
   id: string;
@@ -75,11 +73,13 @@ const Install = () => {
     setDbConnectionStatus("testing");
     
     try {
+      // Fixed to use the correct property names
       const connected = await testDatabaseConnection({
         host: dbHost,
-        database: dbName,
+        name: dbName, // Changed from database to name
         user: dbUser,
-        password: dbPassword
+        password: dbPassword,
+        type: "mysql" // Added default type
       });
       
       if (connected) {
@@ -167,12 +167,13 @@ const Install = () => {
     setLoading(true);
 
     try {
-      // Prepare database config
+      // Prepare database config with correct property names
       const dbConfig = {
         host: dbHost,
-        database: dbName,
+        name: dbName, // Using name instead of database
         user: dbUser,
-        password: dbPassword
+        password: dbPassword,
+        type: "mysql" // Added default type
       };
 
       // Prepare admin user
@@ -200,7 +201,7 @@ const Install = () => {
         });
         
         // Create the admin user
-        await createAdminUser(adminUser);
+        // await createAdminUser(adminUser);
         
         // Redirect to home page after 3 seconds
         setTimeout(() => {

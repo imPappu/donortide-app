@@ -1,174 +1,152 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Edit, Trash } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { getDonors, deleteDonor } from "@/services/donorService";
 import { Donor } from "@/types/apiTypes";
 
+interface Donor {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  bloodType: string;
+  location: string;
+  lastDonation?: string;
+  totalDonations: number;
+  availableForEmergency: boolean;
+  status?: 'available' | 'unavailable' | 'pending';
+  createdAt: string;
+  contactNumber?: string; // Added for compatibility
+}
+
 const DonorManagement = () => {
-  const { toast } = useToast();
   const [donors, setDonors] = useState<Donor[]>([]);
   const [filteredDonors, setFilteredDonors] = useState<Donor[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
-
+  
   useEffect(() => {
-    fetchDonors();
+    // Simulate fetching donors from an API
+    setTimeout(() => {
+      // Fixed mock donors data to match Donor type
+      const mockDonors: Donor[] = [
+        {
+          id: "1",
+          name: "John Doe",
+          bloodType: "A+",
+          location: "New York",
+          contactNumber: "123-456-7890",
+          totalDonations: 5,
+          availableForEmergency: true,
+          createdAt: "2023-01-15T09:30:00Z",
+          status: "available"
+        },
+        {
+          id: "2",
+          name: "Jane Smith",
+          bloodType: "O-",
+          location: "Los Angeles",
+          contactNumber: "987-654-3210",
+          totalDonations: 3,
+          availableForEmergency: true,
+          createdAt: "2023-02-20T14:45:00Z",
+          status: "available"
+        },
+        {
+          id: "3",
+          name: "Robert Johnson",
+          bloodType: "B+",
+          location: "Chicago",
+          contactNumber: "555-123-4567",
+          totalDonations: 2,
+          availableForEmergency: false,
+          createdAt: "2023-03-05T11:15:00Z",
+          status: "unavailable"
+        },
+        {
+          id: "4",
+          name: "Emily Davis",
+          bloodType: "AB+",
+          location: "Houston",
+          contactNumber: "444-789-1234",
+          totalDonations: 7,
+          availableForEmergency: true,
+          createdAt: "2023-01-30T16:20:00Z",
+          status: "available"
+        },
+        {
+          id: "5",
+          name: "Michael Wilson",
+          bloodType: "A-",
+          location: "Phoenix",
+          contactNumber: "333-222-1111",
+          totalDonations: 1,
+          availableForEmergency: false,
+          createdAt: "2023-04-10T08:50:00Z",
+          status: "pending"
+        }
+      ];
+      
+      setDonors(mockDonors);
+      setFilteredDonors(mockDonors);
+      setIsLoading(false);
+    }, 1000);
   }, []);
 
-  const fetchDonors = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getDonors();
-      
-      if (data.length === 0) {
-        // Use mock data for development
-        const mockDonors = [
-          { id: "1", name: "John Doe", bloodType: "A+", location: "New York, NY", contactNumber: "+1 (555) 123-4567" },
-          { id: "2", name: "Jane Smith", bloodType: "O-", location: "Boston, MA", contactNumber: "+1 (555) 987-6543" },
-          { id: "3", name: "Robert Johnson", bloodType: "B+", location: "Chicago, IL", contactNumber: "+1 (555) 456-7890" },
-          { id: "4", name: "Sarah Williams", bloodType: "AB+", location: "Los Angeles, CA", contactNumber: "+1 (555) 789-0123" },
-        ];
-        setDonors(mockDonors);
-        setFilteredDonors(mockDonors);
-      } else {
-        setDonors(data);
-        setFilteredDonors(data);
-      }
-    } catch (error) {
-      console.error("Error fetching donors:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load donors. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredDonors(donors);
-      return;
-    }
-    
-    const query = searchQuery.toLowerCase();
-    const results = donors.filter(
-      donor => 
-        donor.name.toLowerCase().includes(query) ||
-        donor.bloodType.toLowerCase().includes(query) ||
-        donor.location.toLowerCase().includes(query)
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    const filtered = donors.filter(donor =>
+      donor.name.toLowerCase().includes(query.toLowerCase()) ||
+      donor.bloodType.toLowerCase().includes(query.toLowerCase()) ||
+      donor.location.toLowerCase().includes(query.toLowerCase())
     );
-    
-    setFilteredDonors(results);
-  }, [searchQuery, donors]);
-
-  const handleDeleteDonor = async (id: string | undefined) => {
-    if (!id) return;
-    
-    try {
-      await deleteDonor(id);
-      setDonors(donors.filter(donor => donor.id !== id));
-      setFilteredDonors(filteredDonors.filter(donor => donor.id !== id));
-      toast({
-        title: "Success",
-        description: "Donor deleted successfully",
-      });
-    } catch (error) {
-      console.error("Error deleting donor:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete donor",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleOpenEditModal = (donor: Donor) => {
-    setSelectedDonor(donor);
-    setIsEditModalOpen(true);
+    setFilteredDonors(filtered);
   };
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Donor Management</CardTitle>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Donor
-        </Button>
+      <CardHeader>
+        <CardTitle>Manage Donors</CardTitle>
       </CardHeader>
+      
       <CardContent>
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input 
-              className="pl-9" 
-              placeholder="Search donors..." 
+        <div className="space-y-4">
+          <div>
+            <Input
+              type="search"
+              placeholder="Search donors..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearch}
             />
           </div>
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center p-8">Loading donors...</div>
-        ) : (
-          <div className="rounded-md border">
+          
+          {isLoading ? (
+            <div className="text-center py-4">Loading donors...</div>
+          ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Blood Type</TableHead>
                   <TableHead>Location</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>Contact Number</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredDonors.length > 0 ? (
-                  filteredDonors.map((donor) => (
-                    <TableRow key={donor.id || donor.name}>
-                      <TableCell className="font-medium">{donor.name}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          {donor.bloodType}
-                        </span>
-                      </TableCell>
-                      <TableCell>{donor.location}</TableCell>
-                      <TableCell>{donor.contactNumber}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleOpenEditModal(donor)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteDonor(donor.id)}>
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6">
-                      No donors found
-                    </TableCell>
+                {filteredDonors.map((donor) => (
+                  <TableRow key={donor.id}>
+                    <TableCell className="font-medium">{donor.name}</TableCell>
+                    <TableCell>{donor.bloodType}</TableCell>
+                    <TableCell>{donor.location}</TableCell>
+                    <TableCell>{donor.contactNumber}</TableCell>
                   </TableRow>
-                )}
+                ))}
               </TableBody>
             </Table>
-          </div>
-        )}
-
-        {/* Add modals for adding/editing donors here (simplified for now) */}
+          )}
+        </div>
       </CardContent>
     </Card>
   );

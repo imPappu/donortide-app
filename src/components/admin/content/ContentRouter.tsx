@@ -15,18 +15,24 @@ import MapApiConfiguration from "../MapApiConfiguration";
 import EmailTemplatesManagement from "../EmailTemplatesManagement";
 import SocialMediaAdsConfiguration from "../SocialMediaAdsConfiguration";
 
-const ContentRouter = ({ activeTab }: { activeTab: string }) => {
-  // Mock stats for the dashboard
-  const mockStats = {
-    totalUsers: 254,
-    totalDonations: 89,
-    totalRequests: 42,
-    totalLocations: 15
+const ContentRouter = ({ activeTab, stats, loading }: { 
+  activeTab: string;
+  stats?: {
+    totalUsers: number;
+    totalDonations: number;
+    totalRequests: number;
+    totalLocations: number;
   };
-  
+  loading?: boolean;
+}) => {
   switch (activeTab) {
     case "dashboard":
-      return <DashboardContent stats={mockStats} loading={false} />;
+      return <DashboardContent stats={stats || {
+        totalUsers: 254,
+        totalDonations: 89,
+        totalRequests: 42,
+        totalLocations: 15
+      }} loading={loading || false} />;
     case "users":
       return <UserManagement />;
     case "roles":
@@ -35,11 +41,13 @@ const ContentRouter = ({ activeTab }: { activeTab: string }) => {
       return <BloodRequestsManagement />;
     case "donors":
       return <DonorsManagement />;
+    case "app-settings":
+      return <Settings />;
     case "database":
       return <DatabaseSettings />;
     case "payment":
       return <PaymentGatewaySettings />;
-    case "app-settings":
+    case "app-settings-form":
       return <AppSettingsForm />;
     case "app-branding":
       return <AppBrandingForm />;

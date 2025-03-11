@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { createBloodRequest } from "@/services/dbService";
+import { createBloodRequest } from "@/services/bloodRequestService";
 import { useNavigate } from "react-router-dom";
 import { BloodRequest } from "@/types/apiTypes";
 
@@ -10,14 +10,17 @@ export function useRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Blood request form state
-  const [requestForm, setRequestForm] = useState<BloodRequest>({
+  const [requestForm, setRequestForm] = useState<Partial<BloodRequest>>({
     patientName: '',
     bloodType: '',
     hospital: '',
     location: '',
     contactNumber: '',
-    urgency: 'Standard',
-    notes: ''
+    urgency: 'standard',
+    notes: '',
+    units: 1,
+    status: 'open',
+    createdAt: new Date().toISOString()
   });
   
   // Blood type selection handler for request form
@@ -26,7 +29,7 @@ export function useRequestForm() {
   };
   
   // Urgency level selection handler
-  const handleUrgencySelect = (level: 'Standard' | 'High' | 'Urgent') => {
+  const handleUrgencySelect = (level: 'standard' | 'urgent' | 'critical') => {
     setRequestForm({...requestForm, urgency: level});
   };
   
@@ -51,7 +54,7 @@ export function useRequestForm() {
     setIsSubmitting(true);
     
     try {
-      const response = await createBloodRequest(requestForm);
+      const response = await createBloodRequest(requestForm as BloodRequest);
       if (response) {
         toast({
           title: "Request created",

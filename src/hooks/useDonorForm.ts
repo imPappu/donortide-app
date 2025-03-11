@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { registerDonor } from "@/services/dbService";
+import { registerDonor } from "@/services/donorService";
 import { useNavigate } from "react-router-dom";
 import { Donor } from "@/types/apiTypes";
 
@@ -10,11 +10,14 @@ export function useDonorForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Donor registration form state
-  const [donorForm, setDonorForm] = useState<Donor>({
+  const [donorForm, setDonorForm] = useState<Partial<Donor>>({
     name: '',
     bloodType: '',
     location: '',
-    contactNumber: ''
+    contactNumber: '',
+    totalDonations: 0,
+    availableForEmergency: true,
+    createdAt: new Date().toISOString()
   });
   
   // Blood type selection handler for donor form
@@ -43,7 +46,7 @@ export function useDonorForm() {
     setIsSubmitting(true);
     
     try {
-      const response = await registerDonor(donorForm);
+      const response = await registerDonor(donorForm as Donor);
       if (response) {
         toast({
           title: "Registration successful",

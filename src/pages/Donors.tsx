@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Filter, Users, Phone, AlertTriangle } from "lucide-react";
-import { getDonors, Donor } from "@/services/dbService";
+import { getDonors } from "@/services/donorService";
+import { Donor } from "@/types/apiTypes";
 import { toast } from "@/hooks/use-toast";
 
 const DonorCard = ({ name, bloodType, location, lastDonation, contactNumber }: Donor & { lastDonation?: string }) => {
@@ -68,14 +70,54 @@ const Donors = () => {
         
         // If our API is not available yet, use mock data
         if (data.length === 0) {
-          const mockDonors = [
-            { name: "John Doe", bloodType: "A+", location: "New York, NY", lastDonation: "4 months ago", contactNumber: "+1 (555) 123-4567" },
-            { name: "Jane Smith", bloodType: "O-", location: "Boston, MA", lastDonation: "2 months ago", contactNumber: "+1 (555) 987-6543" },
-            { name: "Robert Johnson", bloodType: "B+", location: "Chicago, IL", lastDonation: "6 months ago", contactNumber: "+1 (555) 456-7890" },
-            { name: "Sarah Williams", bloodType: "AB+", location: "Los Angeles, CA", lastDonation: "1 month ago", contactNumber: "+1 (555) 789-0123" },
+          const mockDonors: Donor[] = [
+            { 
+              id: "1", 
+              name: "John Doe", 
+              bloodType: "A+", 
+              location: "New York, NY", 
+              lastDonation: "4 months ago", 
+              contactNumber: "+1 (555) 123-4567", 
+              totalDonations: 5, 
+              availableForEmergency: true, 
+              createdAt: new Date().toISOString() 
+            },
+            { 
+              id: "2", 
+              name: "Jane Smith", 
+              bloodType: "O-", 
+              location: "Boston, MA", 
+              lastDonation: "2 months ago", 
+              contactNumber: "+1 (555) 987-6543", 
+              totalDonations: 3, 
+              availableForEmergency: true, 
+              createdAt: new Date().toISOString() 
+            },
+            { 
+              id: "3", 
+              name: "Robert Johnson", 
+              bloodType: "B+", 
+              location: "Chicago, IL", 
+              lastDonation: "6 months ago", 
+              contactNumber: "+1 (555) 456-7890", 
+              totalDonations: 8, 
+              availableForEmergency: false, 
+              createdAt: new Date().toISOString() 
+            },
+            { 
+              id: "4", 
+              name: "Sarah Williams", 
+              bloodType: "AB+", 
+              location: "Los Angeles, CA", 
+              lastDonation: "1 month ago", 
+              contactNumber: "+1 (555) 789-0123", 
+              totalDonations: 2, 
+              availableForEmergency: true, 
+              createdAt: new Date().toISOString() 
+            },
           ];
-          setDonors(mockDonors as Donor[]);
-          setFilteredDonors(mockDonors as Donor[]);
+          setDonors(mockDonors);
+          setFilteredDonors(mockDonors);
           setIsError(true);
           // Show a toast when using mock data
           toast({
@@ -92,14 +134,54 @@ const Donors = () => {
         setIsError(true);
         
         // Fallback to mock data
-        const mockDonors = [
-          { name: "John Doe", bloodType: "A+", location: "New York, NY", lastDonation: "4 months ago", contactNumber: "+1 (555) 123-4567" },
-          { name: "Jane Smith", bloodType: "O-", location: "Boston, MA", lastDonation: "2 months ago", contactNumber: "+1 (555) 987-6543" },
-          { name: "Robert Johnson", bloodType: "B+", location: "Chicago, IL", lastDonation: "6 months ago", contactNumber: "+1 (555) 456-7890" },
-          { name: "Sarah Williams", bloodType: "AB+", location: "Los Angeles, CA", lastDonation: "1 month ago", contactNumber: "+1 (555) 789-0123" },
+        const mockDonors: Donor[] = [
+          { 
+            id: "1", 
+            name: "John Doe", 
+            bloodType: "A+", 
+            location: "New York, NY", 
+            lastDonation: "4 months ago", 
+            contactNumber: "+1 (555) 123-4567", 
+            totalDonations: 5, 
+            availableForEmergency: true, 
+            createdAt: new Date().toISOString() 
+          },
+          { 
+            id: "2", 
+            name: "Jane Smith", 
+            bloodType: "O-", 
+            location: "Boston, MA", 
+            lastDonation: "2 months ago", 
+            contactNumber: "+1 (555) 987-6543", 
+            totalDonations: 3, 
+            availableForEmergency: true, 
+            createdAt: new Date().toISOString() 
+          },
+          { 
+            id: "3", 
+            name: "Robert Johnson", 
+            bloodType: "B+", 
+            location: "Chicago, IL", 
+            lastDonation: "6 months ago", 
+            contactNumber: "+1 (555) 456-7890", 
+            totalDonations: 8, 
+            availableForEmergency: false, 
+            createdAt: new Date().toISOString() 
+          },
+          { 
+            id: "4", 
+            name: "Sarah Williams", 
+            bloodType: "AB+", 
+            location: "Los Angeles, CA", 
+            lastDonation: "1 month ago", 
+            contactNumber: "+1 (555) 789-0123", 
+            totalDonations: 2, 
+            availableForEmergency: true, 
+            createdAt: new Date().toISOString() 
+          },
         ];
-        setDonors(mockDonors as Donor[]);
-        setFilteredDonors(mockDonors as Donor[]);
+        setDonors(mockDonors);
+        setFilteredDonors(mockDonors);
         
         toast({
           title: "Connection error",

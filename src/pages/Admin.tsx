@@ -6,7 +6,7 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminContent from "@/components/admin/AdminContent";
 import SystemUpdatePanel from "@/components/admin/SystemUpdatePanel";
 import { useToast } from "@/hooks/use-toast";
-import { Banner, BlogPost, Notification } from "@/types/apiTypes";
+import { Notification } from "@/types/apiTypes";
 import { getDashboardStats } from "@/services/dashboardService";
 
 const AdminDashboard = () => {
@@ -23,17 +23,11 @@ const AdminDashboard = () => {
     totalLocations: 24
   });
   
-  // Banners state
-  const [banners, setBanners] = useState<Banner[]>([]);
-  
-  // Blog posts state
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  
   // Notification state
   const [notification, setNotification] = useState<Partial<Notification>>({
     title: '',
     message: '',
-    targetType: 'all'
+    type: 'info'
   });
 
   // System update state
@@ -125,12 +119,6 @@ const AdminDashboard = () => {
         <AdminContent 
           activeTab={activeTab}
           stats={stats}
-          banners={banners}
-          setBanners={setBanners}
-          blogPosts={blogPosts}
-          setBlogPosts={setBlogPosts}
-          notification={notification}
-          setNotification={setNotification}
           loading={loading}
         />
       </div>

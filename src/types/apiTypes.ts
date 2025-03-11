@@ -13,6 +13,7 @@ export interface Donor {
   availableForEmergency: boolean;
   status?: 'available' | 'unavailable' | 'pending';
   createdAt: string;
+  contactNumber?: string; // Added for compatibility
 }
 
 export interface BloodRequest {
@@ -34,6 +35,34 @@ export interface AppSetting {
   settingKey: string;
   settingValue: string;
   description?: string;
+  updatedAt?: string;
+}
+
+export interface Banner {
+  id: string;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  link?: string;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  position?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  author: string;
+  imageUrl?: string;
+  tags?: string[];
+  publishDate: string;
+  isPublished: boolean;
+  createdAt: string;
   updatedAt?: string;
 }
 
@@ -71,11 +100,25 @@ export interface Notification {
   message: string;
   type: 'info' | 'warning' | 'success' | 'error' | 'request' | 'donation' | 'event' | 'campaign';
   read: boolean;
+  targetType?: string; // Added for notification targeting
   action?: {
     type: string;
     payload: any;
   };
   createdAt: string;
+}
+
+export interface Payment {
+  id: string;
+  userId?: string;
+  amount: number;
+  currency: string;
+  method: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  transactionId?: string;
+  createdAt: string;
+  updatedAt?: string;
+  paymentDetails?: any;
 }
 
 export interface DatabaseConfig {

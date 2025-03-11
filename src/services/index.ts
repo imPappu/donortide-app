@@ -19,15 +19,5 @@ export * from './communicationService';
 export * from './communityService';  // Add the export for communityService
 export * from './types/serviceTypes';
 
-// Re-export types (for backward compatibility)
-export type { 
-  AppSetting,
-  Banner,
-  BloodRequest,
-  BlogPost,
-  DatabaseConfig,
-  Donor,
-  Notification,
-  Payment,
-  AdminUser
-} from '@/types/apiTypes';
+// Re-export types from apiTypes
+export * from '@/types/apiTypes';

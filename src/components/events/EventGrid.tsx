@@ -15,19 +15,25 @@ const EventGrid = ({
   cols = 2,
   compact = false 
 }: EventGridProps) => {
-  // Create a grid template columns style to properly handle the cols prop
-  const gridCols = {
-    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`
+  // Create grid column classes based on the cols prop
+  const getGridColsClass = () => {
+    switch (cols) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-1 md:grid-cols-2";
+      case 3:
+        return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+      case 4:
+        return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+      default:
+        return "grid-cols-1 md:grid-cols-2";
+    }
   };
 
   return (
     <div 
-      className={`grid gap-6 ${className}`}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(1, minmax(0, 1fr))`,
-        '@media (min-width: 768px)': gridCols
-      }}
+      className={`grid gap-6 ${getGridColsClass()} ${className}`}
     >
       {events.map((event) => (
         <EventCard

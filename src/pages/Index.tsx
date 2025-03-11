@@ -63,7 +63,7 @@ const Index = () => {
     {
       src: "https://placehold.co/1200x400/blue/white?text=World+Blood+Donor+Day",
       alt: "World Blood Donor Day",
-      url: "/blog"
+      url: "/events"
     },
     {
       src: "https://placehold.co/1200x400/green/white?text=Find+Donors+Near+You",
@@ -149,7 +149,7 @@ const Index = () => {
           </Alert>
         </div>
 
-        {/* Urgent Requests Row */}
+        {/* NEW: Urgent Requests Row */}
         <UrgentRequestsRow requests={urgentRequests} />
 
         {/* Quick Actions */}

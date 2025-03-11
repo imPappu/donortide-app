@@ -1,7 +1,9 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Calendar, MapPin, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export interface EventCardProps {
   id: string;
@@ -25,7 +27,7 @@ const EventCard = ({
   image 
 }: EventCardProps) => {
   return (
-    <Card key={id} className="overflow-hidden">
+    <Card key={id} className="overflow-hidden hover:shadow-md transition-shadow">
       <div className="aspect-video w-full">
         <img 
           src={image} 
@@ -53,6 +55,11 @@ const EventCard = ({
       <CardContent>
         <p className="text-sm">{description}</p>
       </CardContent>
+      <CardFooter>
+        <Button variant="outline" size="sm" className="w-full" asChild>
+          <Link to={`/events/${id}`}>View Details</Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

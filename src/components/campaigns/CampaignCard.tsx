@@ -1,6 +1,7 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, CalendarClock } from "lucide-react";
 
@@ -24,7 +25,7 @@ const CampaignCard = ({
   image 
 }: CampaignCardProps) => {
   return (
-    <Card key={id} className="overflow-hidden">
+    <Card key={id} className="overflow-hidden hover:shadow-md transition-shadow">
       <div className="aspect-video w-full">
         <img 
           src={image} 
@@ -54,10 +55,17 @@ const CampaignCard = ({
           <p className="text-xs text-right text-muted-foreground">{progress}% Complete</p>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent>
         <p className="text-sm">{description}</p>
-        <Button className="w-full">Support This Campaign</Button>
       </CardContent>
+      <CardFooter className="flex gap-2">
+        <Button className="w-full" asChild>
+          <Link to={`/campaigns/${id}/donate`}>Support</Link>
+        </Button>
+        <Button variant="outline" className="w-full" asChild>
+          <Link to={`/campaigns/${id}`}>Details</Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

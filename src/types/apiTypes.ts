@@ -44,6 +44,9 @@ export interface Banner {
   content: string;
   imageUrl?: string;
   link?: string;
+  description?: string; // Added for compatibility with BannerBasicFields
+  linkUrl?: string; // Added for compatibility with BannerBasicFields
+  displayOrder?: number; // Added for compatibility with BannerBasicFields
   startDate: string;
   endDate?: string;
   isActive: boolean;
@@ -60,6 +63,7 @@ export interface BlogPost {
   author: string;
   imageUrl?: string;
   tags?: string[];
+  category?: string; // Added for compatibility with BlogPostBasicFields
   publishDate: string;
   isPublished: boolean;
   createdAt: string;
@@ -123,11 +127,12 @@ export interface Payment {
 
 export interface DatabaseConfig {
   host: string;
-  database: string;
+  name: string; // Changed from database to name for consistency
   user: string;
   password: string;
   port?: string;
   ssl?: boolean;
+  type?: string; // Added for compatibility
 }
 
 export interface AdminUser {

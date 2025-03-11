@@ -10,7 +10,13 @@ export const testDatabaseConnection = async (dbConfig: DatabaseConfig): Promise<
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(dbConfig),
+      body: JSON.stringify({
+        host: dbConfig.host,
+        database: dbConfig.name, // Using the name property from DatabaseConfig
+        user: dbConfig.user,
+        password: dbConfig.password,
+        type: dbConfig.type || 'mysql'
+      }),
     });
     
     if (!response.ok) return false;
@@ -38,7 +44,13 @@ export const installSystem = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        database: dbConfig,
+        database: {
+          host: dbConfig.host,
+          database: dbConfig.name, // Using the name property from DatabaseConfig
+          user: dbConfig.user,
+          password: dbConfig.password,
+          type: dbConfig.type || 'mysql'
+        },
         admin: adminUser,
         settings: appSettings
       }),

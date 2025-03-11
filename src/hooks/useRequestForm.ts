@@ -16,7 +16,7 @@ export function useRequestForm() {
     hospital: '',
     location: '',
     contactNumber: '',
-    urgency: 'standard',
+    urgency: 'standard', // Changed from "Standard" to "standard"
     notes: '',
     units: 1,
     status: 'open',
@@ -28,7 +28,7 @@ export function useRequestForm() {
     setRequestForm({...requestForm, bloodType: type});
   };
   
-  // Urgency level selection handler
+  // Urgency level selection handler - fixing enum values
   const handleUrgencySelect = (level: 'standard' | 'urgent' | 'critical') => {
     setRequestForm({...requestForm, urgency: level});
   };

@@ -1,3 +1,4 @@
+
 import React from "react";
 import DashboardContent from "./DashboardContent";
 import UserManagement from "../UserManagement";
@@ -15,9 +16,17 @@ import EmailTemplatesManagement from "../EmailTemplatesManagement";
 import SocialMediaAdsConfiguration from "../SocialMediaAdsConfiguration";
 
 const ContentRouter = ({ activeTab }: { activeTab: string }) => {
+  // Mock stats for the dashboard
+  const mockStats = {
+    totalUsers: 254,
+    totalDonations: 89,
+    totalRequests: 42,
+    totalLocations: 15
+  };
+  
   switch (activeTab) {
     case "dashboard":
-      return <DashboardContent />;
+      return <DashboardContent stats={mockStats} loading={false} />;
     case "users":
       return <UserManagement />;
     case "roles":

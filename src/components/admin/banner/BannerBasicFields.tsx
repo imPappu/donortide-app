@@ -1,9 +1,9 @@
 
-import React from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Banner } from "@/types/apiTypes";
+import React from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Banner } from '@/types/apiTypes';
 
 export interface BannerBasicFieldsProps {
   formData: Partial<Banner>;
@@ -11,7 +11,6 @@ export interface BannerBasicFieldsProps {
 }
 
 const BannerBasicFields: React.FC<BannerBasicFieldsProps> = ({ formData, onChange }) => {
-  // Create a handler that converts ChangeEvent to the field/value format
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onChange(name, value);
@@ -24,68 +23,70 @@ const BannerBasicFields: React.FC<BannerBasicFieldsProps> = ({ formData, onChang
         <Input
           id="title"
           name="title"
-          value={formData.title || ""}
+          value={formData.title || ''}
           onChange={handleInputChange}
           placeholder="Enter banner title"
+          required
         />
       </div>
-
+      
       <div className="space-y-2">
         <Label htmlFor="content">Banner Content</Label>
         <Textarea
           id="content"
           name="content"
-          value={formData.content || ""}
+          value={formData.content || ''}
           onChange={handleInputChange}
           placeholder="Enter banner content"
-          rows={4}
+          required
+          rows={3}
         />
       </div>
-
+      
+      <div className="space-y-2">
+        <Label htmlFor="description">Banner Description (Optional)</Label>
+        <Textarea
+          id="description"
+          name="description"
+          value={formData.description || ''}
+          onChange={handleInputChange}
+          placeholder="Enter banner description"
+          rows={2}
+        />
+      </div>
+      
       <div className="space-y-2">
         <Label htmlFor="link">Button Text (Optional)</Label>
         <Input
           id="link"
           name="link"
-          value={formData.link || ""}
+          value={formData.link || ''}
           onChange={handleInputChange}
-          placeholder="Learn More"
+          placeholder="E.g., Learn More, Register Now"
         />
       </div>
-
+      
       <div className="space-y-2">
         <Label htmlFor="linkUrl">Button URL (Optional)</Label>
         <Input
           id="linkUrl"
           name="linkUrl"
-          value={formData.linkUrl || ""}
+          value={formData.linkUrl || ''}
           onChange={handleInputChange}
-          placeholder="https://example.com/page"
+          placeholder="E.g., /blog, https://example.com"
         />
       </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="startDate">Start Date</Label>
-          <Input
-            id="startDate"
-            name="startDate"
-            type="date"
-            value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ""}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="endDate">End Date (Optional)</Label>
-          <Input
-            id="endDate"
-            name="endDate"
-            type="date"
-            value={formData.endDate ? new Date(formData.endDate).toISOString().split('T')[0] : ""}
-            onChange={handleInputChange}
-          />
-        </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="displayOrder">Display Order</Label>
+        <Input
+          id="displayOrder"
+          name="displayOrder"
+          type="number"
+          value={formData.displayOrder || 0}
+          onChange={handleInputChange}
+          min={0}
+        />
       </div>
     </div>
   );

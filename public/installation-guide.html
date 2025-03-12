@@ -37,10 +37,16 @@
       padding: 10px 15px;
       margin: 15px 0;
     }
+    .warning {
+      background-color: #ffeeee;
+      border-left: 4px solid #f44336;
+      padding: 10px 15px;
+      margin: 15px 0;
+    }
   </style>
 </head>
 <body>
-  <h1>Blood Donation System - Installation Guide</h1>
+  <h1>Blood Donation System - cPanel Installation Guide</h1>
   
   <p>This guide will help you install the Blood Donation System on your cPanel hosting.</p>
   
@@ -49,37 +55,86 @@
     <p>Before you begin, ensure your server meets the following requirements:</p>
     <ul>
       <li>PHP 7.4 or higher</li>
-      <li>PostgreSQL 12 or higher</li>
+      <li>PostgreSQL 12 or higher (or MySQL 5.7+)</li>
       <li>Apache or Nginx web server</li>
       <li>SSL certificate (recommended for security)</li>
     </ul>
   </div>
   
   <div class="step">
-    <h2>Step 2: Upload Files</h2>
-    <p>Upload the application files to your cPanel hosting:</p>
+    <h2>Step 2: Upload Files to cPanel</h2>
     <ol>
       <li>Login to your cPanel account</li>
       <li>Navigate to the File Manager</li>
       <li>Go to the public_html directory (or subdirectory where you want to install)</li>
-      <li>Upload the zipped application package</li>
-      <li>Extract the files</li>
+      <li>Upload the build folder from your local project to this directory</li>
+      <li>
+        <strong>Rename and configure the backend files:</strong>
+        <ul>
+          <li>Rename <code>backend/install.php.example</code> to <code>backend/install.php</code></li>
+          <li>Rename <code>backend/api.php.example</code> to <code>backend/api.php</code></li>
+          <li>Update the database connection details in both files to match your cPanel database</li>
+        </ul>
+      </li>
     </ol>
+    
+    <div class="note">
+      <p><strong>Note:</strong> If your cPanel uses a different folder structure, adjust the upload location accordingly.</p>
+    </div>
   </div>
   
   <div class="step">
-    <h2>Step 3: Create Database</h2>
-    <p>Create a PostgreSQL database for the application:</p>
+    <h2>Step 3: Build the React Application</h2>
+    <p>Before uploading to cPanel, build your React application:</p>
     <ol>
-      <li>In cPanel, navigate to "PostgreSQL Databases"</li>
-      <li>Create a new database</li>
+      <li>On your local machine, navigate to your project directory</li>
+      <li>Run the build command: <code>npm run build</code></li>
+      <li>The build folder will contain the compiled application</li>
+      <li>Upload the contents of the build folder to your cPanel public_html directory</li>
+    </ol>
+    
+    <div class="warning">
+      <p><strong>Important:</strong> Make sure you upload both the front-end build files AND the backend PHP files to your cPanel.</p>
+    </div>
+  </div>
+  
+  <div class="step">
+    <h2>Step 4: Create Database in cPanel</h2>
+    <p>Create a PostgreSQL or MySQL database for the application:</p>
+    <ol>
+      <li>In cPanel, navigate to "PostgreSQL Databases" or "MySQL Databases"</li>
+      <li>Create a new database (e.g., blood_donation_db)</li>
       <li>Create a database user and assign it to the database with all privileges</li>
       <li>Note down the database name, username, and password</li>
+      <li>Update the database connection details in <code>backend/api.php</code> and <code>backend/install.php</code></li>
     </ol>
   </div>
   
   <div class="step">
-    <h2>Step 4: Configure Installation</h2>
+    <h2>Step 5: Update API Configuration</h2>
+    <p>Update your API configuration to point to your new domain:</p>
+    <ol>
+      <li>Navigate to the <code>src/services/apiConfig.ts</code> file in your source code</li>
+      <li>Update the <code>API_BASE_URL</code> to your domain: <code>https://your-domain.com/backend</code></li>
+      <li>Update database configuration in the same file to match your cPanel database</li>
+      <li>Rebuild your application with <code>npm run build</code></li>
+      <li>Re-upload the updated build files to cPanel</li>
+    </ol>
+    
+    <pre><code>// Example apiConfig.ts update
+const API_BASE_URL = 'https://your-domain.com/backend';
+
+export const DB_CONFIG = {
+  host: 'localhost', 
+  name: 'your_database_name',
+  user: 'your_database_user',
+  password: 'your_database_password',
+  type: 'postgresql' // or 'mysql'
+};</code></pre>
+  </div>
+  
+  <div class="step">
+    <h2>Step 6: Run the Installation</h2>
     <p>Navigate to the installation wizard by visiting your domain:</p>
     <pre><code>https://your-domain.com/install</code></pre>
     <p>Follow the installation wizard which will guide you through:</p>
@@ -90,32 +145,44 @@
     </ul>
     
     <div class="note">
-      <p><strong>Note:</strong> The installation script will create necessary database tables and initial configuration.</p>
+      <p><strong>Note:</strong> If you encounter issues with the installation wizard, you can manually set up the database using the SQL file.</p>
     </div>
   </div>
   
   <div class="step">
-    <h2>Step 5: Finalize Installation</h2>
+    <h2>Step 7: Finalize Installation</h2>
     <p>After completing the wizard:</p>
     <ol>
       <li>Set proper file permissions (typically 755 for directories and 644 for files)</li>
-      <li>Remove or rename the install directory for security</li>
+      <li>Remove or rename the <code>install.php</code> file for security</li>
       <li>Configure cron jobs if needed (for scheduling tasks)</li>
     </ol>
   </div>
   
   <div class="step">
-    <h2>Manual Installation (Advanced)</h2>
-    <p>If you prefer a manual installation, follow these steps:</p>
+    <h2>cPanel Specific Configuration</h2>
+    <p>Some additional steps may be necessary for cPanel hosting:</p>
     <ol>
-      <li>Copy the <code>config.php.example</code> file to <code>config.php</code></li>
-      <li>Edit the configuration file with your database credentials</li>
-      <li>Import the SQL schema from <code>database_setup.sql</code> to your PostgreSQL database</li>
-      <li>Create an admin user directly in the database</li>
+      <li>
+        <strong>Create .htaccess file:</strong> In your public_html directory, create or modify the .htaccess file with the following content:
+        <pre><code># Handle React routing
+&lt;IfModule mod_rewrite.c&gt;
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
+&lt;/IfModule&gt;</code></pre>
+      </li>
+      <li>
+        <strong>PHP Configuration:</strong> Make sure your PHP version is set to 7.4 or higher in cPanel
+      </li>
+      <li>
+        <strong>SSL Configuration:</strong> Enable SSL for your domain through cPanel if not already done
+      </li>
     </ol>
-    <pre><code>-- SQL to create admin user manually
-INSERT INTO users (email, password_hash, name, role)
-VALUES ('admin@example.com', 'YOUR_HASHED_PASSWORD', 'Admin', 'admin');</code></pre>
   </div>
   
   <div class="step">
@@ -124,7 +191,8 @@ VALUES ('admin@example.com', 'YOUR_HASHED_PASSWORD', 'Admin', 'admin');</code></
       <li>If you encounter database connection issues, verify your database credentials</li>
       <li>For permission errors, check file ownership and permissions</li>
       <li>Check PHP error logs in cPanel for detailed error messages</li>
-      <li>Ensure your server meets all the requirements listed above</li>
+      <li>If React routing doesn't work, ensure the .htaccess file is properly configured</li>
+      <li>For API connection issues, check that your API_BASE_URL is correctly set</li>
     </ul>
   </div>
   

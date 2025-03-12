@@ -32,6 +32,7 @@ import FirebasePushComponent from "../FirebasePushComponent";
 import NotificationPanel from "../NotificationPanel";
 import AdsManagement from "../AdsManagement";
 import VolunteerManagement from "../VolunteerManagement";
+import InstallationGuide from "../system/InstallationGuide";
 import { Notification } from "@/types/apiTypes";
 
 const ContentRouter = ({ activeTab, stats, loading }: { 
@@ -119,6 +120,8 @@ const ContentRouter = ({ activeTab, stats, loading }: {
       return <TestEnvironment />;
     case "ai-configuration":
       return <AIConfiguration />;
+    case "installation-guide":
+      return <InstallationGuide />;
     
     // Settings section
     case "app-branding":

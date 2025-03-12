@@ -6,7 +6,8 @@ import {
   AlertTriangle, 
   Gauge, 
   BrainCircuit,
-  Calendar
+  Calendar,
+  Book
 } from "lucide-react";
 import { NavSection, NavItem } from "../NavSection";
 
@@ -16,6 +17,11 @@ interface SystemSectionProps {
 }
 
 const SystemSection = ({ activeTab, setActiveTab }: SystemSectionProps) => {
+  // Function to open installation guide in a new tab
+  const openInstallationGuide = () => {
+    window.open('/installation-guide.html', '_blank');
+  };
+
   return (
     <NavSection title="System">
       <NavItem
@@ -60,6 +66,13 @@ const SystemSection = ({ activeTab, setActiveTab }: SystemSectionProps) => {
         activeTab={activeTab}
         onClick={setActiveTab}
       />
+      <div
+        className="flex w-full items-center rounded-md px-3 py-2 text-sm cursor-pointer hover:bg-muted"
+        onClick={openInstallationGuide}
+      >
+        <Book className="mr-2 h-4 w-4" />
+        <span>Installation Guide</span>
+      </div>
     </NavSection>
   );
 };

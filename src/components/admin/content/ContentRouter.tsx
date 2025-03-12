@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState } from "react";
 import DashboardContent from "./DashboardContent";
 import UserManagement from "../UserManagement";
 import RoleManagement from "../RoleManagement";
@@ -31,6 +32,7 @@ import FirebasePushComponent from "../FirebasePushComponent";
 import NotificationPanel from "../NotificationPanel";
 import AdsManagement from "../AdsManagement";
 import VolunteerManagement from "../VolunteerManagement";
+import { Notification } from "@/types/apiTypes";
 
 const ContentRouter = ({ activeTab, stats, loading }: { 
   activeTab: string;
@@ -42,6 +44,13 @@ const ContentRouter = ({ activeTab, stats, loading }: {
   };
   loading?: boolean;
 }) => {
+  // State for notification panel
+  const [notification, setNotification] = useState<Partial<Notification>>({
+    title: '',
+    message: '',
+    targetType: 'all'
+  });
+
   // Default message for tabs not implemented yet
   const NotImplementedTab = () => (
     <div className="p-6 text-center">
@@ -90,7 +99,10 @@ const ContentRouter = ({ activeTab, stats, loading }: {
     case "push-notifications":
       return <FirebasePushComponent />;
     case "notifications":
-      return <NotificationPanel />;
+      return <NotificationPanel 
+        notification={notification} 
+        setNotification={setNotification} 
+      />;
     case "ads":
       return <AdsManagement />;
     

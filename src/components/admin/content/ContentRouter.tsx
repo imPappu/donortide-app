@@ -14,6 +14,7 @@ import SplashScreenSettings from "../SplashScreenSettings";
 import MapApiConfiguration from "../MapApiConfiguration";
 import EmailTemplatesManagement from "../EmailTemplatesManagement";
 import SocialMediaAdsConfiguration from "../SocialMediaAdsConfiguration";
+import AlgorithmContent from "./AlgorithmContent";
 
 const ContentRouter = ({ activeTab, stats, loading }: { 
   activeTab: string;
@@ -33,6 +34,8 @@ const ContentRouter = ({ activeTab, stats, loading }: {
         totalRequests: 42,
         totalLocations: 15
       }} loading={loading || false} />;
+    case "algorithm":
+      return <AlgorithmContent />;
     case "users":
       return <UserManagement />;
     case "roles":
@@ -60,7 +63,10 @@ const ContentRouter = ({ activeTab, stats, loading }: {
     case "social-media-ads":
       return <SocialMediaAdsConfiguration />;
     default:
-      return <div>Select a tab</div>;
+      return <div className="p-6 text-center">
+        <h3 className="text-lg font-medium text-muted-foreground">Select a tab from the sidebar</h3>
+        <p className="text-sm text-muted-foreground mt-2">This feature will be available soon.</p>
+      </div>;
   }
 };
 

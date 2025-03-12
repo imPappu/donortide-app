@@ -2,6 +2,7 @@
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export type ErrorSeverity = 'error' | 'warning' | 'info';
 
@@ -64,7 +65,7 @@ const DBErrorAlert = ({
   return (
     <Alert 
       variant={getVariant() as any} 
-      className={`mb-4 relative ${className}`}
+      className={cn("mb-4 relative", className)}
     >
       <div className="flex">
         <div className="flex-shrink-0">

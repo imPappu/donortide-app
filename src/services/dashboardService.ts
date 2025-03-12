@@ -1,15 +1,25 @@
 
 // Dashboard service for handling statistics and dashboard data
 import { API_BASE_URL } from './apiConfig';
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 export const getDashboardStats = async (): Promise<any> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/stats/dashboard`);
+    // First try to get data from the API
+    const response = await fetch(`${API_BASE_URL}/stats/dashboard`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Add a timeout to prevent long loading
+      signal: AbortSignal.timeout(5000)
+    });
+    
     if (!response.ok) throw new Error('Failed to fetch dashboard statistics');
     return await response.json();
   } catch (error) {
     console.error('Error fetching dashboard statistics:', error);
+    
     // Return fallback data when API fails
     return {
       totalUsers: 450,
@@ -48,4 +58,3 @@ export const fetchWithRetry = async (url: string, options = {}, maxRetries = 3):
   
   throw new Error(`Max retries reached for ${url}`);
 };
-

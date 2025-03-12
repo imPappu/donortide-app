@@ -1,4 +1,3 @@
-
 import React from "react";
 import DashboardContent from "./DashboardContent";
 import UserManagement from "../UserManagement";
@@ -15,6 +14,23 @@ import MapApiConfiguration from "../MapApiConfiguration";
 import EmailTemplatesManagement from "../EmailTemplatesManagement";
 import SocialMediaAdsConfiguration from "../SocialMediaAdsConfiguration";
 import AlgorithmContent from "./AlgorithmContent";
+import StaffManagement from "../StaffManagement";
+import ServicesManagement from "../ServicesManagement";
+import OrganizationManagement from "../OrganizationManagement";
+import BannerManagement from "../BannerManagement";
+import BlogManagement from "../BlogManagement";
+import CommunityPostManagement from "../CommunityPostManagement";
+import StoryManagement from "../stories/StoryManagement";
+import AIConfiguration from "../system/AIConfiguration";
+import AddonModules from "../system/AddonModules";
+import EventsCampaignsAddon from "../system/events-campaigns/EventsCampaignsAddon";
+import MaintenanceMode from "../system/MaintenanceMode";
+import TestEnvironment from "../system/TestEnvironment";
+import SystemUpdatePanel from "../SystemUpdatePanel";
+import FirebasePushComponent from "../FirebasePushComponent";
+import NotificationPanel from "../NotificationPanel";
+import AdsManagement from "../AdsManagement";
+import VolunteerManagement from "../VolunteerManagement";
 
 const ContentRouter = ({ activeTab, stats, loading }: { 
   activeTab: string;
@@ -26,7 +42,16 @@ const ContentRouter = ({ activeTab, stats, loading }: {
   };
   loading?: boolean;
 }) => {
+  // Default message for tabs not implemented yet
+  const NotImplementedTab = () => (
+    <div className="p-6 text-center">
+      <h3 className="text-lg font-medium text-muted-foreground">In Development</h3>
+      <p className="text-sm text-muted-foreground mt-2">This feature is currently under development and will be available soon.</p>
+    </div>
+  );
+
   switch (activeTab) {
+    // Dashboard section
     case "dashboard":
       return <DashboardContent stats={stats || {
         totalUsers: 254,
@@ -36,32 +61,81 @@ const ContentRouter = ({ activeTab, stats, loading }: {
       }} loading={loading || false} />;
     case "algorithm":
       return <AlgorithmContent />;
-    case "users":
-      return <UserManagement />;
-    case "roles":
-      return <RoleManagement />;
-    case "blood-requests":
-      return <BloodRequestsManagement />;
+    
+    // Content section
+    case "banners":
+      return <BannerManagement />;
+    case "blog":
+      return <BlogManagement />;
+    case "community":
+      return <CommunityPostManagement />;
+    case "stories":
+      return <StoryManagement />;
+    
+    // Users section
+    case "staff":
+      return <StaffManagement />;
     case "donors":
       return <DonorsManagement />;
-    case "app-settings":
-      return <Settings />;
+    case "volunteers":
+      return <VolunteerManagement />;
+    
+    // Organizations & Services section
+    case "organizations":
+      return <OrganizationManagement />;
+    case "services":
+      return <ServicesManagement />;
+
+    // Marketing section
+    case "push-notifications":
+      return <FirebasePushComponent />;
+    case "notifications":
+      return <NotificationPanel />;
+    case "ads":
+      return <AdsManagement />;
+    
+    // System section
+    case "system-updates":
+      return <SystemUpdatePanel />;
+    case "addons":
+      return <AddonModules />;
+    case "events-campaigns":
+      return <EventsCampaignsAddon />;
+    case "maintenance":
+      return <MaintenanceMode />;
+    case "test-environment":
+      return <TestEnvironment />;
+    case "ai-configuration":
+      return <AIConfiguration />;
+    
+    // Settings section
+    case "app-branding":
+      return <AppBrandingForm />;
     case "database":
       return <DatabaseSettings />;
     case "payment":
       return <PaymentGatewaySettings />;
-    case "app-settings-form":
-      return <AppSettingsForm />;
-    case "app-branding":
-      return <AppBrandingForm />;
-    case "splash-screen":
-      return <SplashScreenSettings />;
     case "map-configuration":
       return <MapApiConfiguration />;
     case "email-templates":
       return <EmailTemplatesManagement />;
     case "social-media-ads":
       return <SocialMediaAdsConfiguration />;
+    case "app-settings":
+      return <Settings />;
+    case "splash-screen":
+      return <SplashScreenSettings />;
+    
+    // Legacy routes - keeping for compatibility
+    case "users":
+      return <UserManagement />;
+    case "roles":
+      return <RoleManagement />;
+    case "blood-requests":
+      return <BloodRequestsManagement />;
+    case "app-settings-form":
+      return <AppSettingsForm />;
+      
     default:
       return <div className="p-6 text-center">
         <h3 className="text-lg font-medium text-muted-foreground">Select a tab from the sidebar</h3>

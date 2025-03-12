@@ -7,7 +7,8 @@ import {
   Gauge, 
   BrainCircuit,
   Calendar,
-  Book
+  Book,
+  Upload
 } from "lucide-react";
 import { NavSection, NavItem } from "../NavSection";
 
@@ -20,6 +21,11 @@ const SystemSection = ({ activeTab, setActiveTab }: SystemSectionProps) => {
   // Function to open installation guide in a new tab
   const openInstallationGuide = () => {
     window.open('/installation-guide.html', '_blank');
+  };
+  
+  // Function to open deployment script guide in a new tab
+  const openDeploymentGuide = () => {
+    window.open('/deploy-to-cpanel.html', '_blank');
   };
 
   return (
@@ -72,6 +78,13 @@ const SystemSection = ({ activeTab, setActiveTab }: SystemSectionProps) => {
       >
         <Book className="mr-2 h-4 w-4" />
         <span>Installation Guide</span>
+      </div>
+      <div
+        className="flex w-full items-center rounded-md px-3 py-2 text-sm cursor-pointer hover:bg-muted"
+        onClick={openDeploymentGuide}
+      >
+        <Upload className="mr-2 h-4 w-4" />
+        <span>Deployment Script</span>
       </div>
     </NavSection>
   );

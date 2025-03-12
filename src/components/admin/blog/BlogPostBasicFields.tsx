@@ -25,8 +25,8 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
       const target = e.target as HTMLInputElement;
       const value = target.value.trim();
       
-      if (value && !formData.tags.includes(value)) {
-        const newTags = [...formData.tags, value];
+      if (value && !formData.tags?.includes(value)) {
+        const newTags = [...(formData.tags || []), value];
         onTagsChange(newTags);
         target.value = '';
       }
@@ -34,7 +34,7 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
   };
 
   const removeTag = (tagToRemove: string) => {
-    const newTags = formData.tags.filter(tag => tag !== tagToRemove);
+    const newTags = formData.tags?.filter(tag => tag !== tagToRemove) || [];
     onTagsChange(newTags);
   };
 
@@ -80,13 +80,16 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
+        <Label htmlFor="publishStatus">Publish Status</Label>
         <Select 
-          name="status"
-          value={formData.status} 
+          name="isPublished"
+          value={formData.isPublished ? "published" : "draft"}
           onValueChange={(value) => {
             const event = {
-              target: { name: 'status', value }
+              target: { 
+                name: 'isPublished', 
+                value: value === "published" 
+              }
             } as unknown as ChangeEvent<HTMLSelectElement>;
             onChange(event);
           }}
@@ -97,7 +100,6 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
           <SelectContent>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -106,7 +108,7 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
         <Label htmlFor="category">Category</Label>
         <Select 
           name="category"
-          value={formData.category} 
+          value={formData.category || ""} 
           onValueChange={(value) => {
             const event = {
               target: { name: 'category', value }
@@ -130,7 +132,7 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
       <div className="space-y-2">
         <Label htmlFor="tags">Tags</Label>
         <div className="flex flex-wrap gap-2 mb-2">
-          {formData.tags.map((tag, index) => (
+          {formData.tags?.map((tag, index) => (
             <div key={index} className="bg-primary-100 text-primary-800 px-2 py-1 rounded-md flex items-center gap-1">
               <span>{tag}</span>
               <button 
@@ -159,7 +161,7 @@ const BlogPostBasicFields: React.FC<BlogPostBasicFieldsProps> = ({
           <Input
             id="imageUrl"
             name="imageUrl"
-            value={formData.imageUrl}
+            value={formData.imageUrl || ""}
             onChange={onChange}
             placeholder="Image URL"
           />

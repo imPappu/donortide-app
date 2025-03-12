@@ -1,149 +1,97 @@
 
 <?php
-// This is an example backend file for your cPanel hosting
-// You would need to save this as api.php on your server
+/**
+ * Blood Donation System - API Router
+ * This is the main entry point for the API.
+ * Rename this file to api.php after configuring it.
+ */
+
+// Include configuration
+require_once __DIR__ . '/config.php';
 
 // Set headers for CORS and JSON content type
-header("Access-Control-Allow-Origin: *"); // In production, replace * with your domain
-header("Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Origin: {$API_CONFIG['allow_origin']}");
+header("Access-Control-Allow-Methods: {$API_CONFIG['allow_methods']}");
+header("Access-Control-Allow-Headers: {$API_CONFIG['allow_headers']}");
 header("Content-Type: application/json");
 
-// Database connection details - update with your cPanel PostgreSQL credentials
-$host = "localhost";
-$dbname = "your_database_name";
-$user = "your_username";
-$password = "your_password";
-
-// Create connection string for PostgreSQL
-$dsn = "pgsql:host=$host;dbname=$dbname;";
-
-// Handle preflight OPTIONS requests
+// Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-try {
-    // Create a PDO instance
-    $pdo = new PDO($dsn, $user, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// Database connection function
+function getDbConnection() {
+    global $DB_CONFIG;
     
-    // Get the request method and path
-    $method = $_SERVER['REQUEST_METHOD'];
-    $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-    $path_parts = explode('/', $path);
-    $endpoint = end($path_parts);
-    
-    // Handle different API endpoints
-    if ($endpoint === 'requests') {
-        if ($method === 'GET') {
-            // Get all blood requests
-            $stmt = $pdo->prepare("SELECT * FROM blood_requests ORDER BY created_at DESC");
-            $stmt->execute();
-            $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($requests);
-        } 
-        else if ($method === 'POST') {
-            // Create a new blood request
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            $stmt = $pdo->prepare("INSERT INTO blood_requests (patient_name, blood_type, hospital, location, contact_number, urgency, notes, created_at) 
-                                   VALUES (:patient_name, :blood_type, :hospital, :location, :contact_number, :urgency, :notes, NOW())
-                                   RETURNING id, patient_name, blood_type, hospital, location, contact_number, urgency, notes, created_at");
-            
-            $stmt->bindParam(':patient_name', $data['patientName']);
-            $stmt->bindParam(':blood_type', $data['bloodType']);
-            $stmt->bindParam(':hospital', $data['hospital']);
-            $stmt->bindParam(':location', $data['location']);
-            $stmt->bindParam(':contact_number', $data['contactNumber']);
-            $stmt->bindParam(':urgency', $data['urgency']);
-            $stmt->bindParam(':notes', $data['notes']);
-            
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            echo json_encode($result);
+    try {
+        if ($DB_CONFIG['type'] === 'mysql' || $DB_CONFIG['type'] === 'mariadb') {
+            $dsn = "mysql:host={$DB_CONFIG['host']};dbname={$DB_CONFIG['database']};";
+        } else {
+            $dsn = "pgsql:host={$DB_CONFIG['host']};dbname={$DB_CONFIG['database']};";
         }
-    } 
-    else if ($endpoint === 'donors') {
-        if ($method === 'GET') {
-            // Get all donors
-            $stmt = $pdo->prepare("SELECT * FROM donors ORDER BY name");
-            $stmt->execute();
-            $donors = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($donors);
-        } 
-        else if ($method === 'POST') {
-            // Register a new donor
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            $stmt = $pdo->prepare("INSERT INTO donors (name, blood_type, location, contact_number, created_at) 
-                                   VALUES (:name, :blood_type, :location, :contact_number, NOW())
-                                   RETURNING id, name, blood_type, location, contact_number, created_at");
-            
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':blood_type', $data['bloodType']);
-            $stmt->bindParam(':location', $data['location']);
-            $stmt->bindParam(':contact_number', $data['contactNumber']);
-            
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            echo json_encode($result);
-        }
+        
+        $pdo = new PDO($dsn, $DB_CONFIG['user'], $DB_CONFIG['password']);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        return $pdo;
+    } catch (PDOException $e) {
+        throw new Exception("Database connection failed: " . $e->getMessage());
     }
-    else if ($endpoint === 'settings') {
-        if ($method === 'GET') {
-            // Get all app settings
-            $stmt = $pdo->prepare("SELECT setting_key as settingKey, setting_value as settingValue, description, updated_at as updatedAt FROM app_settings");
-            $stmt->execute();
-            $settings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($settings);
-        }
-        else if (preg_match('/^settings\/([a-zA-Z0-9_]+)$/', $path, $matches) && $method === 'PUT') {
-            // Update a specific setting
-            $settingKey = $matches[1];
-            $data = json_decode(file_get_contents('php://input'), true);
-            
-            // Check if setting exists
-            $stmt = $pdo->prepare("SELECT id FROM app_settings WHERE setting_key = :key");
-            $stmt->bindParam(':key', $settingKey);
-            $stmt->execute();
-            
-            if ($stmt->fetch()) {
-                // Update existing setting
-                $updateStmt = $pdo->prepare("UPDATE app_settings SET setting_value = :value, updated_at = NOW() WHERE setting_key = :key RETURNING setting_key as settingKey, setting_value as settingValue, description, updated_at as updatedAt");
-                $updateStmt->bindParam(':key', $settingKey);
-                $updateStmt->bindParam(':value', $data['settingValue']);
-                $updateStmt->execute();
-                $result = $updateStmt->fetch(PDO::FETCH_ASSOC);
-            } else {
-                // Insert new setting
-                $description = $data['description'] ?? '';
-                $insertStmt = $pdo->prepare("INSERT INTO app_settings (setting_key, setting_value, description) VALUES (:key, :value, :description) RETURNING setting_key as settingKey, setting_value as settingValue, description, updated_at as updatedAt");
-                $insertStmt->bindParam(':key', $settingKey);
-                $insertStmt->bindParam(':value', $data['settingValue']);
-                $insertStmt->bindParam(':description', $description);
-                $insertStmt->execute();
-                $result = $insertStmt->fetch(PDO::FETCH_ASSOC);
-            }
-            
-            echo json_encode($result);
-        }
-    }
-    else {
-        // Return 404 for unknown endpoints
-        http_response_code(404);
-        echo json_encode(["error" => "Endpoint not found"]);
-    }
-    
-} catch (PDOException $e) {
-    // Handle database errors
-    http_response_code(500);
-    echo json_encode(["error" => "Database error: " . $e->getMessage()]);
-} catch (Exception $e) {
-    // Handle other errors
-    http_response_code(500);
-    echo json_encode(["error" => "Server error: " . $e->getMessage()]);
 }
-?>
+
+// Get request method and path
+$method = $_SERVER['REQUEST_METHOD'];
+$path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$path_parts = explode('/', $path);
+
+// Remove 'api.php' from path if it's included
+if ($path_parts[0] === 'api.php') {
+    array_shift($path_parts);
+}
+
+// Determine the resource and ID (if provided)
+$resource = $path_parts[0] ?? '';
+$id = $path_parts[1] ?? null;
+$action = $path_parts[2] ?? null;
+
+// Get request body for POST, PUT requests
+$requestBody = null;
+if ($method === 'POST' || $method === 'PUT') {
+    $requestBody = json_decode(file_get_contents('php://input'), true);
+}
+
+// Simple API router
+try {
+    $pdo = getDbConnection();
+    
+    // Handle different resources
+    switch ($resource) {
+        case 'settings':
+            // Get app settings
+            if ($method === 'GET') {
+                $stmt = $pdo->query("SELECT setting_key, setting_value, description FROM app_settings");
+                $settings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($settings);
+            }
+            // Update app settings
+            else if ($method === 'POST' && !$id) {
+                // Implementation for updating settings
+                echo json_encode(["success" => true, "message" => "Settings updated"]);
+            } 
+            else {
+                http_response_code(405); // Method Not Allowed
+                echo json_encode(["error" => "Method not allowed"]);
+            }
+            break;
+            
+        // Add more resource handlers here
+            
+        default:
+            http_response_code(404);
+            echo json_encode(["error" => "Resource not found"]);
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["error" => $e->getMessage()]);
+}

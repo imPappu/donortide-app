@@ -1,12 +1,21 @@
 
 <?php
-// This is an example installation backend file for your cPanel hosting
-// You would need to save this as install.php on your server
+/**
+ * Blood Donation System - Installation Script
+ * This is the main entry point for the installation process.
+ * Rename this file to install.php after configuring it.
+ */
+
+// Include configuration
+require_once __DIR__ . '/config.php.example';
+
+// Include installation controller
+require_once __DIR__ . '/controllers/install_controller.php';
 
 // Set headers for CORS and JSON content type
-header("Access-Control-Allow-Origin: *"); // In production, replace * with your domain
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Origin: {$API_CONFIG['allow_origin']}");
+header("Access-Control-Allow-Methods: {$API_CONFIG['allow_methods']}");
+header("Access-Control-Allow-Headers: {$API_CONFIG['allow_headers']}");
 header("Content-Type: application/json");
 
 // Handle preflight requests
@@ -14,88 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// Define installation functions
-function testDatabaseConnection($config) {
-    $host = $config['host'];
-    $dbname = $config['database'];
-    $user = $config['user'];
-    $password = $config['password'];
-    
-    try {
-        // Create a PDO instance
-        $dsn = "pgsql:host=$host;dbname=$dbname;";
-        $pdo = new PDO($dsn, $user, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        return true;
-    } catch (PDOException $e) {
-        return false;
-    }
-}
-
-function createAdminUser($pdo, $admin) {
-    $username = $admin['username'];
-    $email = $admin['email'];
-    $password = password_hash($admin['password'], PASSWORD_DEFAULT);
-    
-    try {
-        $stmt = $pdo->prepare("INSERT INTO users (email, password_hash, name, role) 
-                              VALUES (:email, :password, :name, 'admin')");
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
-        $stmt->bindParam(':name', $username);
-        $stmt->execute();
-        
-        return true;
-    } catch (PDOException $e) {
-        return false;
-    }
-}
-
-function createAppSettings($pdo, $settings) {
-    try {
-        foreach ($settings as $setting) {
-            $key = $setting['settingKey'];
-            $value = $setting['settingValue'];
-            $description = $setting['description'] ?? '';
-            
-            // Check if setting already exists
-            $stmt = $pdo->prepare("SELECT id FROM app_settings WHERE setting_key = :key");
-            $stmt->bindParam(':key', $key);
-            $stmt->execute();
-            
-            if ($stmt->fetch()) {
-                // Update existing setting
-                $stmt = $pdo->prepare("UPDATE app_settings SET setting_value = :value, description = :description 
-                                      WHERE setting_key = :key");
-            } else {
-                // Insert new setting
-                $stmt = $pdo->prepare("INSERT INTO app_settings (setting_key, setting_value, description) 
-                                      VALUES (:key, :value, :description)");
-            }
-            
-            $stmt->bindParam(':key', $key);
-            $stmt->bindParam(':value', $value);
-            $stmt->bindParam(':description', $description);
-            $stmt->execute();
-        }
-        
-        return true;
-    } catch (PDOException $e) {
-        return false;
-    }
-}
-
-function runDatabaseMigrations($pdo) {
-    try {
-        // Read and execute SQL from database_setup.sql
-        $sqlFile = file_get_contents(__DIR__ . '/database_setup.sql');
-        $pdo->exec($sqlFile);
-        return true;
-    } catch (PDOException $e) {
-        return false;
-    }
-}
+// Create installation controller
+$installController = new InstallController([
+    'DB_CONFIG' => $DB_CONFIG,
+    'API_CONFIG' => $API_CONFIG,
+    'PATHS' => $PATHS,
+    'SYSTEM_SETTINGS' => $SYSTEM_SETTINGS
+]);
 
 // Handle the API endpoints
 $method = $_SERVER['REQUEST_METHOD'];
@@ -103,180 +37,56 @@ $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $path_parts = explode('/', $path);
 $endpoint = end($path_parts);
 
-// Test database connection
-if ($endpoint === 'test-connection' && $method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    $result = testDatabaseConnection($data);
-    
-    echo json_encode([
-        'connected' => $result
-    ]);
-    exit;
+// Get request body for POST requests
+$requestBody = null;
+if ($method === 'POST') {
+    $requestBody = json_decode(file_get_contents('php://input'), true);
 }
 
-// Create admin user
-if ($endpoint === 'create-admin' && $method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    // Connect to database
-    $dbConfig = [
-        'host' => $_ENV['DB_HOST'] ?? 'localhost',
-        'database' => $_ENV['DB_NAME'] ?? 'blood_donation',
-        'user' => $_ENV['DB_USER'] ?? 'postgres',
-        'password' => $_ENV['DB_PASSWORD'] ?? ''
-    ];
-    
-    $dsn = "pgsql:host={$dbConfig['host']};dbname={$dbConfig['database']};";
-    
-    try {
-        $pdo = new PDO($dsn, $dbConfig['user'], $dbConfig['password']);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        $result = createAdminUser($pdo, $data);
-        
-        echo json_encode([
-            'success' => $result
-        ]);
-    } catch (PDOException $e) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Database connection failed'
-        ]);
-    }
-    
-    exit;
-}
-
-// Full system installation
-if ($endpoint === 'install' && $method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    $dbConfig = $data['database'];
-    $admin = $data['admin'];
-    $settings = $data['settings'];
-    
-    // Test database connection
-    $connected = testDatabaseConnection($dbConfig);
-    if (!$connected) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Database connection failed'
-        ]);
-        exit;
-    }
-    
-    // Connect to the database
-    $dsn = "pgsql:host={$dbConfig['host']};dbname={$dbConfig['database']};";
-    
-    try {
-        $pdo = new PDO($dsn, $dbConfig['user'], $dbConfig['password']);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        // Run migrations
-        $migrationsOk = runDatabaseMigrations($pdo);
-        if (!$migrationsOk) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Database migrations failed'
-            ]);
-            exit;
-        }
-        
-        // Create admin user
-        $adminOk = createAdminUser($pdo, $admin);
-        if (!$adminOk) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Admin user creation failed'
-            ]);
-            exit;
-        }
-        
-        // Create app settings
-        $settingsOk = createAppSettings($pdo, $settings);
-        if (!$settingsOk) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'App settings creation failed'
-            ]);
-            exit;
-        }
-        
-        // Save database config
-        $configFile = "<?php\n";
-        $configFile .= "// Generated by installer\n";
-        $configFile .= "\$DB_HOST = '{$dbConfig['host']}';\n";
-        $configFile .= "\$DB_NAME = '{$dbConfig['database']}';\n";
-        $configFile .= "\$DB_USER = '{$dbConfig['user']}';\n";
-        $configFile .= "\$DB_PASSWORD = '{$dbConfig['password']}';\n";
-        
-        file_put_contents(__DIR__ . '/config.php', $configFile);
-        
-        echo json_encode([
-            'success' => true
-        ]);
-    } catch (PDOException $e) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Installation process failed: ' . $e->getMessage()
-        ]);
-    }
-    
-    exit;
-}
-
-// Admin login endpoint
-if ($endpoint === 'admin/login' && $method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $username = $data['username'];
-    $password = $data['password'];
-    
-    // Connect to database
-    $dbConfig = [
-        'host' => $_ENV['DB_HOST'] ?? 'localhost',
-        'database' => $_ENV['DB_NAME'] ?? 'blood_donation',
-        'user' => $_ENV['DB_USER'] ?? 'postgres',
-        'password' => $_ENV['DB_PASSWORD'] ?? ''
-    ];
-    
-    $dsn = "pgsql:host={$dbConfig['host']};dbname={$dbConfig['database']};";
-    
-    try {
-        $pdo = new PDO($dsn, $dbConfig['user'], $dbConfig['password']);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        // Get user
-        $stmt = $pdo->prepare("SELECT id, email, password_hash FROM users WHERE (email = :username OR name = :username) AND role = 'admin'");
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
-        
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($user && password_verify($password, $user['password_hash'])) {
-            echo json_encode([
-                'success' => true,
-                'user' => [
-                    'id' => $user['id'],
-                    'email' => $user['email']
-                ]
-            ]);
+// Route requests to appropriate controller methods
+switch ($endpoint) {
+    case 'test-connection':
+        if ($method === 'POST') {
+            $result = $installController->testConnection($requestBody);
+            echo json_encode($result);
         } else {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Invalid credentials'
-            ]);
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["error" => "Method not allowed"]);
         }
-    } catch (PDOException $e) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Login failed: ' . $e->getMessage()
-        ]);
-    }
-    
-    exit;
+        break;
+        
+    case 'create-admin':
+        if ($method === 'POST') {
+            $result = $installController->createAdmin($requestBody);
+            echo json_encode($result);
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["error" => "Method not allowed"]);
+        }
+        break;
+        
+    case 'install':
+        if ($method === 'POST') {
+            $result = $installController->fullInstall($requestBody);
+            echo json_encode($result);
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["error" => "Method not allowed"]);
+        }
+        break;
+        
+    case 'admin/login':
+        if ($method === 'POST') {
+            $result = $installController->adminLogin($requestBody);
+            echo json_encode($result);
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["error" => "Method not allowed"]);
+        }
+        break;
+        
+    default:
+        // Return 404 for unknown endpoints
+        http_response_code(404);
+        echo json_encode(["error" => "Endpoint not found"]);
 }
-
-// Return 404 for unknown endpoints
-http_response_code(404);
-echo json_encode(["error" => "Endpoint not found"]);

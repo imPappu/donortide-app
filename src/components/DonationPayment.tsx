@@ -12,12 +12,16 @@ import DonationHeader from "./donation/DonationHeader";
 import DonationContent from "./donation/DonationContent";
 import DonationFooter from "./donation/DonationFooter";
 
+export type DonationType = 'monetary' | 'blood' | 'clothing' | 'food' | 'books' | 'essentials' | 'other';
+
 interface DonationPaymentProps {
   trigger?: React.ReactNode;
   purpose?: string;
   eventId?: string;
   defaultAmount?: number;
   fixedAmount?: number;
+  donationType?: DonationType;
+  category?: string;
 }
 
 const DonationPayment = ({ 
@@ -25,7 +29,9 @@ const DonationPayment = ({
   purpose = "general donation", 
   eventId,
   defaultAmount = 10,
-  fixedAmount
+  fixedAmount,
+  donationType = 'monetary',
+  category
 }: DonationPaymentProps) => {
   const {
     amount,
@@ -42,7 +48,9 @@ const DonationPayment = ({
     setCurrency,
     handleChange,
     handleDonation
-  } = useDonationPayment({ defaultAmount, purpose });
+  } = useDonationPayment({ defaultAmount, purpose, donationType, category });
+  
+  const showAmountSelector = donationType === 'monetary';
   
   return (
     <Dialog onOpenChange={handleDialogOpenChange}>
@@ -55,7 +63,7 @@ const DonationPayment = ({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden rounded-xl">
-        <DonationHeader />
+        <DonationHeader donationType={donationType} category={category} />
         
         <DonationContent 
           amount={amount}
@@ -70,6 +78,8 @@ const DonationPayment = ({
           handleChange={handleChange}
           setPaymentMethod={setPaymentMethod}
           setCurrency={setCurrency}
+          showAmountSelector={showAmountSelector}
+          donationType={donationType}
         />
         
         <DonationFooter 
@@ -79,6 +89,7 @@ const DonationPayment = ({
           processing={processing}
           handleDonation={handleDonation}
           availablePaymentMethodsCount={availablePaymentMethods.length}
+          donationType={donationType}
         />
       </DialogContent>
     </Dialog>

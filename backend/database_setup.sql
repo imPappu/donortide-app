@@ -32,22 +32,40 @@ CREATE TABLE IF NOT EXISTS donors (
     updated_at TIMESTAMP
 );
 
--- Create index for blood type to optimize searches
-CREATE INDEX IF NOT EXISTS idx_requests_blood_type ON blood_requests(blood_type);
-CREATE INDEX IF NOT EXISTS idx_donors_blood_type ON donors(blood_type);
-CREATE INDEX IF NOT EXISTS idx_donors_location ON donors(location);
+-- Create donation_categories table
+CREATE TABLE IF NOT EXISTS donation_categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    icon VARCHAR(50) NOT NULL,
+    color VARCHAR(30) NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
+);
 
--- Create donations table to track actual donations
+-- Create donations table
 CREATE TABLE IF NOT EXISTS donations (
     id SERIAL PRIMARY KEY,
     donor_id INTEGER REFERENCES donors(id),
     request_id INTEGER REFERENCES blood_requests(id),
-    donation_date TIMESTAMP NOT NULL,
-    amount VARCHAR(10) NOT NULL DEFAULT '450ml',
-    location VARCHAR(255) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'Completed',
+    category_id INTEGER REFERENCES donation_categories(id),
+    title VARCHAR(255),
+    description TEXT,
+    amount VARCHAR(50),
+    monetary_amount DECIMAL(10, 2),
+    currency VARCHAR(3) DEFAULT 'USD',
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+    location VARCHAR(255),
+    donation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create index for blood type to optimize searches
+CREATE INDEX IF NOT EXISTS idx_requests_blood_type ON blood_requests(blood_type);
+CREATE INDEX IF NOT EXISTS idx_donors_blood_type ON donors(blood_type);
+CREATE INDEX IF NOT EXISTS idx_donors_location ON donors(location);
 
 -- Create users table for authentication (if needed)
 CREATE TABLE IF NOT EXISTS users (
@@ -139,6 +157,15 @@ INSERT INTO app_settings (setting_key, setting_value, description) VALUES
 ('stripe_secret_key', 'YOUR_STRIPE_SECRET_KEY', 'Stripe Secret Key'),
 ('ime_pay_merchant_code', 'YOUR_IME_PAY_MERCHANT_CODE', 'IME Pay Merchant Code'),
 ('upi_id', 'your-upi-id@provider', 'UPI ID for payments');
+
+-- Insert initial donation categories
+INSERT INTO donation_categories (name, description, icon, color, active, display_order) VALUES
+('Blood', 'Donate blood to save lives in emergency situations', 'droplet', 'bg-red-500', TRUE, 1),
+('Clothing', 'Donate clean, gently used clothing for those in need', 'shirt', 'bg-blue-500', TRUE, 2),
+('Food', 'Donate non-perishable food items to local food banks', 'pizza', 'bg-orange-500', TRUE, 3),
+('Books', 'Donate books to schools, libraries, and literacy programs', 'book', 'bg-emerald-500', TRUE, 4),
+('Essential Items', 'Donate toiletries, hygiene products, and basic necessities', 'package', 'bg-purple-500', TRUE, 5),
+('Monetary', 'Make a monetary donation to support our operations', 'dollar-sign', 'bg-green-500', TRUE, 6);
 
 -- Add some sample data
 INSERT INTO donors (name, blood_type, location, contact_number, last_donation)

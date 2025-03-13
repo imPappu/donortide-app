@@ -8,6 +8,8 @@ import SystemUpdatePanel from "@/components/admin/SystemUpdatePanel";
 import { useToast } from "@/hooks/use-toast";
 import { Notification } from "@/types/apiTypes";
 import { getDashboardStats } from "@/services/dashboardService";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
@@ -80,7 +82,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <AdminSidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -88,39 +90,32 @@ const AdminDashboard = () => {
       />
       
       {/* Main content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <AdminHeader activeTab={activeTab} />
         
-        {updateAvailable && activeTab === "dashboard" && (
-          <div className="mx-4 mt-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-800">
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 002 0V7zm-1-5a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                  A system update is available. Go to System Updates to learn more.
-                </p>
-              </div>
-              <div>
+        <div className="flex-1 overflow-auto p-4">
+          {updateAvailable && activeTab === "dashboard" && (
+            <Alert variant="info" className="mb-4 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>System Update Available</AlertTitle>
+              <AlertDescription className="flex items-center justify-between">
+                <span>A new version of the system is available with bug fixes and new features.</span>
                 <button 
                   onClick={() => setActiveTab("system-updates")}
                   className="text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
                 >
-                  View
+                  View Details
                 </button>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <AdminContent 
-          activeTab={activeTab}
-          stats={stats}
-          loading={loading}
-        />
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <AdminContent 
+            activeTab={activeTab}
+            stats={stats}
+            loading={loading}
+          />
+        </div>
       </div>
     </div>
   );

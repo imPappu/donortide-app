@@ -66,7 +66,7 @@ const AdminDashboard = () => {
         toast({
           title: "Error",
           description: "Failed to load dashboard statistics. Using cached data.",
-          variant: "destructive", // Changed from 'info' to 'destructive'
+          variant: "destructive", // This is the correct variant value
         });
       } finally {
         setLoading(false);
@@ -95,7 +95,7 @@ const AdminDashboard = () => {
         
         <div className="flex-1 overflow-auto p-4">
           {updateAvailable && activeTab === "dashboard" && (
-            <Alert variant="info" className="mb-4 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30">
+            <Alert variant="default" className="mb-4 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>System Update Available</AlertTitle>
               <AlertDescription className="flex items-center justify-between">

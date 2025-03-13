@@ -48,7 +48,12 @@ const DonationPayment = ({
     setCurrency,
     handleChange,
     handleDonation
-  } = useDonationPayment({ defaultAmount, purpose, donationType, category });
+  } = useDonationPayment({ 
+    defaultAmount, 
+    purpose, 
+    donationType, 
+    category 
+  });
   
   const showAmountSelector = donationType === 'monetary';
   

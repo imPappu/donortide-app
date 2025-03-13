@@ -6,7 +6,7 @@ import MonetaryDonationCard from "@/components/donation/MonetaryDonationCard";
 import { donationCategories as initialCategories } from "@/data/donationCategories";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Save } from "lucide-react";
-import CategoryManagement from "@/components/donation/CategoryManagement";
+import CategoryManagement from "@/components/donation/category-management";
 import { useAuth } from "@/components/auth/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

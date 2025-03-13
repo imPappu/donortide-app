@@ -1,15 +1,17 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { DonationType } from "../DonationPayment";
 
-interface DonationFooterProps {
+export interface DonationFooterProps {
   amount: number;
   fixedAmount?: number;
   currency: string;
   processing: boolean;
   handleDonation: () => Promise<void>;
   availablePaymentMethodsCount: number;
+  donationType: DonationType;
 }
 
 const DonationFooter = ({
@@ -19,45 +21,36 @@ const DonationFooter = ({
   processing,
   handleDonation,
   availablePaymentMethodsCount,
+  donationType
 }: DonationFooterProps) => {
-  const finalAmount = fixedAmount || amount;
-  
-  const getCurrencySymbol = (currency: string): string => {
-    try {
-      return (0).toLocaleString('en-US', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/\d/g, '').trim();
-    } catch (e) {
-      return currency;
+  const getDonationButtonText = () => {
+    if (donationType === 'monetary') {
+      return `Donate ${currency} ${fixedAmount || amount}`;
     }
+    
+    return 'Continue to Donation';
   };
 
   return (
-    <div className="p-5 bg-gray-50 border-t flex items-center justify-between">
-      <div>
-        <p className="text-sm text-muted-foreground">Total Amount</p>
-        <p className="text-xl font-bold">
-          {getCurrencySymbol(currency)} {finalAmount}
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t">
+      {availablePaymentMethodsCount > 0 ? (
+        <Button 
+          className="w-full py-6" 
+          onClick={handleDonation}
+          disabled={processing}
+        >
+          {processing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : getDonationButtonText()}
+        </Button>
+      ) : (
+        <p className="text-center text-sm text-muted-foreground">
+          Please select a payment method to continue
         </p>
-      </div>
-      <Button
-        disabled={
-          processing || 
-          finalAmount <= 0 || 
-          availablePaymentMethodsCount === 0
-        }
-        onClick={handleDonation}
-      >
-        {processing ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          <>
-            <CreditCard className="h-4 w-4 mr-2" />
-            Donate Now
-          </>
-        )}
-      </Button>
+      )}
     </div>
   );
 };

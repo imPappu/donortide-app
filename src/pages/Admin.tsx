@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -29,7 +28,7 @@ const AdminDashboard = () => {
   const [notification, setNotification] = useState<Partial<Notification>>({
     title: '',
     message: '',
-    type: 'info'
+    type: 'default'
   });
 
   // System update state

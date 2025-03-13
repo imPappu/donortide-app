@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Dialog, 
@@ -33,6 +32,7 @@ const CategoryManagement = ({
   categories,
   categoryToEdit 
 }: CategoryManagementProps) => {
+  
   const {
     formData,
     errors,

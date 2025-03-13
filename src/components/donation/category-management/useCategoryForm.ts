@@ -10,7 +10,7 @@ export const useCategoryForm = (categoryToEdit?: DonationCategory) => {
     name: categoryToEdit?.name || "",
     description: categoryToEdit?.description || "",
     color: categoryToEdit?.color || "bg-blue-500",
-    iconId: "droplet"
+    iconId: categoryToEdit?.iconId || "droplet"
   });
   
   const [errors, setErrors] = useState<FormErrors>({

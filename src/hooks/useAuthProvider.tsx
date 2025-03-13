@@ -153,15 +153,13 @@ export const useAuthProvider = () => {
     }
   };
 
-  // Check if user has admin role
-  const isAdmin = (): boolean => {
-    return user?.roles?.includes('admin') || false;
-  };
+  // Check if user has admin role - convert to a computed value instead of a function
+  const isAdmin = user?.roles?.includes('admin') || false;
 
   return {
     user,
     isAuthenticated: !!user,
-    isAdmin: isAdmin(),
+    isAdmin,
     isLoading,
     login,
     register,

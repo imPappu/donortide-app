@@ -19,7 +19,11 @@ const Profile = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    console.log("Profile component mounted", { isAuthenticated, user });
+    
+    // Add fallback handling for authentication issues
     if (!isAuthenticated && !user) {
+      console.log("User not authenticated, redirecting to home");
       toast({
         title: "Authentication required",
         description: "Please log in to view your profile",
@@ -28,6 +32,21 @@ const Profile = () => {
     }
   }, [isAuthenticated, user, navigate]);
   
+  // Add simple debug output if there's a rendering issue
+  if (!isAuthenticated) {
+    console.log("Not authenticated, returning null");
+    return (
+      <div className="container max-w-md mx-auto px-4 py-6">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p>Please log in to view your profile</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
+  // Provide fallback data if user object is somehow incomplete
   const userData = user || {
     name: "John Doe",
     email: "johndoe@example.com",
@@ -35,15 +54,13 @@ const Profile = () => {
     isVerified: false
   };
   
+  console.log("Rendering profile with user data:", userData);
+  
   const handleAvatarChange = async (imageUrl: string) => {
     if (user) {
       await updateProfile({ avatar: imageUrl });
     }
   };
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   return (
     <div className="container max-w-md mx-auto px-4 py-6">

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import TopNavbar from "@/components/TopNavbar";
-import CategoryCard, { DonationCategory } from "@/components/donation/CategoryCard";
+import CategoryCard, { DonationCategory } from "@/components/donation/category-card";
 import MonetaryDonationCard from "@/components/donation/MonetaryDonationCard";
 import { donationCategories as initialCategories } from "@/data/donationCategories";
 import { Button } from "@/components/ui/button";

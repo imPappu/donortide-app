@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import TopNavbar from "@/components/TopNavbar";
-import CategoryCard from "@/components/donation/CategoryCard";
+import CategoryCard, { DonationCategory } from "@/components/donation/category-card";
 import MonetaryDonationCard from "@/components/donation/MonetaryDonationCard";
 import { donationCategories as initialCategories } from "@/data/donationCategories";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import { Plus, Edit, Save } from "lucide-react";
 import CategoryManagement from "@/components/donation/category-management";
 import { useAuth } from "@/components/auth/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import { DonationCategory } from "@/components/donation/CategoryCard";
 
 const DonationCategories = () => {
   const [categories, setCategories] = useState<DonationCategory[]>(initialCategories);

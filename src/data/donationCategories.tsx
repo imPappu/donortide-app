@@ -1,7 +1,6 @@
-
 import React from "react";
 import { DropletIcon, Shirt, Pizza, BookOpen, Package, Gift } from "lucide-react";
-import { DonationCategory } from "@/components/donation/CategoryCard";
+import { DonationCategory } from "@/components/donation/category-card/types";
 
 export const donationCategories: DonationCategory[] = [
   {

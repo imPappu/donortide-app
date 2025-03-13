@@ -10,7 +10,7 @@ import {
   Heart, 
   Backpack 
 } from "lucide-react";
-import { DonationCategory } from "../CategoryCard";
+import { DonationCategory } from "../category-card/types";
 
 export interface CategoryFormData extends Omit<DonationCategory, 'icon'> {
   iconId: string;

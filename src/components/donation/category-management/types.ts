@@ -1,4 +1,15 @@
 
+import React from "react";
+import { 
+  Droplet as DropletIcon, 
+  Shirt, 
+  Pizza, 
+  BookOpen, 
+  Package, 
+  Gift, 
+  Heart, 
+  Backpack 
+} from "lucide-react";
 import { DonationCategory } from "../CategoryCard";
 
 export interface CategoryFormData extends Omit<DonationCategory, 'icon'> {
@@ -19,8 +30,15 @@ export interface FormErrors {
   description: string;
 }
 
+// Define icon type
+export interface IconOption {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+}
+
 // Available icons for selection
-export const iconOptions = [
+export const iconOptions: IconOption[] = [
   { id: "droplet", label: "Droplet", icon: <DropletIcon className="h-6 w-6 text-white" /> },
   { id: "shirt", label: "Clothing", icon: <Shirt className="h-6 w-6 text-white" /> },
   { id: "pizza", label: "Food", icon: <Pizza className="h-6 w-6 text-white" /> },

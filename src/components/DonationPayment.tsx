@@ -76,8 +76,11 @@ const DonationPayment = ({
           purpose={purpose}
           paymentMethod={paymentMethod}
           currency={currency}
-          availableCurrencies={availableCurrencies}
-          paymentDetails={paymentDetails}
+          availableCurrencies={availableCurrencies.map(c => c.value)} // Convert to string array
+          paymentDetails={{
+            ...paymentDetails,
+            name: paymentDetails.cardHolder // Map cardHolder to name for compatibility
+          }}
           availablePaymentMethods={availablePaymentMethods}
           handleAmountChange={handleAmountChange}
           handleChange={handleChange}

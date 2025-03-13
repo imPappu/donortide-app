@@ -9,3 +9,10 @@ export interface DonationCategory {
   color: string;
   iconId?: string;
 }
+
+export interface CategoryCardProps {
+  category: DonationCategory;
+  isEditing?: boolean;
+  onEdit?: (category: DonationCategory) => void;
+  onDelete?: (categoryId: string) => void;
+}

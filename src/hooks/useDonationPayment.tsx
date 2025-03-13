@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "./use-toast";
 import { DonationType } from "@/components/DonationPayment";
@@ -13,6 +14,7 @@ export interface PaymentDetails {
   cardHolder: string;
   expiryDate: string;
   cvv: string;
+  name: string; // Adding the missing name property
 }
 
 export interface UseDonationPaymentProps {
@@ -39,7 +41,8 @@ export const useDonationPayment = ({
     cardNumber: "",
     cardHolder: "",
     expiryDate: "",
-    cvv: ""
+    cvv: "",
+    name: ""  // Initialize the name property
   });
 
   const availableCurrencies = [

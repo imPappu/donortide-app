@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -28,7 +29,7 @@ const AdminDashboard = () => {
   const [notification, setNotification] = useState<Partial<Notification>>({
     title: '',
     message: '',
-    type: 'default'
+    type: 'info' // Changed from 'default' to 'info'
   });
 
   // System update state
@@ -65,7 +66,7 @@ const AdminDashboard = () => {
         toast({
           title: "Error",
           description: "Failed to load dashboard statistics. Using cached data.",
-          variant: "destructive",
+          variant: "destructive", // Changed from 'info' to 'destructive'
         });
       } finally {
         setLoading(false);

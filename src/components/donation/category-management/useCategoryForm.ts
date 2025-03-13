@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { CategoryFormData, FormErrors } from "./types";
-import { DonationCategory } from "../CategoryCard";
+import { DonationCategory } from "../category-card";
 
 export const useCategoryForm = (categoryToEdit?: DonationCategory) => {
   const [formData, setFormData] = useState<CategoryFormData>({

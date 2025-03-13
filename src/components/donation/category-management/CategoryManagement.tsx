@@ -9,7 +9,7 @@ import {
   DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DonationCategory } from "../category-card/types";
+import { DonationCategory } from "../category-card";
 import { iconOptions } from "./types";
 import { useCategoryForm } from "./useCategoryForm";
 import CategoryFormFields from "./CategoryFormFields";

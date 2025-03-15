@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/components/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Import the extracted components
 import ProfileHeader from "@/components/profile/ProfileHeader";
@@ -17,6 +17,7 @@ import VolunteerApplicationTab from "@/components/profile/VolunteerApplicationTa
 const Profile = () => {
   const { user, isAuthenticated, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   useEffect(() => {
     console.log("Profile component mounted", { isAuthenticated, user });
@@ -30,11 +31,11 @@ const Profile = () => {
       });
       navigate("/");
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, toast]);
   
   // Add simple debug output if there's a rendering issue
   if (!isAuthenticated) {
-    console.log("Not authenticated, returning null");
+    console.log("Not authenticated, returning login prompt");
     return (
       <div className="container max-w-md mx-auto px-4 py-6">
         <Card>
@@ -58,7 +59,20 @@ const Profile = () => {
   
   const handleAvatarChange = async (imageUrl: string) => {
     if (user) {
-      await updateProfile({ avatar: imageUrl });
+      try {
+        await updateProfile({ avatar: imageUrl });
+        toast({
+          title: "Profile updated",
+          description: "Your profile picture has been updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating profile picture:", error);
+        toast({
+          title: "Update failed",
+          description: "Failed to update profile picture. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 

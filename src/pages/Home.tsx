@@ -1,13 +1,81 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TopNavbar from "@/components/TopNavbar";
 import HomeBanner from "@/components/HomeBanner";
 import TopDonorsRow from "@/components/home/TopDonorsRow";
 import HomeSidebar from "@/components/home/HomeSidebar";
 import CreatePostCard from "@/components/home/CreatePostCard";
 import NewsFeedPost from "@/components/home/NewsFeedPost";
+import UrgentRequestsRow from "@/components/home/UrgentRequestsRow";
+import { getBloodRequests } from "@/services/bloodRequestService";
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 const Home = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [urgentRequests, setUrgentRequests] = useState([]);
+  
+  useEffect(() => {
+    const fetchUrgentRequests = async () => {
+      setLoading(true);
+      try {
+        const requests = await getBloodRequests();
+        // Filter for urgent requests
+        const urgent = requests
+          .filter(req => req.urgency === 'Urgent' && req.status === 'Pending')
+          .slice(0, 5)
+          .map(req => ({
+            id: req.id,
+            name: req.patientName,
+            bloodType: req.bloodType,
+            location: req.hospital,
+            distance: '2.5 km', // This would come from geolocation in a real app
+            urgency: req.urgency,
+            postedTime: new Date(req.createdAt).toLocaleDateString()
+          }));
+        
+        setUrgentRequests(urgent);
+      } catch (error) {
+        console.error("Error fetching blood requests:", error);
+        // Use sample data if API fails
+        setUrgentRequests([
+          {
+            id: '1',
+            name: 'Emily Johnson',
+            bloodType: 'O-',
+            location: 'Memorial Hospital',
+            distance: '2.5 km',
+            urgency: 'Urgent',
+            postedTime: '2 hours ago'
+          },
+          {
+            id: '2',
+            name: 'Michael Chen',
+            bloodType: 'A+',
+            location: 'General Hospital',
+            distance: '3.7 km',
+            urgency: 'Urgent',
+            postedTime: 'Yesterday'
+          },
+          {
+            id: '3',
+            name: 'Sarah Williams',
+            bloodType: 'B-',
+            location: 'City Medical Center',
+            distance: '5.1 km',
+            urgency: 'Urgent',
+            postedTime: '2 days ago'
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUrgentRequests();
+  }, []);
+
   // Sample banner images
   const bannerImages = [
     {
@@ -120,6 +188,19 @@ const Home = () => {
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
         {/* Top Donors Row */}
         <TopDonorsRow donors={topDonors} />
+
+        {/* Urgent Blood Requests Row */}
+        {urgentRequests.length > 0 && (
+          <UrgentRequestsRow requests={urgentRequests} className="mb-6" />
+        )}
+
+        {loading && (
+          <Card className="mb-6">
+            <CardContent className="p-4 flex items-center justify-center">
+              <div className="animate-pulse h-24 bg-gray-200 dark:bg-gray-700 rounded-md w-full"></div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left sidebar/shortcut column - visible on large screens */}

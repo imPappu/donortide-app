@@ -29,7 +29,7 @@ const AdminDashboard = () => {
   const [notification, setNotification] = useState<Partial<Notification>>({
     title: '',
     message: '',
-    type: 'info' // Changed from 'default' to 'info'
+    type: 'info' // This is the type for the notification, not the Alert component
   });
 
   // System update state

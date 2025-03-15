@@ -23,7 +23,7 @@ const Home = () => {
         const requests = await getBloodRequests();
         // Filter for urgent requests
         const urgent = requests
-          .filter(req => req.urgency === 'Urgent' && req.status === 'Pending')
+          .filter(req => req.urgency === 'urgent' && req.status === 'open')
           .slice(0, 5)
           .map(req => ({
             id: req.id,
@@ -46,7 +46,7 @@ const Home = () => {
             bloodType: 'O-',
             location: 'Memorial Hospital',
             distance: '2.5 km',
-            urgency: 'Urgent',
+            urgency: 'urgent',
             postedTime: '2 hours ago'
           },
           {
@@ -55,7 +55,7 @@ const Home = () => {
             bloodType: 'A+',
             location: 'General Hospital',
             distance: '3.7 km',
-            urgency: 'Urgent',
+            urgency: 'urgent',
             postedTime: 'Yesterday'
           },
           {
@@ -64,7 +64,7 @@ const Home = () => {
             bloodType: 'B-',
             location: 'City Medical Center',
             distance: '5.1 km',
-            urgency: 'Urgent',
+            urgency: 'urgent',
             postedTime: '2 days ago'
           }
         ]);

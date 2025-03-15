@@ -1,118 +1,157 @@
+
 import React, { useState } from "react";
 import TopNavbar from "@/components/TopNavbar";
-import CategoryCard, { DonationCategory } from "@/components/donation/category-card";
-import MonetaryDonationCard from "@/components/donation/MonetaryDonationCard";
-import { donationCategories as initialCategories } from "@/data/donationCategories";
-import { Button } from "@/components/ui/button";
-import { Plus, Edit, Save } from "lucide-react";
-import CategoryManagement from "@/components/donation/category-management";
-import { useAuth } from "@/components/auth/AuthContext";
-import { toast } from "@/hooks/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DonationForm from "@/components/donation/DonationForm";
+import { donationCategories } from "@/data/donationCategories";
+import { Gift, HeartHandshake, Droplet, CircleDollarSign, ShoppingBag } from "lucide-react";
 
 const DonationCategories = () => {
-  const [categories, setCategories] = useState<DonationCategory[]>(initialCategories);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isManagingCategories, setIsManagingCategories] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const [activeTab, setActiveTab] = useState("monetary");
   
-  const isAdmin = isAuthenticated && user?.role === "admin";
-  
-  const handleAddCategory = (category: DonationCategory) => {
-    setCategories([...categories, category]);
-    toast({
-      title: "Category Added",
-      description: `${category.name} has been added to donation categories`,
-    });
-  };
-  
-  const handleUpdateCategory = (updatedCategory: DonationCategory) => {
-    setCategories(categories.map(cat => 
-      cat.id === updatedCategory.id ? updatedCategory : cat
-    ));
-    toast({
-      title: "Category Updated",
-      description: `${updatedCategory.name} has been updated successfully`,
-    });
-  };
-  
-  const handleDeleteCategory = (categoryId: string) => {
-    setCategories(categories.filter(cat => cat.id !== categoryId));
-    toast({
-      title: "Category Deleted",
-      description: "Donation category has been removed",
-    });
-  };
-  
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-    if (isEditing) {
-      // Save changes to backend would go here
-      toast({
-        title: "Changes Saved",
-        description: "Your changes to donation categories have been saved",
-      });
-    }
-  };
-  
+  const categories = [
+    {
+      id: "monetary",
+      name: "Monetary Donation",
+      description: "Support our operations with a financial contribution",
+      icon: <CircleDollarSign className="h-6 w-6 text-green-600" />,
+      color: "bg-green-50 dark:bg-green-900/20",
+    },
+    {
+      id: "blood",
+      name: "Blood Donation",
+      description: "Schedule a blood donation appointment",
+      icon: <Droplet className="h-6 w-6 text-red-600" />,
+      color: "bg-red-50 dark:bg-red-900/20",
+    },
+    {
+      id: "supplies",
+      name: "Medical Supplies",
+      description: "Donate essential medical supplies and equipment",
+      icon: <ShoppingBag className="h-6 w-6 text-blue-600" />,
+      color: "bg-blue-50 dark:bg-blue-900/20",
+    },
+    {
+      id: "volunteer",
+      name: "Volunteer Time",
+      description: "Contribute your time and skills to our mission",
+      icon: <HeartHandshake className="h-6 w-6 text-purple-600" />,
+      color: "bg-purple-50 dark:bg-purple-900/20",
+    },
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <TopNavbar title="Donation Categories" />
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
+      <TopNavbar title="Donate" />
       
-      <div className="container max-w-md mx-auto px-4 py-6 flex-1 pb-20">
-        <div className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold mb-1">Ways to Donate</h1>
-            <p className="text-sm text-muted-foreground">
-              Choose a category below to donate and help those in need
-            </p>
-          </div>
+      <main className="container max-w-4xl mx-auto px-4 py-6 flex-1 pb-20">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">How You Can Help</h1>
+          <p className="text-muted-foreground">
+            There are many ways to contribute to our mission. Choose an option below to get started.
+          </p>
+        </div>
+        
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full mb-6">
+            {categories.map((category) => (
+              <TabsTrigger key={category.id} value={category.id} className="flex items-center justify-center">
+                {category.icon}
+                <span className="ml-2 hidden md:inline">{category.name}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
           
-          {isAdmin && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleEditMode}
-              >
-                {isEditing ? <Save className="h-4 w-4 mr-1" /> : <Edit className="h-4 w-4 mr-1" />}
-                {isEditing ? "Save" : "Edit"}
-              </Button>
-              
-              <Button
-                size="sm"
-                onClick={() => setIsManagingCategories(true)}
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add
-              </Button>
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-4 mb-6">
-          {categories.map(category => (
-            <CategoryCard 
-              key={category.id} 
-              category={category} 
-              isEditing={isEditing}
-              onEdit={handleUpdateCategory}
-              onDelete={handleDeleteCategory}
-            />
-          ))}
-        </div>
-        
-        <MonetaryDonationCard />
-      </div>
-      
-      {isAdmin && (
-        <CategoryManagement
-          isOpen={isManagingCategories}
-          onClose={() => setIsManagingCategories(false)}
-          onAddCategory={handleAddCategory}
-          onUpdateCategory={handleUpdateCategory}
-          categories={categories}
-        />
-      )}
+          <TabsContent value="monetary" className="space-y-6">
+            <DonationForm purpose="general support" initialAmount={25} showRecurringOption={true} />
+          </TabsContent>
+          
+          <TabsContent value="blood" className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <Droplet className="h-12 w-12 text-red-600" />
+                  <h2 className="text-xl font-semibold">Blood Donation</h2>
+                  <p className="text-muted-foreground max-w-lg">
+                    Your blood donation can save up to three lives. Schedule an appointment at one of our donation centers or mobile drives.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-lg">
+                    <a 
+                      href="/requests"
+                      className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 px-4 py-6 rounded-lg text-center hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    >
+                      View Blood Requests
+                    </a>
+                    <a
+                      href="/services"
+                      className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 px-4 py-6 rounded-lg text-center hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    >
+                      Find Donation Centers
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="supplies" className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <ShoppingBag className="h-12 w-12 text-blue-600" />
+                  <h2 className="text-xl font-semibold">Medical Supplies Donation</h2>
+                  <p className="text-muted-foreground max-w-lg">
+                    We accept donations of new, unopened medical supplies that help us serve more people in need.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-lg">
+                    <a
+                      href="#supplies-needed"
+                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-4 py-6 rounded-lg text-center hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                    >
+                      Supplies Needed
+                    </a>
+                    <a
+                      href="#drop-off-locations"
+                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-4 py-6 rounded-lg text-center hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                    >
+                      Drop-off Locations
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="volunteer" className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <HeartHandshake className="h-12 w-12 text-purple-600" />
+                  <h2 className="text-xl font-semibold">Volunteer Your Time</h2>
+                  <p className="text-muted-foreground max-w-lg">
+                    Join our team of dedicated volunteers who help with blood drives, community outreach, and administrative support.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-lg">
+                    <a
+                      href="/volunteers"
+                      className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 px-4 py-6 rounded-lg text-center hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                    >
+                      Volunteer Opportunities
+                    </a>
+                    <a
+                      href="/volunteers/apply"
+                      className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 px-4 py-6 rounded-lg text-center hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                    >
+                      Apply to Volunteer
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
     </div>
   );
 };

@@ -1,22 +1,6 @@
 
 import { API_BASE_URL } from './apiConfig';
-import { 
-  RequestUrgencyScoreParams, 
-  DonorReadinessScoreParams, 
-  MatchingAlgorithmParams,
-  AlgorithmFeedback,
-  AlgorithmPerformanceMetrics,
-  DonorLeaderboardEntry
-} from '@/types/algorithmTypes';
-import { calculateRUS, calculateDRS, calculateMatchingScore } from '@/utils/algorithmUtils';
-import { Donor, BloodRequest } from '@/types/apiTypes';
-
-// Default algorithm weights
-const DEFAULT_ALGORITHM_PARAMS: MatchingAlgorithmParams = {
-  rusWeight: 1.5,
-  drsWeight: 1.2,
-  distanceWeight: 0.8
-};
+import { MatchingAlgorithmParams, AlgorithmPerformanceMetrics, DonorLeaderboardEntry } from '@/types/algorithmTypes';
 
 // Get current algorithm parameters
 export const getAlgorithmParams = async (): Promise<MatchingAlgorithmParams> => {
@@ -27,12 +11,16 @@ export const getAlgorithmParams = async (): Promise<MatchingAlgorithmParams> => 
   } catch (error) {
     console.error('Error fetching algorithm parameters:', error);
     // Return default values if API fails
-    return DEFAULT_ALGORITHM_PARAMS;
+    return {
+      rusWeight: 1.5,
+      drsWeight: 1.2,
+      distanceWeight: 0.8
+    };
   }
 };
 
 // Update algorithm parameters
-export const updateAlgorithmParams = async (params: MatchingAlgorithmParams): Promise<MatchingAlgorithmParams> => {
+export const updateAlgorithmParams = async (params: MatchingAlgorithmParams): Promise<boolean> => {
   try {
     const response = await fetch(`${API_BASE_URL}/algorithm/params`, {
       method: 'PUT',
@@ -41,29 +29,11 @@ export const updateAlgorithmParams = async (params: MatchingAlgorithmParams): Pr
       },
       body: JSON.stringify(params),
     });
+    
     if (!response.ok) throw new Error('Failed to update algorithm parameters');
-    return await response.json();
-  } catch (error) {
-    console.error('Error updating algorithm parameters:', error);
-    // Return the input parameters as a fallback
-    return params;
-  }
-};
-
-// Submit feedback for a match
-export const submitMatchFeedback = async (feedback: AlgorithmFeedback): Promise<boolean> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/algorithm/feedback`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(feedback),
-    });
-    if (!response.ok) throw new Error('Failed to submit match feedback');
     return true;
   } catch (error) {
-    console.error('Error submitting match feedback:', error);
+    console.error('Error updating algorithm parameters:', error);
     return false;
   }
 };
@@ -76,85 +46,141 @@ export const getAlgorithmPerformance = async (): Promise<AlgorithmPerformanceMet
     return await response.json();
   } catch (error) {
     console.error('Error fetching algorithm performance:', error);
-    // Return mock data for development
+    // Return mock data if API fails
     return {
-      averageMatchScore: 72.4,
-      successRate: 0.85,
-      averageResponseTime: 18.5,
+      averageMatchScore: 78.5,
+      successRate: 0.82,
+      averageResponseTime: 3.2,
       matchCount: 156,
-      rusAverage: 68.2,
-      drsAverage: 73.8,
+      rusAverage: 7.8,
+      drsAverage: 6.5,
       recentMatches: [
-        { requestId: '1', donorId: '5', matchScore: 87, timestamp: new Date().toISOString(), wasSuccessful: true },
-        { requestId: '2', donorId: '3', matchScore: 92, timestamp: new Date().toISOString(), wasSuccessful: true },
-        { requestId: '3', donorId: '7', matchScore: 64, timestamp: new Date().toISOString(), wasSuccessful: false },
-        { requestId: '4', donorId: '2', matchScore: 78, timestamp: new Date().toISOString(), wasSuccessful: true },
+        {
+          requestId: 'r-1001',
+          donorId: 'd-2001',
+          matchScore: 85.2,
+          timestamp: new Date().toISOString(),
+          wasSuccessful: true
+        },
+        {
+          requestId: 'r-1002',
+          donorId: 'd-2005',
+          matchScore: 79.1,
+          timestamp: new Date(Date.now() - 86400000).toISOString(),
+          wasSuccessful: true
+        },
+        {
+          requestId: 'r-1003',
+          donorId: 'd-2002',
+          matchScore: 68.7,
+          timestamp: new Date(Date.now() - 172800000).toISOString(),
+          wasSuccessful: false
+        }
       ]
     };
   }
 };
 
-// Get donor leaderboard
-export const getDonorLeaderboard = async (): Promise<DonorLeaderboardEntry[]> => {
+// Get donor leaderboard based on donation readiness score
+export const getDonorLeaderboard = async (limit: number = 10): Promise<DonorLeaderboardEntry[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/algorithm/leaderboard`);
+    const response = await fetch(`${API_BASE_URL}/algorithm/leaderboard?limit=${limit}`);
     if (!response.ok) throw new Error('Failed to fetch donor leaderboard');
     return await response.json();
   } catch (error) {
     console.error('Error fetching donor leaderboard:', error);
-    // Return mock data for development
+    // Return mock data if API fails
     return [
-      { id: '1', name: 'John Doe', bloodType: 'O-', drs: 92, donationCount: 7, lastDonation: '2023-10-15' },
-      { id: '2', name: 'Jane Smith', bloodType: 'A+', drs: 88, donationCount: 5, lastDonation: '2023-11-02' },
-      { id: '3', name: 'Robert Johnson', bloodType: 'B+', drs: 83, donationCount: 6, lastDonation: '2023-09-28' },
-      { id: '4', name: 'Emily Williams', bloodType: 'AB-', drs: 76, donationCount: 3, lastDonation: '2023-12-05' },
-      { id: '5', name: 'Michael Brown', bloodType: 'O+', drs: 74, donationCount: 4, lastDonation: '2023-10-30' },
+      {
+        id: '1',
+        name: 'Sarah Johnson',
+        bloodType: 'O-',
+        drs: 92.5,
+        donationCount: 24,
+        lastDonation: new Date(Date.now() - 30 * 86400000).toISOString(),
+        avatar: 'https://randomuser.me/api/portraits/women/12.jpg'
+      },
+      {
+        id: '2',
+        name: 'Michael Chen',
+        bloodType: 'A+',
+        drs: 88.3,
+        donationCount: 18,
+        lastDonation: new Date(Date.now() - 45 * 86400000).toISOString(),
+        avatar: 'https://randomuser.me/api/portraits/men/22.jpg'
+      },
+      {
+        id: '3',
+        name: 'Elena Rodriguez',
+        bloodType: 'B+',
+        drs: 85.7,
+        donationCount: 15,
+        lastDonation: new Date(Date.now() - 60 * 86400000).toISOString(),
+        avatar: 'https://randomuser.me/api/portraits/women/33.jpg'
+      },
+      {
+        id: '4',
+        name: 'David Kim',
+        bloodType: 'AB-',
+        drs: 82.1,
+        donationCount: 12,
+        lastDonation: new Date(Date.now() - 80 * 86400000).toISOString(),
+        avatar: 'https://randomuser.me/api/portraits/men/45.jpg'
+      },
+      {
+        id: '5',
+        name: 'Olivia Wilson',
+        bloodType: 'O+',
+        drs: 79.8,
+        donationCount: 10,
+        lastDonation: new Date(Date.now() - 100 * 86400000).toISOString(),
+        avatar: 'https://randomuser.me/api/portraits/women/67.jpg'
+      }
     ];
   }
 };
 
-// Find best matches for a blood request
-export const findMatchesForRequest = async (requestId: string): Promise<Donor[]> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/algorithm/matches/request/${requestId}`);
-    if (!response.ok) throw new Error('Failed to find matches');
-    return await response.json();
-  } catch (error) {
-    console.error('Error finding matches:', error);
-    return [];
-  }
+// Calculate request urgency score
+export const calculateRequestUrgencyScore = (requestData: any): number => {
+  const urgencyMultipliers: Record<string, number> = {
+    'critical': 2.0,
+    'urgent': 1.5,
+    'standard': 1.0
+  };
+  
+  // Extract needed data
+  const { urgency = 'standard', bloodType, createdAt } = requestData;
+  const ageInHours = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+  
+  // Blood rarity factor
+  const rarityFactor = getRarityFactor(bloodType);
+  
+  // Time factor - more urgent as the request gets older
+  const timeFactor = Math.min(ageInHours / 24, 1.5);
+  
+  // Calculate base score
+  const urgencyMultiplier = urgencyMultipliers[urgency.toLowerCase()] || 1.0;
+  const baseScore = 5.0 * urgencyMultiplier;
+  
+  // Final score calculation
+  const finalScore = baseScore * (1 + rarityFactor) * (1 + timeFactor);
+  
+  // Return normalized score (0-100)
+  return Math.min(Math.round(finalScore * 10), 100);
 };
 
-// Find suitable requests for a donor
-export const findRequestsForDonor = async (donorId: string): Promise<BloodRequest[]> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/algorithm/matches/donor/${donorId}`);
-    if (!response.ok) throw new Error('Failed to find suitable requests');
-    return await response.json();
-  } catch (error) {
-    console.error('Error finding suitable requests:', error);
-    return [];
-  }
-};
-
-// Manually calculate RUS for a request (for development/testing)
-export const calculateRequestUrgencyScore = (params: RequestUrgencyScoreParams): number => {
-  return calculateRUS(params);
-};
-
-// Manually calculate DRS for a donor (for development/testing)
-export const calculateDonorReadinessScore = (params: DonorReadinessScoreParams): number => {
-  return calculateDRS(params);
-};
-
-// Manually calculate matching score (for development/testing)
-export const calculateMatchScore = (
-  rus: number, 
-  drs: number, 
-  distance: number, 
-  params: MatchingAlgorithmParams,
-  requestBloodType: string,
-  donorBloodType: string
-): number => {
-  return calculateMatchingScore(rus, drs, distance, params, requestBloodType, donorBloodType);
+// Helper function to get blood type rarity factor
+const getRarityFactor = (bloodType: string): number => {
+  const rarityMap: Record<string, number> = {
+    'O-': 0.5,  // Rarest, universal donor
+    'AB+': 0.4, // Rarest, universal recipient
+    'B-': 0.3,
+    'AB-': 0.3,
+    'A-': 0.2,
+    'B+': 0.1,
+    'A+': 0.05,
+    'O+': 0.0   // Most common
+  };
+  
+  return rarityMap[bloodType.toUpperCase()] || 0.0;
 };

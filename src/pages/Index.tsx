@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import HomeBanner from "@/components/HomeBanner";
 import TopDonors from "@/components/TopDonors";
 import TopNavbar from "@/components/TopNavbar";
-import UrgentRequestsRow from "@/components/UrgentRequestsRow";
+import UrgentRequestsRow from "@/components/home/UrgentRequestsRow";
 import QuickActionsGrid from "@/components/home/QuickActionsGrid";
 import EventsCampaignsSection from "@/components/home/EventsCampaignsSection";
 import UserStoriesSection from "@/components/home/UserStoriesSection";

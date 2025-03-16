@@ -9,12 +9,12 @@ import { useUrgentRequests } from "@/hooks/useUrgentRequests";
 import { BloodRequest } from "@/types/apiTypes";
 
 const UrgentRequests = () => {
-  const { urgentRequests, loading, fetchRequests } = useUrgentRequests();
+  const { urgentRequests, loading, error, fetchRequests } = useUrgentRequests();
   const [selectedRequest, setSelectedRequest] = useState<BloodRequest | null>(null);
 
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests]);
+  }, []);
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -104,7 +104,24 @@ const UrgentRequests = () => {
                 <div className="flex space-x-2 mt-4">
                   <Button
                     variant="default"
-                    onClick={() => handleContactDonors(request)}
+                    onClick={() => {
+                      // Create a BloodRequest object from UrgentRequest
+                      // This is a workaround for type compatibility
+                      const bloodRequest: BloodRequest = {
+                        id: request.id,
+                        patientName: request.patientName,
+                        bloodType: request.bloodType,
+                        units: request.units,
+                        hospital: request.hospital,
+                        location: request.location,
+                        contactNumber: request.contactNumber,
+                        urgency: request.urgency as any,
+                        notes: request.notes,
+                        status: request.status as any || 'open',
+                        createdAt: request.createdAt
+                      };
+                      handleContactDonors(bloodRequest);
+                    }}
                     className="flex-1"
                   >
                     Contact Potential Donors

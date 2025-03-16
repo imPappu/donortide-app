@@ -1,18 +1,21 @@
 
-import React, { ReactNode } from "react";
+import React from "react";
 
-interface PageHeaderProps {
-  icon: ReactNode;
+export interface PageHeaderProps {
   title: string;
-  className?: string;
+  description?: string;
+  children?: React.ReactNode;
 }
 
-const PageHeader = ({ icon, title, className = "" }: PageHeaderProps) => {
+const PageHeader = ({ title, description, children }: PageHeaderProps) => {
   return (
-    <h1 className={`text-2xl font-bold mb-6 flex items-center ${className}`}>
-      {icon}
-      {title}
-    </h1>
+    <div className="mb-6">
+      <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+      {description && (
+        <p className="text-muted-foreground mt-1">{description}</p>
+      )}
+      {children}
+    </div>
   );
 };
 

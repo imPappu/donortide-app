@@ -4,14 +4,20 @@ import { getBloodRequests } from "@/services/bloodRequestService";
 import { BloodRequest } from "@/types/apiTypes";
 import { toast } from "@/components/ui/use-toast";
 
-interface UrgentRequest {
+export interface UrgentRequest {
   id: string;
-  name: string;
+  patientName: string;
   bloodType: string;
   location: string;
+  hospital: string;
+  contactNumber: string;
   distance?: string;
   urgency: string;
   postedTime: string;
+  units: number;
+  notes?: string;
+  createdAt: string;
+  status?: string;
 }
 
 export const useUrgentRequests = (limit: number = 5) => {
@@ -19,50 +25,52 @@ export const useUrgentRequests = (limit: number = 5) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUrgentRequests = async () => {
-      setLoading(true);
-      try {
-        const requests = await getBloodRequests();
-        
-        // Filter for urgent and critical requests
-        const urgentBloodRequests = requests
-          .filter(req => req.urgency === 'critical' || req.urgency === 'urgent')
-          .slice(0, limit)
-          .map(formatRequestData);
-        
-        setUrgentRequests(urgentBloodRequests);
-      } catch (err) {
-        console.error("Error fetching urgent requests:", err);
-        setError("Failed to load urgent requests");
-        
-        // Generate fallback data when API fails
-        const fallbackRequests = generateFallbackRequests(limit);
-        setUrgentRequests(fallbackRequests);
-        
-        toast({
-          title: "Connection issue",
-          description: "Could not load live blood requests. Using cached data.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUrgentRequests();
-  }, [limit]);
+  const fetchRequests = async () => {
+    setLoading(true);
+    try {
+      const requests = await getBloodRequests();
+      
+      // Filter for urgent and critical requests
+      const urgentBloodRequests = requests
+        .filter(req => req.urgency === 'critical' || req.urgency === 'urgent')
+        .slice(0, limit)
+        .map(formatRequestData);
+      
+      setUrgentRequests(urgentBloodRequests);
+    } catch (err) {
+      console.error("Error fetching urgent requests:", err);
+      setError("Failed to load urgent requests");
+      
+      // Generate fallback data when API fails
+      const fallbackRequests = generateFallbackRequests(limit);
+      setUrgentRequests(fallbackRequests);
+      
+      toast({
+        title: "Connection issue",
+        description: "Could not load live blood requests. Using cached data.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Helper to format request data
   const formatRequestData = (request: BloodRequest): UrgentRequest => {
     return {
       id: request.id,
-      name: request.patientName,
+      patientName: request.patientName,
       bloodType: request.bloodType,
       location: request.location,
+      hospital: request.hospital,
+      contactNumber: request.contactNumber,
       distance: calculateDistance(request),
       urgency: request.urgency,
       postedTime: formatTimeAgo(request.createdAt),
+      units: request.units,
+      notes: request.notes,
+      createdAt: request.createdAt,
+      status: request.status
     };
   };
 
@@ -100,14 +108,24 @@ export const useUrgentRequests = (limit: number = 5) => {
     
     return Array.from({ length: count }).map((_, index) => ({
       id: `offline-${index + 1}`,
-      name: `Patient ${index + 1}`,
+      patientName: `Patient ${index + 1}`,
       bloodType: bloodTypes[Math.floor(Math.random() * bloodTypes.length)],
-      location: `${hospitals[Math.floor(Math.random() * hospitals.length)]}, ${cities[Math.floor(Math.random() * cities.length)]}`,
+      hospital: hospitals[Math.floor(Math.random() * hospitals.length)],
+      location: cities[Math.floor(Math.random() * cities.length)],
+      contactNumber: `+1 (555) ${100 + index}-${1000 + index}`,
       distance: `${(Math.random() * 5).toFixed(1)} km away`,
       urgency: urgencies[Math.floor(Math.random() * urgencies.length)],
       postedTime: times[Math.floor(Math.random() * times.length)],
+      units: Math.floor(Math.random() * 3) + 1,
+      notes: index % 2 === 0 ? "Urgent case, needs immediate attention" : undefined,
+      createdAt: new Date(Date.now() - Math.floor(Math.random() * 86400000)).toISOString(),
+      status: "open"
     }));
   };
 
-  return { urgentRequests, loading, error };
+  useEffect(() => {
+    fetchRequests();
+  }, [limit]);
+
+  return { urgentRequests, loading, error, fetchRequests };
 };

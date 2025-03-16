@@ -4,16 +4,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Droplet, AlertCircle } from "lucide-react";
-
-interface UrgentRequest {
-  id: string;
-  name: string;
-  bloodType: string;
-  location: string;
-  distance?: string;
-  urgency: string;
-  postedTime: string;
-}
+import { UrgentRequest } from "@/hooks/useUrgentRequests";
 
 interface UrgentRequestsRowProps {
   requests: UrgentRequest[];
@@ -44,7 +35,7 @@ const UrgentRequestsRow = ({ requests, className = "" }: UrgentRequestsRowProps)
                   <Droplet className="h-5 w-5 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium">{request.name}</h3>
+                  <h3 className="font-medium">{request.patientName}</h3>
                   <p className="text-xs text-muted-foreground flex items-center">
                     <MapPin className="h-3 w-3 mr-1" />
                     {request.location}

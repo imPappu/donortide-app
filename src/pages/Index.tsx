@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,44 +12,65 @@ import EventsCampaignsSection from "@/components/home/EventsCampaignsSection";
 import UserStoriesSection from "@/components/home/UserStoriesSection";
 import CommunityActivitySection from "@/components/home/CommunityActivitySection";
 import BloodDonationFacts from "@/components/home/BloodDonationFacts";
+import { UrgentRequest } from "@/hooks/useUrgentRequests";
 
 const Index = () => {
-  const urgentRequests = [
+  const urgentRequests: UrgentRequest[] = [
     {
       id: "1",
-      name: "Emily Johnson",
+      patientName: "Emily Johnson",
       bloodType: "O-",
       location: "Memorial Hospital",
+      hospital: "Memorial Hospital",
+      contactNumber: "(555) 123-4567",
       distance: "2.5 miles",
-      urgency: "Urgent",
-      postedTime: "30 min ago"
+      urgency: "urgent",
+      postedTime: "30 min ago",
+      units: 2,
+      createdAt: new Date().toISOString(),
+      status: "open"
     },
     {
       id: "2",
-      name: "Michael Chen",
+      patientName: "Michael Chen",
       bloodType: "A+",
       location: "City Medical Center",
+      hospital: "City Medical Center",
+      contactNumber: "(555) 234-5678",
       distance: "4.2 miles",
-      urgency: "High",
-      postedTime: "2 hours ago"
+      urgency: "high",
+      postedTime: "2 hours ago",
+      units: 3,
+      createdAt: new Date().toISOString(),
+      status: "open"
     },
     {
       id: "3",
-      name: "Sarah Williams",
+      patientName: "Sarah Williams",
       bloodType: "B-",
       location: "County Hospital",
+      hospital: "County Hospital",
+      contactNumber: "(555) 345-6789",
       distance: "3.7 miles",
-      urgency: "Critical",
-      postedTime: "15 min ago"
+      urgency: "critical",
+      postedTime: "15 min ago",
+      units: 1,
+      createdAt: new Date().toISOString(),
+      status: "open"
     },
     {
       id: "4",
-      name: "David Patel",
+      patientName: "David Patel",
       bloodType: "AB+",
       location: "University Medical",
+      hospital: "University Medical",
+      contactNumber: "(555) 456-7890",
       distance: "5.1 miles",
-      urgency: "Urgent",
-      postedTime: "1 hour ago"
+      urgency: "urgent",
+      postedTime: "1 hour ago",
+      units: 2,
+      createdAt: new Date().toISOString(),
+      status: "open"
     }
   ];
 

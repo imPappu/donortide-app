@@ -1,115 +1,41 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Award, TrendingUp } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
-import { Progress } from "@/components/ui/progress";
-
-interface DonationItem {
-  id: string;
-  name: string;
-  category: string;
-  quantity: number;
-  totalValue: number;
-  donorCount: number;
-  percentageOfTotal: number;
-}
 
 const MostDonatedItems = () => {
-  // Mock data - would be replaced with actual data from an API
-  const donationItems: DonationItem[] = [
-    {
-      id: "1",
-      name: "Whole Blood",
-      category: "Blood",
-      quantity: 243,
-      totalValue: 0,
-      donorCount: 243,
-      percentageOfTotal: 32,
-    },
-    {
-      id: "2",
-      name: "Platelets",
-      category: "Blood",
-      quantity: 156,
-      totalValue: 0,
-      donorCount: 128,
-      percentageOfTotal: 21,
-    },
-    {
-      id: "3",
-      name: "Monetary Donation",
-      category: "Money",
-      quantity: 97,
-      totalValue: 15480,
-      donorCount: 97,
-      percentageOfTotal: 18,
-    },
-    {
-      id: "4",
-      name: "Clothes",
-      category: "Goods",
-      quantity: 76,
-      totalValue: 3800,
-      donorCount: 45,
-      percentageOfTotal: 12,
-    },
-    {
-      id: "5",
-      name: "Non-perishable Food",
-      category: "Food",
-      quantity: 68,
-      totalValue: 2720,
-      donorCount: 32,
-      percentageOfTotal: 9,
-    },
-    {
-      id: "6",
-      name: "Books",
-      category: "Educational",
-      quantity: 52,
-      totalValue: 1560,
-      donorCount: 28,
-      percentageOfTotal: 8,
-    },
+  // Mock data - in a real app this would come from an API
+  const mostDonatedItems = [
+    { id: 1, name: "Whole Blood", count: 1245, percentageIncrease: 12 },
+    { id: 2, name: "Platelets", count: 876, percentageIncrease: 8 },
+    { id: 3, name: "Plasma", count: 654, percentageIncrease: 15 },
+    { id: 4, name: "Red Blood Cells", count: 521, percentageIncrease: 5 },
+    { id: 5, name: "Money Donations", count: 1892, percentageIncrease: 22 },
+    { id: 6, name: "Food Items", count: 432, percentageIncrease: 7 },
   ];
-
+  
   return (
-    <div className="container px-4 py-8 mx-auto">
+    <div className="container mx-auto px-4 py-6">
       <PageHeader 
-        title="Most Donated Items"
-        description="Overview of our most frequently donated items" 
+        title="Most Donated Items" 
+        description="Top donations by our generous community"
+        icon={<Award className="h-5 w-5 text-yellow-500" />}
       />
       
-      <div className="grid grid-cols-1 gap-6 mt-6">
-        {donationItems.map((item) => (
-          <Card key={item.id}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center justify-between">
-                <span>{item.name}</span>
-                <span className="text-sm font-normal text-muted-foreground">
-                  {item.category}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <Progress value={item.percentageOfTotal} className="h-2" />
-                
-                <div className="flex justify-between items-center text-sm">
-                  <div>
-                    <span className="font-medium">Quantity:</span> {item.quantity}
-                  </div>
-                  <div>
-                    <span className="font-medium">Donors:</span> {item.donorCount}
-                  </div>
-                  {item.totalValue > 0 && (
-                    <div>
-                      <span className="font-medium">Value:</span> ${item.totalValue.toLocaleString()}
-                    </div>
-                  )}
-                  <div>
-                    <span className="font-medium">Share:</span> {item.percentageOfTotal}%
-                  </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {mostDonatedItems.map((item) => (
+          <Card key={item.id} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold">{item.name}</h3>
+                  <p className="text-2xl font-bold mt-2">{item.count.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">total donations</p>
+                </div>
+                <div className="flex items-center gap-1 bg-green-50 text-green-600 px-2 py-1 rounded text-sm">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>{item.percentageIncrease}%</span>
                 </div>
               </div>
             </CardContent>

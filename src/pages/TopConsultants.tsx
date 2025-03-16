@@ -1,176 +1,109 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Award, Star, Calendar, Phone, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Star, MessageSquare } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
-import { useToast } from "@/hooks/use-toast";
-
-interface Consultant {
-  id: string;
-  name: string;
-  specialization: string;
-  avatar: string;
-  rating: number;
-  reviewCount: number;
-  consultations: number;
-  experience: string;
-  availability: string;
-  bio: string;
-}
 
 const TopConsultants = () => {
-  const { toast } = useToast();
-
-  // Mock data - would be replaced with actual data from an API
-  const consultants: Consultant[] = [
-    {
-      id: "1",
-      name: "Dr. Emily Rodriguez",
-      specialization: "Hematology",
-      avatar: "",
+  // Mock data - in a real app this would come from an API
+  const topConsultants = [
+    { 
+      id: 1, 
+      name: "Dr. Emily Wong", 
+      specialty: "Hematologist", 
+      hospital: "Memorial Hospital",
       rating: 4.9,
-      reviewCount: 128,
-      consultations: 312,
-      experience: "12 years",
-      availability: "Mon, Wed, Fri",
-      bio: "Specialist in blood disorders and donation medicine with focus on donor health and blood banking procedures.",
-    },
-    {
-      id: "2",
-      name: "Dr. James Wilson",
-      specialization: "Transfusion Medicine",
-      avatar: "",
-      rating: 4.8,
-      reviewCount: 96,
-      consultations: 243,
-      experience: "15 years",
-      availability: "Tue, Thu, Sat",
-      bio: "Expert in blood transfusion protocols and managing complex donation cases.",
-    },
-    {
-      id: "3",
-      name: "Dr. Lisa Chang",
-      specialization: "Immunohematology",
-      avatar: "",
-      rating: 4.7,
-      reviewCount: 87,
-      consultations: 201,
-      experience: "9 years",
+      reviewCount: 124,
       availability: "Mon-Fri",
-      bio: "Specialized in blood group serology and compatibility testing for safe donations.",
+      phone: "+1 (555) 123-4567",
+      image: "https://placehold.co/200x200/e2e8f0/1e293b?text=Dr.W"
     },
-    {
-      id: "4",
-      name: "Dr. Mark Patel",
-      specialization: "Donor Medicine",
-      avatar: "",
-      rating: 4.9,
-      reviewCount: 112,
-      consultations: 276,
-      experience: "11 years",
-      availability: "Wed-Sun",
-      bio: "Focuses on donor health assessment and optimization for safe donation experiences.",
-    },
-    {
-      id: "5",
-      name: "Dr. Sarah Johnson",
-      specialization: "Blood Banking",
-      avatar: "",
+    { 
+      id: 2, 
+      name: "Dr. Robert Chen", 
+      specialty: "Blood Bank Specialist", 
+      hospital: "City Medical Center",
       rating: 4.8,
-      reviewCount: 94,
-      consultations: 187,
-      experience: "8 years",
-      availability: "Tue, Wed, Fri, Sat",
-      bio: "Expert in blood component preparation and storage procedures.",
+      reviewCount: 98,
+      availability: "Weekends & Evenings",
+      phone: "+1 (555) 234-5678",
+      image: "https://placehold.co/200x200/e2e8f0/1e293b?text=Dr.C"
+    },
+    { 
+      id: 3, 
+      name: "Dr. Sarah Johnson", 
+      specialty: "Transfusion Medicine", 
+      hospital: "University Hospital",
+      rating: 4.7,
+      reviewCount: 156,
+      availability: "Tues & Thurs",
+      phone: "+1 (555) 345-6789",
+      image: "https://placehold.co/200x200/e2e8f0/1e293b?text=Dr.J"
+    },
+    { 
+      id: 4, 
+      name: "Dr. Michael Brown", 
+      specialty: "Immunohematologist", 
+      hospital: "General Hospital",
+      rating: 4.6,
+      reviewCount: 87,
+      availability: "Mon, Wed, Fri",
+      phone: "+1 (555) 456-7890",
+      image: "https://placehold.co/200x200/e2e8f0/1e293b?text=Dr.B"
     },
   ];
-
-  const handleScheduleConsultation = (consultantId: string, consultantName: string) => {
-    toast({
-      title: "Consultation Request Sent",
-      description: `Your request for a consultation with ${consultantName} has been submitted.`,
-    });
-  };
-
+  
   return (
-    <div className="container px-4 py-8 mx-auto">
+    <div className="container mx-auto px-4 py-6">
       <PageHeader 
-        title="Top Medical Consultants"
-        description="Expert consultants available for donation-related advice" 
+        title="Top Consultants" 
+        description="Expert consultants in blood donation and transfusion"
+        icon={<Award className="h-5 w-5 text-purple-500" />}
       />
       
-      <div className="grid grid-cols-1 gap-6 mt-6">
-        {consultants.map((consultant) => (
-          <Card key={consultant.id} className="overflow-hidden">
-            <div className="flex flex-col md:flex-row">
-              <div className="p-6 md:w-1/4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border">
-                <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src={consultant.avatar} />
-                  <AvatarFallback className="text-xl">
-                    {consultant.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(consultant.rating)
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                    <span className="ml-1 text-sm">{consultant.rating}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {topConsultants.map((consultant) => (
+          <Card key={consultant.id} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-4">
+                <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-200">
+                  <img 
+                    src={consultant.image} 
+                    alt={consultant.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">{consultant.name}</h3>
+                  <p className="text-sm text-muted-foreground">{consultant.specialty}</p>
+                  <p className="text-sm text-muted-foreground">{consultant.hospital}</p>
+                  
+                  <div className="flex items-center mt-2">
+                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    <span className="ml-1 text-sm font-medium">{consultant.rating}</span>
+                    <span className="ml-1 text-xs text-muted-foreground">({consultant.reviewCount} reviews)</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {consultant.reviewCount} reviews
-                  </p>
+                  
+                  <div className="flex items-center mt-1 text-xs text-muted-foreground">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>Available: {consultant.availability}</span>
+                  </div>
+                  
+                  <div className="flex space-x-2 mt-3">
+                    <Button size="sm" variant="outline" className="gap-1">
+                      <Phone className="h-3 w-3" />
+                      <span className="text-xs">Call</span>
+                    </Button>
+                    <Button size="sm" className="gap-1">
+                      <MessageSquare className="h-3 w-3" />
+                      <span className="text-xs">Consult</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
-              
-              <div className="p-6 md:w-3/4">
-                <CardHeader className="p-0 pb-4">
-                  <CardTitle>{consultant.name}</CardTitle>
-                  <div className="text-sm font-medium text-primary">
-                    {consultant.specialization}
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="p-0">
-                  <p className="text-sm mb-4">{consultant.bio}</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
-                    <div>
-                      <span className="font-medium">Experience:</span> {consultant.experience}
-                    </div>
-                    <div>
-                      <span className="font-medium">Consultations:</span> {consultant.consultations}
-                    </div>
-                    <div>
-                      <span className="font-medium">Available:</span> {consultant.availability}
-                    </div>
-                  </div>
-                  
-                  <div className="flex space-x-3">
-                    <Button
-                      onClick={() => handleScheduleConsultation(consultant.id, consultant.name)}
-                      className="flex-1"
-                    >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Schedule Consultation
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Send Message
-                    </Button>
-                  </div>
-                </CardContent>
-              </div>
-            </div>
+            </CardContent>
           </Card>
         ))}
       </div>

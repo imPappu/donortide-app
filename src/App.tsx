@@ -1,172 +1,93 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
-import Index from "./pages/Index";
-import Donors from "./pages/Donors";
-import Requests from "./pages/Requests";
-import CreateRequest from "./pages/CreateRequest";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
-import Blog from "./pages/Blog";
-import AdminDashboard from "./pages/Admin";
-import Navigation from "./components/Navigation";
-import { getAppSettings } from "@/services/dbService";
-import AdminLogin from "./pages/AdminLogin";
-import Install from "./pages/Install";
-import Volunteers from "./pages/Volunteers";
-import Charities from "./pages/Charities";
-import Notifications from "./pages/Notifications";
-import CommunityFeed from "./pages/CommunityFeed";
-import UserStories from "./pages/UserStories";
-import DonationCategories from "./pages/DonationCategories";
-import { AuthProvider, useAuth } from "@/components/auth/AuthContext";
-import AdminLink from "@/components/AdminLink";
-import SplashScreen from "@/components/SplashScreen";
-import LoginSignup from "./pages/LoginSignup";
-import Home from "./pages/Home";
-import Services from "./pages/Services";
-import Events from "./pages/Events";
-import Campaigns from "./pages/Campaigns";
-import UrgentRequests from "./pages/UrgentRequests";
-import MostDonatedItems from "./pages/MostDonatedItems";
-import NearbyVolunteers from "./pages/NearbyVolunteers";
-import TopConsultants from "./pages/TopConsultants";
+import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import { useToast } from "@/hooks/use-toast"
+import { AuthProvider } from './components/auth/AuthContext';
+import Index from './pages/Index';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Donate from './pages/Donate';
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Events from './pages/Events';
+import Campaigns from './pages/Campaigns';
+import Community from './pages/Community';
+import CreateRequest from './pages/CreateRequest';
+import MostDonatedItems from './pages/MostDonatedItems';
+import UrgentRequests from './pages/UrgentRequests';
+import NearbyVolunteers from './pages/NearbyVolunteers';
+import TopConsultants from './pages/TopConsultants';
+import Fundraising from './pages/Fundraising';
+import CorporateGiving from './pages/CorporateGiving';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import PaymentGatewaySettings from './components/admin/PaymentGatewaySettings';
+import DonorManagement from './components/admin/DonorManagement';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-      retry: 1,
-    },
-  },
-});
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-const App = () => {
-  const [adminPath, setAdminPath] = useState<string>("admin");
-  const [loading, setLoading] = useState(true);
-  const [isInstalled, setIsInstalled] = useState(true);
-  const [showSplash, setShowSplash] = useState(true);
+function App() {
+  const { toast } = useToast()
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    const fetchAppSettings = async () => {
-      try {
-        const settings = await getAppSettings();
-        
-        const installationSetting = settings.find(s => s.settingKey === 'app_installed');
-        if (installationSetting && installationSetting.settingValue === 'false') {
-          setIsInstalled(false);
-        }
-        
-        const adminPathSetting = settings.find(s => s.settingKey === 'admin_url_path');
-        if (adminPathSetting && adminPathSetting.settingValue) {
-          setAdminPath(adminPathSetting.settingValue);
-        }
-      } catch (error) {
-        console.error("Error fetching app settings:", error);
-      } finally {
-        setLoading(false);
-      }
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if (!navigator.onLine) {
+      toast({
+        title: "No internet connection",
+        description: "Some features may be unavailable.",
+      })
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
-
-    fetchAppSettings();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-950">
-        <div className="flex flex-col items-center">
-          <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
-          <p className="text-muted-foreground">Loading application...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isInstalled) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Install />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    );
-  }
+  }, [toast]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+    <AuthProvider>
+      <Router>
+       <SidebarProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/community/*" element={<Community />} />
+            <Route path="/request" element={<CreateRequest />} />
+            <Route path="/most-donated-items" element={<MostDonatedItems />} />
+            <Route path="/urgent-requests" element={<UrgentRequests />} />
+            <Route path="/nearby-volunteers" element={<NearbyVolunteers />} />
+            <Route path="/top-consultants" element={<TopConsultants />} />
+            <Route path="/fundraising" element={<Fundraising />} />
+            <Route path="/corporate-giving" element={<CorporateGiving />} />
+            
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/payment-settings" element={<PaymentGatewaySettings />} />
+            <Route path="/admin/donor-management" element={<DonorManagement />} />
+
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </SidebarProvider>
         <Toaster />
-        <Sonner />
-        <AuthProvider>
-          <BrowserRouter>
-            <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
-              <AnimatePresence>
-                {showSplash && (
-                  <SplashScreen onFinish={() => setShowSplash(false)} />
-                )}
-              </AnimatePresence>
-              
-              <div className="flex-1 pb-20">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/index" element={<Index />} />
-                  <Route path="/donors" element={<Donors />} />
-                  <Route path="/requests" element={<Requests />} />
-                  <Route path="/create" element={<CreateRequest />} />
-                  <Route path="/profile" element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/login" element={<LoginSignup />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/volunteers" element={<Volunteers />} />
-                  <Route path="/charities" element={<Charities />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/community" element={<CommunityFeed />} />
-                  <Route path="/stories" element={<UserStories />} />
-                  <Route path="/donate" element={<DonationCategories />} />
-                  <Route path="/services" element={<Services />} />
-                  <Route path="/events" element={<Events />} />
-                  <Route path="/campaigns" element={<Campaigns />} />
-                  <Route path="/urgent-requests" element={<UrgentRequests />} />
-                  <Route path="/most-donated" element={<MostDonatedItems />} />
-                  <Route path="/nearby-volunteers" element={<NearbyVolunteers />} />
-                  <Route path="/top-consultants" element={<TopConsultants />} />
-                  <Route path={`/${adminPath}`} element={<AdminLogin />} />
-                  <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
-              <Navigation />
-              <AdminLink adminPath={adminPath} />
-            </div>
-          </BrowserRouter>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+      </Router>
+    </AuthProvider>
   );
-};
+}
 
 export default App;

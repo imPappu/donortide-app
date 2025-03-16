@@ -1,54 +1,74 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign, CreditCard, HandCoins, Gift, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
-import DonationPayment from "@/components/DonationPayment";
-import { useAuth } from "@/components/auth/AuthContext";
+import DonationForm from "./DonationForm";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
 
 const MonetaryDonationCard = () => {
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-
-  const handleDonateClick = () => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to make a monetary donation",
-      });
-      navigate("/login");
-      return;
+  
+  const donationBenefits = [
+    {
+      title: "Fund Medical Supplies",
+      description: "Help purchase essential medical equipment and supplies for blood donation centers.",
+      icon: <CreditCard className="h-5 w-5 text-primary" />
+    },
+    {
+      title: "Support Community Programs",
+      description: "Enable outreach programs to encourage more blood donors in underserved areas.",
+      icon: <HandCoins className="h-5 w-5 text-primary" />
+    },
+    {
+      title: "Emergency Response",
+      description: "Fund rapid response initiatives during crises and natural disasters.",
+      icon: <Gift className="h-5 w-5 text-primary" />
     }
-  };
+  ];
 
   return (
-    <Card className="bg-primary/10 border-primary/20">
-      <CardContent className="p-4">
-        <div className="flex items-center">
-          <Heart className="h-10 w-10 text-primary mr-4" />
-          <div>
-            <h3 className="font-semibold">Make a Monetary Donation</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Support our organization with a financial contribution
-            </p>
-            {isAuthenticated ? (
-              <DonationPayment 
-                trigger={
-                  <Button className="mt-3">Donate Now</Button>
-                }
-                purpose="donation to support our cause"
-              />
-            ) : (
-              <Button className="mt-3" onClick={handleDonateClick}>
-                Donate Now
-              </Button>
-            )}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
+          <CardTitle className="flex items-center">
+            <DollarSign className="mr-2 h-5 w-5 text-primary" />
+            Monetary Donations
+          </CardTitle>
+          <CardDescription>Your financial support helps us save more lives</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="grid gap-4 mb-6">
+            {donationBenefits.map((benefit, index) => (
+              <div key={index} className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                <div className="mt-0.5">{benefit.icon}</div>
+                <div>
+                  <h4 className="font-medium">{benefit.title}</h4>
+                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            <Button variant="outline" onClick={() => navigate("/fundraising")} className="flex justify-between items-center">
+              <span>Start a Fundraiser</span>
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/corporate-giving")} className="flex justify-between items-center">
+              <span>Corporate Giving</span>
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <DonationForm 
+        purpose="general support"
+        initialAmount={50}
+        showRecurringOption={true}
+      />
+    </div>
   );
 };
 

@@ -1,89 +1,81 @@
 
 import React from "react";
-import { DonationType } from "@/components/DonationPayment";
+import { DonationType } from "../DonationPayment";
+import { HeartHandshake, Heart, Gift, Shirt, BookOpen, Package, Pizza } from "lucide-react";
 
 interface DonationHeaderProps {
-  donationType?: DonationType;
+  donationType: DonationType;
   category?: string;
 }
 
-const DonationHeader: React.FC<DonationHeaderProps> = ({ donationType = 'monetary', category }) => {
-  const getTitle = () => {
-    if (category) {
-      return `${category} Donation`;
-    }
-    
+const DonationHeader = ({ donationType, category }: DonationHeaderProps) => {
+  const getHeaderContent = () => {
     switch (donationType) {
-      case 'blood':
-        return 'Blood Donation';
-      case 'clothing':
-        return 'Clothing Donation';
-      case 'food':
-        return 'Food Donation';
-      case 'books':
-        return 'Book Donation';
-      case 'essentials':
-        return 'Essentials Donation';
-      case 'other':
-        return 'In-Kind Donation';
-      case 'monetary':
+      case "monetary":
+        return {
+          icon: <HeartHandshake className="h-6 w-6 text-white" />,
+          title: "Make a Donation",
+          description: "Your financial support helps save lives",
+          color: "bg-gradient-to-r from-primary to-primary/80"
+        };
+      case "blood":
+        return {
+          icon: <Heart className="h-6 w-6 text-white" />,
+          title: "Donate Blood",
+          description: "Your blood donation can save up to three lives",
+          color: "bg-gradient-to-r from-red-600 to-red-500"
+        };
+      case "clothing":
+        return {
+          icon: <Shirt className="h-6 w-6 text-white" />,
+          title: "Donate Clothing",
+          description: "Provide essential clothing to those in need",
+          color: "bg-gradient-to-r from-blue-600 to-blue-500"
+        };
+      case "food":
+        return {
+          icon: <Pizza className="h-6 w-6 text-white" />,
+          title: "Donate Food",
+          description: "Help fight hunger in our community",
+          color: "bg-gradient-to-r from-orange-600 to-orange-500"
+        };
+      case "books":
+        return {
+          icon: <BookOpen className="h-6 w-6 text-white" />,
+          title: "Donate Books",
+          description: "Support literacy and education",
+          color: "bg-gradient-to-r from-emerald-600 to-emerald-500"
+        };
+      case "essentials":
+        return {
+          icon: <Package className="h-6 w-6 text-white" />,
+          title: "Donate Essentials",
+          description: "Provide basic necessities to those in need",
+          color: "bg-gradient-to-r from-purple-600 to-purple-500"
+        };
       default:
-        return 'Monetary Donation';
+        return {
+          icon: <Gift className="h-6 w-6 text-white" />,
+          title: "Make a Donation",
+          description: category || "Support our mission with your contribution",
+          color: "bg-gradient-to-r from-gray-700 to-gray-600"
+        };
     }
   };
 
+  const { icon, title, description, color } = getHeaderContent();
+
   return (
-    <div className={`p-6 bg-gradient-to-r ${getDonationTypeColor(donationType)}`}>
-      <h2 className="text-xl font-semibold text-white">{getTitle()}</h2>
-      <p className="text-sm text-white/90 mt-1">
-        {getDonationDescription(donationType, category)}
-      </p>
+    <div className={`${color} p-6 flex items-center`}>
+      <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+        {icon}
+      </div>
+      <div>
+        <h2 className="text-xl font-bold text-white">{title}</h2>
+        <p className="text-white/80 text-sm">{description}</p>
+      </div>
     </div>
   );
 };
-
-function getDonationTypeColor(donationType: DonationType): string {
-  switch (donationType) {
-    case 'blood':
-      return 'from-red-500 to-red-600';
-    case 'clothing':
-      return 'from-purple-500 to-purple-600';
-    case 'food':
-      return 'from-orange-500 to-orange-600';
-    case 'books':
-      return 'from-blue-500 to-blue-600';
-    case 'essentials':
-      return 'from-green-500 to-green-600';
-    case 'other':
-      return 'from-gray-500 to-gray-600';
-    case 'monetary':
-    default:
-      return 'from-emerald-500 to-emerald-600';
-  }
-}
-
-function getDonationDescription(donationType: DonationType, category?: string): string {
-  if (category) {
-    return `Your donation will support ${category.toLowerCase()} initiatives.`;
-  }
-  
-  switch (donationType) {
-    case 'blood':
-      return 'Your blood donation can save up to 3 lives.';
-    case 'clothing':
-      return 'Your clothing donation helps those in need stay warm and dignified.';
-    case 'food':
-      return 'Your food donation helps fight hunger in our community.';
-    case 'books':
-      return 'Your book donation supports education and literacy.';
-    case 'essentials':
-      return 'Your donation of essential items helps families in crisis.';
-    case 'other':
-      return 'Your in-kind donation makes a difference in our community.';
-    case 'monetary':
-    default:
-      return 'Your financial contribution supports our mission.';
-  }
-}
 
 export default DonationHeader;

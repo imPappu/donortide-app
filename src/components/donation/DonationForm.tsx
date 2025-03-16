@@ -101,6 +101,9 @@ const DonationForm = ({
 
   const predefinedAmounts = [10, 25, 50, 100, 250];
 
+  // Convert availableCurrencies from {label, value} format to string[] format
+  const currencyCodes = availableCurrencies.map(curr => curr.value);
+
   return (
     <div className="max-w-md mx-auto">
       <Card>
@@ -134,7 +137,7 @@ const DonationForm = ({
                         </FormControl>
                         <CurrencySelector 
                           currency={currency} 
-                          availableCurrencies={availableCurrencies} 
+                          availableCurrencies={currencyCodes} 
                           onCurrencyChange={setCurrency} 
                         />
                       </div>

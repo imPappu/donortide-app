@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
@@ -66,13 +67,22 @@ const RepositoryTab = ({
         <div key={category} className="space-y-3">
           <h3 className="font-medium text-sm text-muted-foreground">{category}</h3>
           <div className="space-y-4">
-            {addons.map(addon => (
-              <RepositoryAddonCard
-                key={addon.id}
-                addon={addon}
-                onInstall={() => installFromRepository(addon.id, addon.name)}
-              />
-            ))}
+            {addons.map(addon => {
+              // Check if the addon is already installed
+              const isInstalled = installedAddons.some(
+                installed => installed.id === addon.id
+              );
+              
+              return (
+                <RepositoryAddonCard
+                  key={addon.id}
+                  addon={addon}
+                  installingFromRepo={installingFromRepo}
+                  isInstalled={isInstalled}
+                  onInstall={() => installFromRepository(addon.id, addon.name)}
+                />
+              );
+            })}
           </div>
         </div>
       ))}

@@ -17,7 +17,7 @@ interface RepositoryAddonCardProps {
   addon: RepositoryAddon;
   installingFromRepo: boolean;
   isInstalled: boolean;
-  onInstall: (id: number, name: string) => Promise<void>;
+  onInstall: () => Promise<void>;
 }
 
 const RepositoryAddonCard = ({ 
@@ -45,7 +45,7 @@ const RepositoryAddonCard = ({
           </div>
           <Button 
             size="sm" 
-            onClick={() => onInstall(addon.id, addon.name)}
+            onClick={onInstall}
             disabled={installingFromRepo || isInstalled}
           >
             {installingFromRepo ? (

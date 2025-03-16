@@ -31,6 +31,10 @@ import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Events from "./pages/Events";
 import Campaigns from "./pages/Campaigns";
+import UrgentRequests from "./pages/UrgentRequests";
+import MostDonatedItems from "./pages/MostDonatedItems";
+import NearbyVolunteers from "./pages/NearbyVolunteers";
+import TopConsultants from "./pages/TopConsultants";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -146,6 +150,10 @@ const App = () => {
                   <Route path="/services" element={<Services />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/campaigns" element={<Campaigns />} />
+                  <Route path="/urgent-requests" element={<UrgentRequests />} />
+                  <Route path="/most-donated" element={<MostDonatedItems />} />
+                  <Route path="/nearby-volunteers" element={<NearbyVolunteers />} />
+                  <Route path="/top-consultants" element={<TopConsultants />} />
                   <Route path={`/${adminPath}`} element={<AdminLogin />} />
                   <Route path={`/${adminPath}/dashboard`} element={<AdminDashboard />} />
                   <Route path="*" element={<NotFound />} />

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
@@ -39,10 +38,13 @@ const RepositoryTab = ({
   installingFromRepo, 
   installFromRepository 
 }: RepositoryTabProps) => {
+  // Filter out third-party addons
+  const customAddons = repositoryAddons.filter(addon => addon.author === "DonorTide");
+
   // Group addons by category
   const groupedAddons: Record<string, RepositoryAddon[]> = {};
   
-  repositoryAddons.forEach(addon => {
+  customAddons.forEach(addon => {
     const category = addon.category || "Other";
     if (!groupedAddons[category]) {
       groupedAddons[category] = [];
@@ -68,9 +70,7 @@ const RepositoryTab = ({
               <RepositoryAddonCard
                 key={addon.id}
                 addon={addon}
-                installingFromRepo={installingFromRepo}
-                isInstalled={installedAddons.some(a => a.name === addon.name)}
-                onInstall={installFromRepository}
+                onInstall={() => installFromRepository(addon.id, addon.name)}
               />
             ))}
           </div>

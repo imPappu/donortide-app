@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import DashboardContent from "./DashboardContent";
 import UserManagement from "../UserManagement";
@@ -33,6 +32,10 @@ import NotificationPanel from "../NotificationPanel";
 import AdsManagement from "../AdsManagement";
 import VolunteerManagement from "../VolunteerManagement";
 import InstallationGuide from "../system/InstallationGuide";
+import UrgentRequests from "../UrgentRequests";
+import MostDonatedItems from "../MostDonatedItems";
+import NearbyVolunteers from "../NearbyVolunteers";
+import TopConsultants from "../TopConsultants";
 import { Notification } from "@/types/apiTypes";
 
 const ContentRouter = ({ activeTab, stats, loading }: { 
@@ -150,6 +153,16 @@ const ContentRouter = ({ activeTab, stats, loading }: {
       return <BloodRequestsManagement />;
     case "app-settings-form":
       return <AppSettingsForm />;
+    
+    // New routes
+    case "urgent-requests":
+      return <UrgentRequests />;
+    case "most-donated":
+      return <MostDonatedItems />;
+    case "nearby-volunteers":
+      return <NearbyVolunteers />;
+    case "top-consultants":
+      return <TopConsultants />;
       
     default:
       return <div className="p-6 text-center">

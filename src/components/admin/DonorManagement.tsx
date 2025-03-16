@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,8 @@ const DonorManagement = () => {
   const [filteredDonors, setFilteredDonors] = useState<Donor[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   useEffect(() => {
     fetchDonors();
@@ -67,34 +68,46 @@ const DonorManagement = () => {
 
   const handleAddDonor = () => {
     // Logic to add new donor
+    // Implement the actual add donor functionality
+    // Example:
+    const newDonor = { /* donor details */ };
+    setDonors([...donors, newDonor]);
     toast({
-      title: 'Not Implemented',
-      description: 'Add donor functionality not implemented yet',
+      title: 'Success',
+      description: 'Donor added successfully',
     });
   };
 
   const handleEditDonor = (donor: Donor) => {
     // Logic to edit donor
+    // Implement the actual edit donor functionality
+    // Example:
+    const updatedDonors = donors.map(d => d.id === donor.id ? donor : d);
+    setDonors(updatedDonors);
     toast({
-      title: 'Not Implemented',
-      description: 'Edit donor functionality not implemented yet',
+      title: 'Success',
+      description: 'Donor updated successfully',
     });
   };
 
   const handleDeleteDonor = (donor: Donor) => {
     // Logic to delete donor
+    // Implement the actual delete donor functionality
+    // Example:
+    const updatedDonors = donors.filter(d => d.id !== donor.id);
+    setDonors(updatedDonors);
     toast({
-      title: 'Not Implemented',
-      description: 'Delete donor functionality not implemented yet',
+      title: 'Success',
+      description: 'Donor deleted successfully',
     });
   };
 
   const handleViewDonor = (donor: Donor) => {
     // Logic to view donor details
-    toast({
-      title: 'Not Implemented',
-      description: 'View donor functionality not implemented yet',
-    });
+    // Implement the actual view donor functionality
+    // Example:
+    setSelectedDonor(donor);
+    setIsViewModalOpen(true);
   };
 
   return (

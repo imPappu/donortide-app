@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
@@ -114,15 +113,14 @@ export const SidebarMenuAction = React.forwardRef<
 })
 SidebarMenuAction.displayName = "SidebarMenuAction"
 
-export const SidebarMenuBadge = React.forwardRef<
-  React.ElementRef<typeof Badge>,
-  React.ComponentProps<typeof Badge>
->(({ className, ...props }, ref) => {
+export const SidebarMenuBadge = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof Badge>) => {
   return (
     <Badge
-      ref={ref}
-      data-sidebar="menu-badge"
       variant="secondary"
+      data-sidebar="menu-badge"
       className={cn(
         "ml-auto pl-[0.625rem] group-data-[collapsible=icon]/sidebar:hidden",
         className
@@ -130,7 +128,7 @@ export const SidebarMenuBadge = React.forwardRef<
       {...props}
     />
   )
-})
+}
 SidebarMenuBadge.displayName = "SidebarMenuBadge"
 
 export const SidebarMenuSkeleton = React.forwardRef<

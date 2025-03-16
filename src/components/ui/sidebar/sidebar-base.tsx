@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "./context"
@@ -29,7 +28,6 @@ export const Sidebar = React.forwardRef<
       <Dialog open={openMobile} onOpenChange={setOpenMobile}>
         <DialogContent
           className="w-[var(--sidebar-width)] max-w-[85vw] rounded-r-none p-0 sm:max-w-[var(--sidebar-width-mobile)] data-[state=open]:slide-in-from-left"
-          hideClose
         >
           <div
             data-sidebar="root-mobile"

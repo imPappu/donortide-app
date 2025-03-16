@@ -133,9 +133,9 @@ const DonationForm = ({
                           />
                         </FormControl>
                         <CurrencySelector 
-                          currencies={availableCurrencies} 
-                          value={currency} 
-                          onChange={setCurrency} 
+                          currency={currency} 
+                          availableCurrencies={availableCurrencies} 
+                          onCurrencyChange={setCurrency} 
                         />
                       </div>
                       <FormMessage />

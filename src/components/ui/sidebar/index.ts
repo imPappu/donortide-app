@@ -14,6 +14,8 @@ export {
   SidebarGroupAction,
   SidebarGroupContent
 } from './sidebar-elements'
+
+// Import and re-export all menu components from the new location
 export {
   SidebarMenu,
   SidebarMenuItem,
@@ -24,4 +26,4 @@ export {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton
-} from './sidebar-menu'
+} from './menu'

@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertCircle, Heart, HandHeart, Calendar, Users, Award, TrendingUp } from "lucide-react";
+import { AlertCircle, Heart, HandHeart, Calendar, Users, Award, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Quick action item type

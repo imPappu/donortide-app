@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import TopNavbar from '@/components/TopNavbar';
@@ -12,6 +13,8 @@ import TrendingTags from '@/components/community/TrendingTags';
 import FollowedTags from '@/components/community/feed/FollowedTags';
 import FilterSection from '@/components/community/layout/FilterSection';
 import PostList from '@/components/community/feed/PostList';
+import { useCommunityFeed } from '@/hooks/useCommunityFeed';
+import CommunityContent from '@/components/community/layout/CommunityContent';
 
 // Mock data for initial posts
 const initialPosts: Post[] = [
@@ -142,38 +145,18 @@ const CommunityFeed = () => {
           <h1 className="text-2xl font-bold">Community Feed</h1>
         </div>
         
-        <StoriesSection 
-          stories={stories} 
-          onAddStory={handleAddStory} 
-        />
-        
-        <FilterSection 
-          activeTag={activeTag} 
-          clearTagFilter={clearTagFilter}
+        <CommunityContent
+          activeTag={activeTag}
           followedTags={followedTags}
-          toggleFollowTag={toggleFollowTag}
-        />
-        
-        <NewPostForm />
-        
-        <div className="mb-4">
-          <TrendingTags 
-            tags={TRENDING_TAGS} 
-            onTagClick={handleTagClick} 
-          />
-        </div>
-        
-        <FollowedTags 
-          followedTags={followedTags}
+          filteredPosts={filteredPosts}
+          stories={stories}
           handleTagClick={handleTagClick}
+          clearTagFilter={clearTagFilter}
           toggleFollowTag={toggleFollowTag}
-        />
-        
-        <PostList 
-          posts={filteredPosts} 
-          onTagClick={handleTagClick} 
-          onDeletePost={handleDeletePost}
-          onEditPost={handleEditPost}
+          handleAddStory={handleAddStory}
+          handleDeletePost={handleDeletePost}
+          handleEditPost={handleEditPost}
+          TRENDING_TAGS={TRENDING_TAGS}
         />
       </div>
       

@@ -16,10 +16,10 @@ const PostHeader = ({ userName, userAvatar, timestamp }: PostHeaderProps) => {
       <div className="flex items-center">
         <Avatar className="h-10 w-10 mr-3">
           {userAvatar ? (
-            <AvatarImage src={userAvatar} alt={userName} />
+            <AvatarImage src={userAvatar} alt={userName || 'User'} />
           ) : (
             <AvatarFallback>
-              {userName ? userName.charAt(0) : 'U'}
+              {userName && userName.length > 0 ? userName.charAt(0) : 'U'}
             </AvatarFallback>
           )}
         </Avatar>

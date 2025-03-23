@@ -1,20 +1,26 @@
 
-import React from "react";
-import CommunityLayout from "@/components/community/layout/CommunityLayout";
-import CommunityContent from "@/components/community/layout/CommunityContent";
-import { useCommunityFeed } from "@/hooks/useCommunityFeed";
+import React from 'react';
+import Navigation from '@/components/Navigation';
+import TopNavbar from '@/components/TopNavbar';
 
 const CommunityFeed = () => {
-  const communityFeedProps = useCommunityFeed();
-
   return (
-    <CommunityLayout 
-      title="Community Feed" 
-      searchQuery={communityFeedProps.searchQuery}
-      setSearchQuery={communityFeedProps.setSearchQuery}
-    >
-      <CommunityContent {...communityFeedProps} />
-    </CommunityLayout>
+    <div className="flex flex-col min-h-screen">
+      <TopNavbar title="Community Feed" showSearchBar={true} />
+      
+      <div className="container mx-auto p-4 pb-20">
+        <h1 className="text-2xl font-bold mb-6">Community Feed</h1>
+        
+        <div className="space-y-4">
+          {/* Community feed content will go here */}
+          <div className="p-4 border rounded-md">
+            <p>Community posts will be displayed here.</p>
+          </div>
+        </div>
+      </div>
+      
+      <Navigation />
+    </div>
   );
 };
 

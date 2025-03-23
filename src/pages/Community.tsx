@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import Navigation from '@/components/Navigation';
 
 const Community = () => {
   const navigate = useNavigate();
@@ -14,8 +15,9 @@ const Community = () => {
   }, [navigate, location.pathname]);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 pb-20">
       <Outlet />
+      <Navigation />
     </div>
   );
 };

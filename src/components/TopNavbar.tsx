@@ -109,9 +109,9 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                     <span className="sr-only">Home</span>
                   </Button>
                 </Link>
-                <Link to="/requests">
+                <Link to="/urgent-requests">
                   <Button 
-                    variant={isActive("/requests") ? "secondary" : "ghost"} 
+                    variant={isActive("/urgent-requests") ? "secondary" : "ghost"} 
                     size="lg"
                     className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
@@ -120,9 +120,9 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                     <span className="sr-only">Requests</span>
                   </Button>
                 </Link>
-                <Link to="/community">
+                <Link to="/community/feed">
                   <Button 
-                    variant={isActive("/community") ? "secondary" : "ghost"} 
+                    variant={isActive("/community/feed") ? "secondary" : "ghost"} 
                     size="lg"
                     className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
@@ -161,7 +161,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                   className="rounded-full relative hover:bg-gray-100 dark:hover:bg-gray-800" 
                   asChild
                 >
-                  <Link to="/create">
+                  <Link to="/request">
                     <PlusCircle className="h-5 w-5" />
                     <span className="sr-only">Create</span>
                   </Link>

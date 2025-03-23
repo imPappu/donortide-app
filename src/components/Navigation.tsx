@@ -24,6 +24,15 @@ const Navigation = () => {
     if (checkPath === "/") {
       return path === "/" || path === "/index";
     }
+    if (checkPath === "/community") {
+      return path.startsWith("/community");
+    }
+    if (checkPath === "/events") {
+      return path.startsWith("/events") || path.startsWith("/campaigns");
+    }
+    if (checkPath === "/urgent-requests") {
+      return path.startsWith("/urgent-requests");
+    }
     return path.startsWith(checkPath);
   };
 
@@ -98,7 +107,7 @@ const Navigation = () => {
             to="/events"
             icon={<Calendar />}
             label="Events"
-            active={isActive("/events") || isActive("/campaigns")}
+            active={isActive("/events")}
           />
           
           <NavItem

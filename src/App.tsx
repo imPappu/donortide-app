@@ -31,6 +31,7 @@ import DonorManagement from './components/admin/DonorManagement';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import CommunityFeed from './pages/CommunityFeed';
 import NotFound from './pages/NotFound';
+import CreateCampaign from './pages/CreateCampaign';
 
 function App() {
   const { toast } = useToast()
@@ -69,8 +70,9 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/events" element={<Events />} />
             <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/campaigns/create" element={<CreateCampaign />} />
             
-            {/* Fixed Community routes */}
+            {/* Community routes */}
             <Route path="/community" element={<Community />}>
               <Route path="feed" element={<CommunityFeed />} />
             </Route>

@@ -1,10 +1,13 @@
 
 import React from "react";
 import TopNavbar from "@/components/TopNavbar";
-import { Megaphone } from "lucide-react";
+import { Megaphone, Plus } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
 import CampaignGrid from "@/components/campaigns/CampaignGrid";
 import { CampaignCardProps } from "@/components/campaigns/CampaignCard";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
 
 const Campaigns = () => {
   const activeCampaigns: CampaignCardProps[] = [
@@ -48,16 +51,27 @@ const Campaigns = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <TopNavbar />
+      <TopNavbar title="Campaigns" showBackButton />
       
       <div className="container mx-auto px-4 py-6 flex-1 pb-20 max-w-6xl">
-        <PageHeader 
-          icon={<Megaphone className="h-6 w-6 mr-2 text-orange-500" />}
-          title="Active Blood Donation Campaigns"
-        />
+        <div className="flex items-center justify-between mb-6">
+          <PageHeader 
+            icon={<Megaphone className="h-6 w-6 mr-2 text-orange-500" />}
+            title="Active Blood Donation Campaigns"
+          />
+          
+          <Link to="/campaigns/create">
+            <Button className="flex items-center gap-1">
+              <Plus className="h-4 w-4" />
+              New Campaign
+            </Button>
+          </Link>
+        </div>
         
         <CampaignGrid campaigns={activeCampaigns} />
       </div>
+      
+      <Navigation />
     </div>
   );
 };

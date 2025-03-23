@@ -122,7 +122,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                 </Link>
                 <Link to="/community/feed">
                   <Button 
-                    variant={isActive("/community/feed") ? "secondary" : "ghost"} 
+                    variant={location.pathname.includes("/community") ? "secondary" : "ghost"} 
                     size="lg"
                     className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >

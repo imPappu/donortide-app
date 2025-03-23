@@ -1,14 +1,17 @@
 
 import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 const Community = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   React.useEffect(() => {
-    // Default to the community feed page
-    navigate('/community/feed', { replace: true });
-  }, [navigate]);
+    // Only redirect if we're at exactly /community
+    if (location.pathname === '/community') {
+      navigate('/community/feed', { replace: true });
+    }
+  }, [navigate, location.pathname]);
 
   return (
     <div className="container mx-auto p-4">

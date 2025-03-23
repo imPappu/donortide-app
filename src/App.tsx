@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
@@ -28,6 +29,8 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import PaymentGatewaySettings from './components/admin/PaymentGatewaySettings';
 import DonorManagement from './components/admin/DonorManagement';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import CommunityFeed from './pages/CommunityFeed';
+import NotFound from './pages/NotFound';
 
 function App() {
   const { toast } = useToast()
@@ -62,11 +65,16 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/donate" element={<Donate />} />
-            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/events" element={<Events />} />
             <Route path="/campaigns" element={<Campaigns />} />
-            <Route path="/community/*" element={<Community />} />
+            
+            {/* Fixed Community routes */}
+            <Route path="/community" element={<Community />}>
+              <Route path="feed" element={<CommunityFeed />} />
+            </Route>
+            
             <Route path="/request" element={<CreateRequest />} />
             <Route path="/most-donated-items" element={<MostDonatedItems />} />
             <Route path="/urgent-requests" element={<UrgentRequests />} />
@@ -81,7 +89,7 @@ function App() {
             <Route path="/admin/donor-management" element={<DonorManagement />} />
 
             {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </SidebarProvider>
         <Toaster />

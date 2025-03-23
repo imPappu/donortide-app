@@ -19,6 +19,14 @@ const Navigation = () => {
     }
   };
 
+  // Helper function to check if a path is active
+  const isActive = (checkPath: string) => {
+    if (checkPath === "/") {
+      return path === "/" || path === "/index";
+    }
+    return path.startsWith(checkPath);
+  };
+
   const NavItem = ({ to, icon, label, active, notificationCount = 0 }: { 
     to: string; 
     icon: React.ReactNode; 
@@ -67,22 +75,22 @@ const Navigation = () => {
             to="/"
             icon={<Home />}
             label="Home"
-            active={path === "/" || path === "/index"}
+            active={isActive("/")}
           />
           
           <NavItem
-            to="/requests"
+            to="/urgent-requests"
             icon={<Heart />}
             label="Requests"
-            active={path === "/requests"}
+            active={isActive("/urgent-requests")}
             notificationCount={3}
           />
           
           <NavItem
-            to="/community"
+            to="/community/feed"
             icon={<MessageCircle />}
             label="Community"
-            active={path === "/community"}
+            active={isActive("/community")}
             notificationCount={5}
           />
           
@@ -90,14 +98,14 @@ const Navigation = () => {
             to="/events"
             icon={<Calendar />}
             label="Events"
-            active={path.startsWith("/events") || path.startsWith("/campaigns")}
+            active={isActive("/events") || isActive("/campaigns")}
           />
           
           <NavItem
             to="/profile"
             icon={<User />}
             label="Profile"
-            active={path === "/profile"}
+            active={isActive("/profile")}
           />
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import TopNavbar from '@/components/TopNavbar';
@@ -26,7 +25,7 @@ const initialPosts: Post[] = [
     comments: 5,
     shares: 2,
     tags: ['FirstTimeDonor', 'BloodDonation'],
-    images: [],
+    imageUrl: undefined,
     liked: false,
     type: 'text',
   },

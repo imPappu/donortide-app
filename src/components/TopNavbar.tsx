@@ -1,12 +1,11 @@
 
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, PlusCircle, Bell, Home, MessageCircle, User, ArrowLeft, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/components/auth/AuthContext";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
+import NavbarBranding from "./navbar/NavbarBranding";
+import NavbarDesktopMenu from "./navbar/NavbarDesktopMenu";
+import NavbarUserActions from "./navbar/NavbarUserActions";
+import NavbarSearch from "./navbar/NavbarSearch";
 
 interface TopNavbarProps {
   onSearch?: (query: string) => void;
@@ -23,11 +22,9 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
   showBackButton = false,
   onBackClick
 }) => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [searchExpanded, setSearchExpanded] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const { user } = useAuth();
+  const [searchExpanded, setSearchExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchClick = () => {
     if (!showSearchBar) return;
@@ -57,162 +54,35 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
     }
   };
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   return (
     <div className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-sm dark:bg-gray-950 dark:border-gray-800 backdrop-blur-sm bg-white/95 dark:bg-gray-950/95">
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           {!searchExpanded ? (
             <>
-              <div className="flex items-center gap-3">
-                {showBackButton && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 mr-1"
-                    onClick={handleBackClick}
-                  >
-                    <ArrowLeft className="h-5 w-5" />
-                    <span className="sr-only">Back</span>
-                  </Button>
-                )}
-                <Link to="/" className="flex items-center group">
-                  <h1 className="text-xl font-bold text-primary group-hover:text-primary/90 transition-colors">
-                    {title}
-                  </h1>
-                </Link>
-                {showSearchBar && (
-                  <div className="relative hidden md:flex items-center max-w-md flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="desktop-search"
-                      className="pl-9 bg-gray-100/80 border-none rounded-full dark:bg-gray-800/50 focus-visible:ring-primary/30"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                    />
-                  </div>
-                )}
-              </div>
+              <NavbarBranding 
+                title={title}
+                showBackButton={showBackButton}
+                onBackClick={handleBackClick}
+                showSearchBar={showSearchBar}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+              />
               
-              <div className="hidden md:flex items-center justify-center space-x-1 flex-1">
-                <Link to="/">
-                  <Button 
-                    variant={isActive("/") ? "secondary" : "ghost"} 
-                    size="lg"
-                    className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <Home className="h-5 w-5" />
-                    <span className="sr-only">Home</span>
-                  </Button>
-                </Link>
-                <Link to="/urgent-requests">
-                  <Button 
-                    variant={isActive("/urgent-requests") ? "secondary" : "ghost"} 
-                    size="lg"
-                    className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <Heart className="h-5 w-5" />
-                    <Badge className="absolute top-1 right-1 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white">3</Badge>
-                    <span className="sr-only">Requests</span>
-                  </Button>
-                </Link>
-                <Link to="/community/feed">
-                  <Button 
-                    variant={location.pathname.includes("/community") ? "secondary" : "ghost"} 
-                    size="lg"
-                    className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    <Badge className="absolute top-1 right-1 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white">5</Badge>
-                    <span className="sr-only">Community</span>
-                  </Button>
-                </Link>
-                <Link to="/profile">
-                  <Button 
-                    variant={isActive("/profile") ? "secondary" : "ghost"} 
-                    size="lg"
-                    className="relative rounded-md px-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <User className="h-5 w-5" />
-                    <span className="sr-only">Profile</span>
-                  </Button>
-                </Link>
-              </div>
+              <NavbarDesktopMenu />
               
-              <div className="flex items-center space-x-3">
-                {showSearchBar && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full md:hidden hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={handleSearchClick}
-                  >
-                    <Search className="h-5 w-5" />
-                    <span className="sr-only">Search</span>
-                  </Button>
-                )}
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-full relative hover:bg-gray-100 dark:hover:bg-gray-800" 
-                  asChild
-                >
-                  <Link to="/request">
-                    <PlusCircle className="h-5 w-5" />
-                    <span className="sr-only">Create</span>
-                  </Link>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-full relative hover:bg-gray-100 dark:hover:bg-gray-800"
-                  asChild
-                >
-                  <Link to="/notifications">
-                    <Bell className="h-5 w-5" />
-                    <Badge className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-white">2</Badge>
-                    <span className="sr-only">Notifications</span>
-                  </Link>
-                </Button>
-                
-                <Link to="/profile" className="hover:opacity-90 transition-opacity">
-                  <Avatar className="h-9 w-9 border border-border shadow-sm">
-                    {user?.avatar ? (
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                    ) : (
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {user?.name?.charAt(0) || "U"}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                </Link>
-              </div>
+              <NavbarUserActions 
+                showSearchBar={showSearchBar}
+                onSearchClick={handleSearchClick}
+              />
             </>
           ) : (
-            <div className="w-full flex items-center space-x-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="search-input"
-                  className="pl-9 rounded-full border-none bg-gray-100 dark:bg-gray-800"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setSearchExpanded(false)}
-                className="hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                Cancel
-              </Button>
-            </div>
+            <NavbarSearch 
+              searchQuery={searchQuery}
+              searchExpanded={searchExpanded}
+              onSearchChange={handleSearchChange}
+              onCancelSearch={() => setSearchExpanded(false)}
+            />
           )}
         </div>
       </div>

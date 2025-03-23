@@ -18,12 +18,10 @@ import PostList from '@/components/community/feed/PostList';
 const initialPosts: Post[] = [
   {
     id: '1',
-    author: {
-      id: '1',
-      name: 'Sarah Johnson',
-      avatar: 'https://i.pravatar.cc/150?u=sarah',
-      isVerified: true,
-    },
+    authorId: '1',
+    authorName: 'Sarah Johnson',
+    authorAvatar: 'https://i.pravatar.cc/150?u=sarah',
+    isAuthorVerified: true,
     content: 'Just donated blood for the first time today! Feeling great knowing I helped save lives. #FirstTimeDonor #BloodDonation',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
     likes: 24,
@@ -34,12 +32,10 @@ const initialPosts: Post[] = [
   },
   {
     id: '2',
-    author: {
-      id: '2',
-      name: 'Medical Center',
-      avatar: 'https://i.pravatar.cc/150?u=hospital',
-      isVerified: true,
-    },
+    authorId: '2',
+    authorName: 'Medical Center',
+    authorAvatar: 'https://i.pravatar.cc/150?u=hospital',
+    isAuthorVerified: true,
     content: 'URGENT: We need O negative blood donors! Please come to any of our centers today if you can help. #UrgentNeed #ONegative #BloodDrive',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
     likes: 56,
@@ -54,21 +50,17 @@ const initialPosts: Post[] = [
 const initialStories: Story[] = [
   {
     id: '1',
-    user: {
-      id: '1',
-      name: 'Sarah',
-      avatar: 'https://i.pravatar.cc/150?u=sarah',
-    },
+    userId: '1',
+    userName: 'Sarah',
+    userAvatar: 'https://i.pravatar.cc/150?u=sarah',
     image: 'https://placehold.co/600x1200/red/white?text=Blood+Donation',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
   },
   {
     id: '2',
-    user: {
-      id: '2',
-      name: 'Medical Center',
-      avatar: 'https://i.pravatar.cc/150?u=hospital',
-    },
+    userId: '2',
+    userName: 'Medical Center',
+    userAvatar: 'https://i.pravatar.cc/150?u=hospital',
     image: 'https://placehold.co/600x1200/blue/white?text=Blood+Drive',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
   }
@@ -86,7 +78,7 @@ const CommunityFeed = () => {
   const filteredPosts = posts.filter(post => {
     const matchesSearch = !searchQuery || 
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesTag = !activeTag || post.tags.includes(activeTag);

@@ -18,10 +18,8 @@ import PostList from '@/components/community/feed/PostList';
 const initialPosts: Post[] = [
   {
     id: '1',
-    authorId: '1',
-    authorName: 'Sarah Johnson',
-    authorAvatar: 'https://i.pravatar.cc/150?u=sarah',
-    isAuthorVerified: true,
+    userName: 'Sarah Johnson',
+    userAvatar: 'https://i.pravatar.cc/150?u=sarah',
     content: 'Just donated blood for the first time today! Feeling great knowing I helped save lives. #FirstTimeDonor #BloodDonation',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
     likes: 24,
@@ -29,20 +27,22 @@ const initialPosts: Post[] = [
     shares: 2,
     tags: ['FirstTimeDonor', 'BloodDonation'],
     images: [],
+    liked: false,
+    type: 'text',
   },
   {
     id: '2',
-    authorId: '2',
-    authorName: 'Medical Center',
-    authorAvatar: 'https://i.pravatar.cc/150?u=hospital',
-    isAuthorVerified: true,
+    userName: 'Medical Center',
+    userAvatar: 'https://i.pravatar.cc/150?u=hospital',
     content: 'URGENT: We need O negative blood donors! Please come to any of our centers today if you can help. #UrgentNeed #ONegative #BloodDrive',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
     likes: 56,
     comments: 12,
     shares: 45,
     tags: ['UrgentNeed', 'ONegative', 'BloodDrive'],
-    images: ['https://placehold.co/600x400/red/white?text=Blood+Drive'],
+    imageUrl: 'https://placehold.co/600x400/red/white?text=Blood+Drive',
+    liked: false,
+    type: 'image',
   }
 ];
 
@@ -50,19 +50,33 @@ const initialPosts: Post[] = [
 const initialStories: Story[] = [
   {
     id: '1',
-    userId: '1',
     userName: 'Sarah',
     userAvatar: 'https://i.pravatar.cc/150?u=sarah',
-    image: 'https://placehold.co/600x1200/red/white?text=Blood+Donation',
+    content: 'Donating blood today!',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    liked: false,
+    type: 'story',
+    videoUrl: 'https://placehold.co/600x1200/red/white?text=Blood+Donation',
+    duration: 15,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: '2',
-    userId: '2',
     userName: 'Medical Center',
     userAvatar: 'https://i.pravatar.cc/150?u=hospital',
-    image: 'https://placehold.co/600x1200/blue/white?text=Blood+Drive',
+    content: 'Our latest blood drive event',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    liked: false,
+    type: 'story',
+    videoUrl: 'https://placehold.co/600x1200/blue/white?text=Blood+Drive',
+    duration: 15,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   }
 ];
 
@@ -78,10 +92,10 @@ const CommunityFeed = () => {
   const filteredPosts = posts.filter(post => {
     const matchesSearch = !searchQuery || 
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      post.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    const matchesTag = !activeTag || post.tags.includes(activeTag);
+    const matchesTag = !activeTag || post.tags?.includes(activeTag);
     
     return matchesSearch && matchesTag;
   });

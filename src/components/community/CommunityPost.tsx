@@ -63,6 +63,7 @@ const CommunityPost = ({ post, onTagClick, onDelete, onEdit }: CommunityPostProp
     setShowComments(!showComments);
   };
 
+  // Make sure we check if user exists AND if userName matches
   const isOwnPost = user && user.name === post.userName;
 
   const commentData = post.commentData || [
@@ -115,7 +116,7 @@ const CommunityPost = ({ post, onTagClick, onDelete, onEdit }: CommunityPostProp
       <CardContent className="p-4">
         <div className="flex justify-between items-center mb-2">
           <PostHeader 
-            userName={post.userName}
+            userName={post.userName || ''}
             userAvatar={post.userAvatar}
             timestamp={post.timestamp}
           />
@@ -196,7 +197,7 @@ const CommunityPost = ({ post, onTagClick, onDelete, onEdit }: CommunityPostProp
           likes={likeCount}
           comments={post.comments}
           shares={post.shares}
-          userName={post.userName}
+          userName={post.userName || ''}
           content={post.content}
           postId={post.id}
           liked={liked}

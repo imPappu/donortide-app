@@ -100,9 +100,9 @@ const StoriesSection = ({ stories, onAddStory }: StoriesSectionProps) => {
               <div className="ring-2 ring-primary rounded-full overflow-hidden">
                 <Avatar className="h-8 w-8">
                   {story.userAvatar ? (
-                    <AvatarImage src={story.userAvatar} alt={story.userName} />
+                    <AvatarImage src={story.userAvatar} alt={story.userName || 'User'} />
                   ) : (
-                    <AvatarFallback>{story.userName.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{story.userName ? story.userName.charAt(0) : 'U'}</AvatarFallback>
                   )}
                 </Avatar>
               </div>
@@ -110,7 +110,7 @@ const StoriesSection = ({ stories, onAddStory }: StoriesSectionProps) => {
             
             {/* Username */}
             <div className="absolute bottom-2 left-0 right-0 text-center">
-              <p className="text-white text-xs truncate px-1">{story.userName}</p>
+              <p className="text-white text-xs truncate px-1">{story.userName || 'User'}</p>
             </div>
             
             {/* Video indicator */}

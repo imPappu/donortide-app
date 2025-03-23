@@ -19,12 +19,12 @@ const PostHeader = ({ userName, userAvatar, timestamp }: PostHeaderProps) => {
             <AvatarImage src={userAvatar} alt={userName} />
           ) : (
             <AvatarFallback>
-              {userName.charAt(0)}
+              {userName ? userName.charAt(0) : 'U'}
             </AvatarFallback>
           )}
         </Avatar>
         <div>
-          <h3 className="font-medium text-sm">{userName}</h3>
+          <h3 className="font-medium text-sm">{userName || 'Anonymous'}</h3>
           <p className="text-xs text-muted-foreground">{timestamp}</p>
         </div>
       </div>

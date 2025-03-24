@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './components/auth/AuthContext';
@@ -16,7 +17,7 @@ import EventsPage from './pages/events/EventsPage';
 import CreateEvent from './pages/events/CreateEvent';
 
 const AppContent = () => {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const AppContent = () => {
     }
   }, [user]);
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 

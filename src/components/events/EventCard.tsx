@@ -1,63 +1,120 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Calendar, MapPin, User } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface EventCardProps {
-  id: string;
   title: string;
-  date: string;
-  time: string;
-  location: string;
-  organizer: string;
   description: string;
-  image: string;
+  date: Date;
+  location: string;
+  imageUrl?: string;
+  isPaid: boolean;
+  price?: number;
+  currency?: string;
+  attendeesCount?: number;
+  maxAttendees?: number;
+  status: string;
+  onClick: () => void;
 }
 
-const EventCard = ({ 
-  id, 
-  title, 
-  date, 
-  time, 
-  location, 
-  organizer, 
-  description, 
-  image 
-}: EventCardProps) => {
+const EventCard: React.FC<EventCardProps> = ({
+  title,
+  description,
+  date,
+  location,
+  imageUrl,
+  isPaid,
+  price,
+  currency,
+  attendeesCount,
+  maxAttendees,
+  status,
+  onClick
+}) => {
+  const formattedDate = date ? date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }) : '';
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'upcoming':
+        return 'bg-blue-100 text-blue-800';
+      case 'ongoing':
+        return 'bg-green-100 text-green-800';
+      case 'completed':
+        return 'bg-gray-100 text-gray-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
-    <Card key={id} className="overflow-hidden hover:shadow-md transition-shadow">
-      <div className="aspect-video w-full">
-        <img 
-          src={image} 
-          alt={title} 
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <CardHeader className="pb-2">
-        <CardTitle>{title}</CardTitle>
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1" />
-            {date}, {time}
-          </span>
+    <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
+      {imageUrl && (
+        <div className="aspect-video w-full">
+          <img 
+            src={imageUrl} 
+            alt={title} 
+            className="w-full h-full object-cover"
+          />
         </div>
-        <div className="text-sm text-muted-foreground flex items-center">
-          <MapPin className="h-4 w-4 mr-1" />
-          {location}
+      )}
+      <CardContent className="flex-1 p-4">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-semibold text-lg line-clamp-2">{title}</h3>
+          <Badge className={`ml-2 capitalize ${getStatusColor(status)}`}>
+            {status}
+          </Badge>
         </div>
-        <div className="text-sm text-muted-foreground flex items-center">
-          <User className="h-4 w-4 mr-1" />
-          Organized by: {organizer}
+        
+        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+          {description}
+        </p>
+        
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center text-muted-foreground">
+            <Calendar className="h-4 w-4 mr-2" />
+            <span>{formattedDate}</span>
+          </div>
+          
+          <div className="flex items-center text-muted-foreground">
+            <MapPin className="h-4 w-4 mr-2" />
+            <span>{location}</span>
+          </div>
+          
+          {(attendeesCount !== undefined || maxAttendees !== undefined) && (
+            <div className="flex items-center text-muted-foreground">
+              <Users className="h-4 w-4 mr-2" />
+              <span>
+                {attendeesCount !== undefined ? attendeesCount : 0}
+                {maxAttendees !== undefined ? ` / ${maxAttendees}` : ''}
+              </span>
+            </div>
+          )}
         </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm">{description}</p>
       </CardContent>
-      <CardFooter>
-        <Button variant="outline" size="sm" className="w-full" asChild>
-          <Link to={`/events/${id}`}>View Details</Link>
+      
+      <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-center">
+        <div>
+          {isPaid && price !== undefined && (
+            <span className="font-medium">
+              {currency || '$'}{price.toFixed(2)}
+            </span>
+          )}
+          {!isPaid && (
+            <span className="text-sm text-green-600 font-medium">Free</span>
+          )}
+        </div>
+        <Button onClick={onClick} variant="outline" size="sm">
+          View Details
         </Button>
       </CardFooter>
     </Card>

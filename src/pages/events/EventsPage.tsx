@@ -5,8 +5,8 @@ import TopNavbar from '@/components/TopNavbar';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Plus, Calendar } from 'lucide-react';
-import { EventCard } from '@/components/events/EventCard';
-import { EventGrid } from '@/components/events/EventGrid';
+import EventCard from '@/components/events/EventCard';
+import EventGrid from '@/components/events/EventGrid';
 import { useEventsService } from '@/hooks/addon-modules/events-campaigns/eventsService';
 
 const EventsPage = () => {

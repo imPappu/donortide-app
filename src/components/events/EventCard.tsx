@@ -1,24 +1,10 @@
 
 import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Calendar, MapPin, Users, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-export interface EventCardProps {
-  title: string;
-  description: string;
-  date: Date;
-  location: string;
-  imageUrl?: string;
-  isPaid: boolean;
-  price?: number;
-  currency?: string;
-  attendeesCount?: number;
-  maxAttendees?: number;
-  status: string;
-  onClick: () => void;
-}
+import { EventCardProps } from "@/types/events";
 
 const EventCard: React.FC<EventCardProps> = ({
   title,
@@ -28,92 +14,92 @@ const EventCard: React.FC<EventCardProps> = ({
   imageUrl,
   isPaid,
   price,
-  currency,
+  currency = "USD",
   attendeesCount,
   maxAttendees,
   status,
   onClick
 }) => {
-  const formattedDate = date ? date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  }) : '';
+  // Format date to readable string
+  const formattedDate = date.toLocaleDateString("en-US", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
-  const getStatusColor = (status: string) => {
+  // Determine badge color based on status
+  const getBadgeVariant = () => {
     switch (status) {
-      case 'upcoming':
-        return 'bg-blue-100 text-blue-800';
-      case 'ongoing':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-gray-100 text-gray-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
+      case "upcoming":
+        return "outline";
+      case "ongoing":
+        return "secondary";
+      case "completed":
+        return "default";
+      case "cancelled":
+        return "destructive";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "outline";
     }
   };
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
-      {imageUrl && (
-        <div className="aspect-video w-full">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      {imageUrl ? (
+        <div className="h-48 overflow-hidden">
           <img 
             src={imageUrl} 
             alt={title} 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
         </div>
-      )}
-      <CardContent className="flex-1 p-4">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-lg line-clamp-2">{title}</h3>
-          <Badge className={`ml-2 capitalize ${getStatusColor(status)}`}>
-            {status}
-          </Badge>
+      ) : (
+        <div className="h-48 bg-gradient-to-r from-red-400 to-orange-500 flex items-center justify-center text-white font-bold text-xl p-4 text-center">
+          {title}
         </div>
+      )}
+      
+      <CardContent className="p-5">
+        <Badge variant={getBadgeVariant()} className="mb-2">
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Badge>
+        <h3 className="text-xl font-bold mb-2 line-clamp-2">{title}</h3>
+        <p className="text-gray-600 mb-4 line-clamp-3">{description}</p>
         
-        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-          {description}
-        </p>
-        
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center text-muted-foreground">
-            <Calendar className="h-4 w-4 mr-2" />
+        <div className="space-y-2 text-sm text-gray-500">
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-2 text-orange-500" />
             <span>{formattedDate}</span>
           </div>
           
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-2" />
+          <div className="flex items-center">
+            <MapPin className="h-4 w-4 mr-2 text-orange-500" />
             <span>{location}</span>
           </div>
           
-          {(attendeesCount !== undefined || maxAttendees !== undefined) && (
-            <div className="flex items-center text-muted-foreground">
-              <Users className="h-4 w-4 mr-2" />
+          {attendeesCount !== undefined && maxAttendees !== undefined && (
+            <div className="flex items-center">
+              <Users className="h-4 w-4 mr-2 text-orange-500" />
               <span>
-                {attendeesCount !== undefined ? attendeesCount : 0}
-                {maxAttendees !== undefined ? ` / ${maxAttendees}` : ''}
+                {attendeesCount} / {maxAttendees} attendees
+              </span>
+            </div>
+          )}
+          
+          {isPaid && price !== undefined && (
+            <div className="flex items-center">
+              <Tag className="h-4 w-4 mr-2 text-orange-500" />
+              <span>
+                {currency} {price}
               </span>
             </div>
           )}
         </div>
       </CardContent>
       
-      <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-center">
-        <div>
-          {isPaid && price !== undefined && (
-            <span className="font-medium">
-              {currency || '$'}{price.toFixed(2)}
-            </span>
-          )}
-          {!isPaid && (
-            <span className="text-sm text-green-600 font-medium">Free</span>
-          )}
-        </div>
-        <Button onClick={onClick} variant="outline" size="sm">
+      <CardFooter className="p-5 pt-0">
+        <Button onClick={onClick} className="w-full">
           View Details
         </Button>
       </CardFooter>

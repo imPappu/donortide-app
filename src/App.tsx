@@ -9,6 +9,7 @@ import Profile from './pages/Profile';
 import CommunityFeed from './pages/CommunityFeed';
 import DonationPage from './pages/DonationPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Events from './pages/Events';
 import { useAuth } from './components/auth/AuthContext';
 import { Roles } from './types/user';
 import ErrorComponent from './components/ErrorComponent';
@@ -40,7 +41,8 @@ const AppContent = () => {
       <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
       <Route path="/community" element={isAuthenticated ? <CommunityFeed /> : <Navigate to="/login" />} />
       <Route path="/donation" element={isAuthenticated ? <DonationPage /> : <Navigate to="/login" />} />
-      <Route path="/events" element={isAuthenticated ? <EventsPage /> : <Navigate to="/login" />} />
+      <Route path="/events" element={<Events />} />
+      <Route path="/events/page" element={isAuthenticated ? <EventsPage /> : <Navigate to="/login" />} />
       <Route path="/events/create" element={isAuthenticated ? <CreateEvent /> : <Navigate to="/login" />} />
       {isAdmin && (
         <Route path="/admin/*" element={<AdminDashboard />} />

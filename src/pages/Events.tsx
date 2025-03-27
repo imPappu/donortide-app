@@ -6,6 +6,7 @@ import PageHeader from "@/components/common/PageHeader";
 import EventGrid from "@/components/events/EventGrid";
 import EventCard from "@/components/events/EventCard";
 import { EventCardProps } from "@/types/events";
+import Navigation from "@/components/Navigation";
 
 const Events = () => {
   const upcomingEvents: EventCardProps[] = [
@@ -79,6 +80,8 @@ const Events = () => {
           ))}
         </EventGrid>
       </div>
+
+      <Navigation />
     </div>
   );
 };
